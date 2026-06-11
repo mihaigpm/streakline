@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "skills": {
+    "android-clean-architecture": {
+      "source": "affaan-m/everything-claude-code",
+      "sourceType": "github",
+      "skillPath": "skills/android-clean-architecture/SKILL.md",
+      "computedHash": "877b63dfe31ec4d864c0a09ead442029a236def32fd2a7fd374083a27b4fa5ba"
+    },
+    "android-jetpack-compose": {
+      "source": "thebushidocollective/han",
+      "sourceType": "github",
+      "skillPath": "plugins/specialized/android/skills/jetpack-compose/SKILL.md",
+      "computedHash": "7c17e8d8ecfc7159fa18a4359cc0e53868134b6bfd28e825b5c5473d52987853"
+    },
+    "kotlin-coroutines-flows": {
+      "source": "affaan-m/everything-claude-code",
+      "sourceType": "github",
+      "skillPath": "skills/kotlin-coroutines-flows/SKILL.md",
+      "computedHash": "dc26f1f68010e6b79f0e18c71a3677f80da1c54dd0356e5e9c080ee2b6644910"
+    },
+    "kotlin-patterns": {
+      "source": "affaan-m/everything-claude-code",
+      "sourceType": "github",
+      "skillPath": "skills/kotlin-patterns/SKILL.md",
+      "computedHash": "d69f7c8966582d10cd0e3b93cff4dec073872068785376ad835d4f2c87b0561c"
+    },
+    "mobile-android-design": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/ui-design/skills/mobile-android-design/SKILL.md",
+      "computedHash": "bcb274bcc4e0ad076b5947f90e5a247f370ed4da1274b2b7347dc293ee396309"
+    },
+    "swift-api-design-guidelines-skill": {
+      "source": "Erikote04/Swift-API-Design-Guidelines-Agent-Skill",
+      "sourceType": "github",
+      "skillPath": "swift-api-design-guidelines-skill/SKILL.md",
+      "computedHash": "aea51903f26bb8771e292a9e5c1ad0d5731224620fd764f7e3db1236e086d356"
+    },
+    "swift-architecture-skill": {
+      "source": "efremidze/swift-architecture-skill",
+      "sourceType": "github",
+      "skillPath": "swift-architecture-skill/SKILL.md",
+      "computedHash": "67d3359424b19084631998def14666fd5a77284a45ac0353c41a86a7ed216923"
+    },
+    "swift-concurrency": {
+      "source": "avdlee/swift-concurrency-agent-skill",
+      "sourceType": "github",
+      "skillPath": "swift-concurrency/SKILL.md",
+      "computedHash": "64067648af92d2c24b8df033e9f1b19ab36364fbee015a53755d7e74a5711b60"
+    },
+    "swift-format-style": {
+      "source": "n0an/Swift-FormatStyle-Agent-Skill",
+      "sourceType": "github",
+      "skillPath": "swift-format-style/SKILL.md",
+      "computedHash": "66f4a1245750df4438a53696b0288cccf7bf575581b3050420871c3db7f8ffa4"
+    },
+    "swiftui-pro": {
+      "source": "twostraws/swiftui-agent-skill",
+      "sourceType": "github",
+      "skillPath": "swiftui-pro/SKILL.md",
+      "computedHash": "07033426e384295a4b49cf0b2ffdefd4098cae4af53fef16bc1f2d9281118c41"
+    }
+  }
+}

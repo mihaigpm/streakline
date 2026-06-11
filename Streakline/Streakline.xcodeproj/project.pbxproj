@@ -1,0 +1,431 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		013170C24D4EFA4E4A7F20AD /* ConfettiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248C0B8FED00D105C6DD8D47 /* ConfettiView.swift */; };
+		01C816BA97CEA1F95595ADBB /* WeekRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E76D307DA5D2497D0710334 /* WeekRowView.swift */; };
+		1355BFF65EB73161A0D0CBF2 /* ExerciseGuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBD3E8F252687158CD64A1AF /* ExerciseGuideView.swift */; };
+		1925B31C0D774E3CCA71AFF4 /* WorkoutCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1F1C91EB385F573AA7E1872 /* WorkoutCardView.swift */; };
+		20D2B844D659B90029E4491D /* DrinkUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2DC923C50CB3B31149B46F4 /* DrinkUnit.swift */; };
+		2DC16769B6848FD86BA51BC0 /* WorkoutDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36A2F111BFD59D704A9A9E65 /* WorkoutDetailView.swift */; };
+		36EAC2065FD510C4BD18B45F /* DrinkLogStripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E8BF3C9B189FBBEF6678EC0 /* DrinkLogStripView.swift */; };
+		42A6D5F08B2CE775FA79CE5A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656837E3B18215A6514EB004 /* SettingsView.swift */; };
+		49C3E49B0D7A3AA5CA13CBB4 /* Gamification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DB08271C24518E5995BEB8 /* Gamification.swift */; };
+		59A660B2C799BF5004257102 /* WeekManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0043259160E33B0724258D /* WeekManager.swift */; };
+		5FC57586D50D879057C0A4D2 /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21E3A1E463F6B1344272A5F /* DesignSystem.swift */; };
+		6147DEB76324A51FF2F92D49 /* Exercise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F84FF4247006E209E2C4C9 /* Exercise.swift */; };
+		651BF9BD404024269BB4F681 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A969CE6A7578B1BFC1C877F /* NotificationManager.swift */; };
+		67DA909B692B13A3B11E71D2 /* StreaklineApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA6267BBBB2ED38301BA6E0 /* StreaklineApp.swift */; };
+		6AA0467F75FE50C4246BD51E /* RankUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD396A2A0DE26A02615504C3 /* RankUpView.swift */; };
+		83CC279088163C79212D5E67 /* DrinkLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D5F2F89BC41DC18EC041CF5 /* DrinkLog.swift */; };
+		8F44EC4FE566F440AF469612 /* WorkoutDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DCF2CA4A8303CDA8D53F02 /* WorkoutDay.swift */; };
+		8F6DE2DD0FE51495BC1F1945 /* ExerciseLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D10128C5891371381AD16CF /* ExerciseLibrary.swift */; };
+		9A24A189CA1A135E49C2C46B /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F5CE75DF9404E7B4083B7B /* HistoryView.swift */; };
+		A6DE9E63A58BA6FC415AA54A /* ProgressScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6AE49A691ED8976F3C765E5 /* ProgressScreen.swift */; };
+		C6738EA7656E429CF7422280 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A481FB37302DE4268474FA3A /* Assets.xcassets */; };
+		C6CABB4B6D9FCD3B7B11F0C4 /* WorkoutLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C11159C0BFD84525BD62478 /* WorkoutLog.swift */; };
+		E0A0EF6928BA069658C6CCED /* AppWeek.swift in Sources */ = {isa = PBXBuildFile; fileRef = 711AD7BD0E93C8FB9B3C4260 /* AppWeek.swift */; };
+		E0A1B7BD50AFD652F2AB0076 /* ProgressRingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33A17ECA8770640C864826 /* ProgressRingView.swift */; };
+		E223827967DE5DA99ABDDB65 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D942551B00777C635DEAF5 /* HomeView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		02F84FF4247006E209E2C4C9 /* Exercise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exercise.swift; sourceTree = "<group>"; };
+		07D942551B00777C635DEAF5 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		0A0043259160E33B0724258D /* WeekManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekManager.swift; sourceTree = "<group>"; };
+		0CA6267BBBB2ED38301BA6E0 /* StreaklineApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreaklineApp.swift; sourceTree = "<group>"; };
+		248C0B8FED00D105C6DD8D47 /* ConfettiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfettiView.swift; sourceTree = "<group>"; };
+		2C11159C0BFD84525BD62478 /* WorkoutLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutLog.swift; sourceTree = "<group>"; };
+		2C33A17ECA8770640C864826 /* ProgressRingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressRingView.swift; sourceTree = "<group>"; };
+		2D10128C5891371381AD16CF /* ExerciseLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseLibrary.swift; sourceTree = "<group>"; };
+		2E76D307DA5D2497D0710334 /* WeekRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekRowView.swift; sourceTree = "<group>"; };
+		36A2F111BFD59D704A9A9E65 /* WorkoutDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutDetailView.swift; sourceTree = "<group>"; };
+		38DB08271C24518E5995BEB8 /* Gamification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gamification.swift; sourceTree = "<group>"; };
+		49930DCD60BCC76AA08DA6EA /* Streakline.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Streakline.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4D5F2F89BC41DC18EC041CF5 /* DrinkLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrinkLog.swift; sourceTree = "<group>"; };
+		656837E3B18215A6514EB004 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		65F5CE75DF9404E7B4083B7B /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		6A969CE6A7578B1BFC1C877F /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		711AD7BD0E93C8FB9B3C4260 /* AppWeek.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppWeek.swift; sourceTree = "<group>"; };
+		7E8BF3C9B189FBBEF6678EC0 /* DrinkLogStripView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrinkLogStripView.swift; sourceTree = "<group>"; };
+		A481FB37302DE4268474FA3A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B2DC923C50CB3B31149B46F4 /* DrinkUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrinkUnit.swift; sourceTree = "<group>"; };
+		B6AE49A691ED8976F3C765E5 /* ProgressScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressScreen.swift; sourceTree = "<group>"; };
+		BD396A2A0DE26A02615504C3 /* RankUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankUpView.swift; sourceTree = "<group>"; };
+		D1F1C91EB385F573AA7E1872 /* WorkoutCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutCardView.swift; sourceTree = "<group>"; };
+		D9B47D92DA490EFA18ABA4F8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		E21E3A1E463F6B1344272A5F /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
+		F0DCF2CA4A8303CDA8D53F02 /* WorkoutDay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutDay.swift; sourceTree = "<group>"; };
+		FBD3E8F252687158CD64A1AF /* ExerciseGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseGuideView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		01F73A139BF05D664ADD6949 /* Streakline */ = {
+			isa = PBXGroup;
+			children = (
+				A481FB37302DE4268474FA3A /* Assets.xcassets */,
+				D9B47D92DA490EFA18ABA4F8 /* Info.plist */,
+				0CA6267BBBB2ED38301BA6E0 /* StreaklineApp.swift */,
+				C6E15D32A650C44434AE41F4 /* Components */,
+				279FBAC1189180EA283A825C /* Models */,
+				3FB45435EC0793DF479032A4 /* Utilities */,
+				C74B9CAF19DCC7C346F6ACAF /* Views */,
+			);
+			path = Streakline;
+			sourceTree = "<group>";
+		};
+		279FBAC1189180EA283A825C /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				711AD7BD0E93C8FB9B3C4260 /* AppWeek.swift */,
+				4D5F2F89BC41DC18EC041CF5 /* DrinkLog.swift */,
+				B2DC923C50CB3B31149B46F4 /* DrinkUnit.swift */,
+				02F84FF4247006E209E2C4C9 /* Exercise.swift */,
+				2D10128C5891371381AD16CF /* ExerciseLibrary.swift */,
+				F0DCF2CA4A8303CDA8D53F02 /* WorkoutDay.swift */,
+				2C11159C0BFD84525BD62478 /* WorkoutLog.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		3FB45435EC0793DF479032A4 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				E21E3A1E463F6B1344272A5F /* DesignSystem.swift */,
+				38DB08271C24518E5995BEB8 /* Gamification.swift */,
+				6A969CE6A7578B1BFC1C877F /* NotificationManager.swift */,
+				0A0043259160E33B0724258D /* WeekManager.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		93684EDE3402E65A8B14EBD9 = {
+			isa = PBXGroup;
+			children = (
+				01F73A139BF05D664ADD6949 /* Streakline */,
+				AEEB120576A214EEC1C5D0AE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AEEB120576A214EEC1C5D0AE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				49930DCD60BCC76AA08DA6EA /* Streakline.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C6E15D32A650C44434AE41F4 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				248C0B8FED00D105C6DD8D47 /* ConfettiView.swift */,
+				7E8BF3C9B189FBBEF6678EC0 /* DrinkLogStripView.swift */,
+				2C33A17ECA8770640C864826 /* ProgressRingView.swift */,
+				2E76D307DA5D2497D0710334 /* WeekRowView.swift */,
+				D1F1C91EB385F573AA7E1872 /* WorkoutCardView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		C74B9CAF19DCC7C346F6ACAF /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				FBD3E8F252687158CD64A1AF /* ExerciseGuideView.swift */,
+				65F5CE75DF9404E7B4083B7B /* HistoryView.swift */,
+				07D942551B00777C635DEAF5 /* HomeView.swift */,
+				B6AE49A691ED8976F3C765E5 /* ProgressScreen.swift */,
+				BD396A2A0DE26A02615504C3 /* RankUpView.swift */,
+				656837E3B18215A6514EB004 /* SettingsView.swift */,
+				36A2F111BFD59D704A9A9E65 /* WorkoutDetailView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A5C9BD2583BCC294CC2ECBD2 /* Streakline */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0981AEEDA76D06F7298DC89B /* Build configuration list for PBXNativeTarget "Streakline" */;
+			buildPhases = (
+				5A072AEA6BECDAF4AFC62A8A /* Sources */,
+				065B5D8DF869C46E5EBF391C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Streakline;
+			packageProductDependencies = (
+			);
+			productName = Streakline;
+			productReference = 49930DCD60BCC76AA08DA6EA /* Streakline.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		214FFC5B46509D1E049572DF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+			};
+			buildConfigurationList = 31A0F0B606759DFADCF1EC77 /* Build configuration list for PBXProject "Streakline" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 93684EDE3402E65A8B14EBD9;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A5C9BD2583BCC294CC2ECBD2 /* Streakline */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		065B5D8DF869C46E5EBF391C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C6738EA7656E429CF7422280 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5A072AEA6BECDAF4AFC62A8A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E0A0EF6928BA069658C6CCED /* AppWeek.swift in Sources */,
+				013170C24D4EFA4E4A7F20AD /* ConfettiView.swift in Sources */,
+				5FC57586D50D879057C0A4D2 /* DesignSystem.swift in Sources */,
+				83CC279088163C79212D5E67 /* DrinkLog.swift in Sources */,
+				36EAC2065FD510C4BD18B45F /* DrinkLogStripView.swift in Sources */,
+				20D2B844D659B90029E4491D /* DrinkUnit.swift in Sources */,
+				6147DEB76324A51FF2F92D49 /* Exercise.swift in Sources */,
+				1355BFF65EB73161A0D0CBF2 /* ExerciseGuideView.swift in Sources */,
+				8F6DE2DD0FE51495BC1F1945 /* ExerciseLibrary.swift in Sources */,
+				49C3E49B0D7A3AA5CA13CBB4 /* Gamification.swift in Sources */,
+				9A24A189CA1A135E49C2C46B /* HistoryView.swift in Sources */,
+				E223827967DE5DA99ABDDB65 /* HomeView.swift in Sources */,
+				651BF9BD404024269BB4F681 /* NotificationManager.swift in Sources */,
+				E0A1B7BD50AFD652F2AB0076 /* ProgressRingView.swift in Sources */,
+				A6DE9E63A58BA6FC415AA54A /* ProgressScreen.swift in Sources */,
+				6AA0467F75FE50C4246BD51E /* RankUpView.swift in Sources */,
+				42A6D5F08B2CE775FA79CE5A /* SettingsView.swift in Sources */,
+				67DA909B692B13A3B11E71D2 /* StreaklineApp.swift in Sources */,
+				59A660B2C799BF5004257102 /* WeekManager.swift in Sources */,
+				01C816BA97CEA1F95595ADBB /* WeekRowView.swift in Sources */,
+				1925B31C0D774E3CCA71AFF4 /* WorkoutCardView.swift in Sources */,
+				8F44EC4FE566F440AF469612 /* WorkoutDay.swift in Sources */,
+				2DC16769B6848FD86BA51BC0 /* WorkoutDetailView.swift in Sources */,
+				C6CABB4B6D9FCD3B7B11F0C4 /* WorkoutLog.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		01F81D0BDD214E3A8F8166A7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_LANGUAGE = en;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		452D4D65730AB23E5136126A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_LANGUAGE = en;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		D5819C3E8F32C363539C7F67 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Streakline/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mihaigarda.threshold;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		FBA1DDA980B7260486BD5D25 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Streakline/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mihaigarda.threshold;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0981AEEDA76D06F7298DC89B /* Build configuration list for PBXNativeTarget "Streakline" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D5819C3E8F32C363539C7F67 /* Debug */,
+				FBA1DDA980B7260486BD5D25 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		31A0F0B606759DFADCF1EC77 /* Build configuration list for PBXProject "Streakline" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				452D4D65730AB23E5136126A /* Debug */,
+				01F81D0BDD214E3A8F8166A7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 214FFC5B46509D1E049572DF /* Project object */;
+}
