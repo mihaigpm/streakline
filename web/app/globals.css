@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+/*
+  Design tokens mirror the app's DesignSystem.swift so the site and the
+  product read as one brand.
+    background  #0A0A0F   surface  #13131A   surfaceHigh #1C1C26
+    border      #2A2A38   teal     #00E5C3   amber       #F5A623
+    red         #FF4D4D   text     #FFFFFF / #8888A0 / #555568
+*/
+@theme {
+  --color-bg: #0a0a0f;
+  --color-surface: #13131a;
+  --color-surface-high: #1c1c26;
+  --color-border: #2a2a38;
+
+  --color-teal: #00e5c3;
+  --color-teal-dim: #00e5c326;
+  --color-amber: #f5a623;
+  --color-amber-dim: #f5a62326;
+  --color-red: #ff4d4d;
+
+  --color-ink: #ffffff;
+  --color-ink-2: #8888a0;
+  --color-ink-3: #555568;
+
+  --font-sans: var(--font-nunito), ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  --shadow-glow-teal: 0 0 60px -12px #00e5c366;
+  --shadow-glow-amber: 0 0 60px -12px #f5a62355;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-teal);
+  color: #04261f;
+}
+
+/* Subtle, brand-tinted ambient backdrop used behind hero/CTA sections. */
+.ambient {
+  position: relative;
+  isolation: isolate;
+}
+.ambient::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(60% 50% at 75% 10%, #00e5c31f, transparent 70%),
+    radial-gradient(50% 45% at 10% 90%, #f5a6231a, transparent 70%);
+  pointer-events: none;
+}
+
+/* Fine grid texture, like the app's dark surfaces. */
+.grid-texture::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(to right, #ffffff08 1px, transparent 1px),
+    linear-gradient(to bottom, #ffffff08 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(70% 60% at 50% 30%, black, transparent 75%);
+  pointer-events: none;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/*
+  Progressive reveal: [data-reveal] elements fade up once in view.
+  Content is visible by default — the hidden start state only applies when
+  the `.js` flag is set by the inline reveal script, so no-JS visitors and
+  crawlers always see everything.
+*/
+.js [data-reveal] {
+  opacity: 0;
+}
+.js [data-reveal].is-visible {
+  animation: rise-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal],
+  .js [data-reveal].is-visible {
+    opacity: 1;
+    animation: none;
+  }
+}
+
+@keyframes dash-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}

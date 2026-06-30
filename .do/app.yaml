@@ -1,0 +1,40 @@
+# DigitalOcean App Platform spec for the Streakline landing page.
+#
+# This deploys the Next.js static export in `web/` as a FREE static site
+# (App Platform's free tier covers up to 3 static-site apps). DigitalOcean
+# builds it on their infrastructure and serves it from a global CDN with
+# automatic HTTPS — nothing to manage, and it redeploys on every push to main.
+#
+# Deploy with doctl:
+#   doctl apps create --spec .do/app.yaml
+# Update later:
+#   doctl apps update <APP_ID> --spec .do/app.yaml
+#
+# Or in the dashboard: Create > Apps > pick the GitHub repo > it auto-detects
+# this spec. The free tier requires the app to contain only static sites.
+name: streakline-web
+region: lon
+static_sites:
+  - name: web
+    # Monorepo: the site lives in the web/ subdirectory.
+    source_dir: web
+    github:
+      repo: mihaigpm/streakline
+      branch: main
+      deploy_on_push: true
+    build_command: npm run build
+    # next.config.ts sets output: "export" -> static files land in web/out
+    output_dir: out
+    # Branded 404 from app/not-found.tsx (do NOT set catchall_document — the
+    # site has real per-route HTML, not a single-page app).
+    error_document: 404.html
+    index_document: index.html
+
+# Custom domain. Add the streakline.fit DNS records DigitalOcean shows you
+# (or delegate the domain to DO's nameservers); TLS is issued automatically.
+# Remove this block to deploy first on the free *.ondigitalocean.app URL.
+domains:
+  - domain: streakline.fit
+    type: PRIMARY
+  - domain: www.streakline.fit
+    type: ALIAS
