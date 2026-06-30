@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "rm -rf dist && cp -R out dist",
     "start": "next start",
     "lint": "eslint"
   },

@@ -23,8 +23,10 @@ static_sites:
       branch: main
       deploy_on_push: true
     build_command: npm run build
-    # next.config.ts sets output: "export" -> static files land in web/out
-    output_dir: out
+    # next.config.ts sets output: "export" (static files land in web/out); the
+    # build's postbuild step copies them to web/dist, which App Platform also
+    # auto-detects — so this works whether or not the spec is applied.
+    output_dir: dist
     # Branded 404 from app/not-found.tsx (do NOT set catchall_document — the
     # site has real per-route HTML, not a single-page app).
     error_document: 404.html
