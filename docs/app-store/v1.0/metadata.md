@@ -5,11 +5,11 @@
 - **Name:** Streakline
 - **Platform:** iOS (iPhone)
 - **Version:** 1.0
-- **Build:** 1
+- **Build:** 3
 - **Bundle ID:** `com.mihaigarda.threshold`
 - **Primary category:** Health & Fitness
 - **Secondary category:** Lifestyle
-- **Copyright:** `2026 [CONFIRM LEGAL NAME]`
+- **Copyright:** `2026 Mihai Garda Popescu`
 
 ## Listing copy
 

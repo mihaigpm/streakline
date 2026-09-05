@@ -43,8 +43,8 @@ locally through iOS.
 
 ## Reviewer contact
 
-- **Contact name:** `[CONFIRM APPOINTED REVIEW CONTACT]`
-- **Email:** `support@streakline.fit`
-- **Phone:** `[CONFIRM REVIEW PHONE NUMBER]`
+- **Contact name:** Mihai Garda Popescu
+- **Email:** `mihai.garda.popescu@gmail.com`
+- **Phone:** `+353852832124`
 
 Verify the contact can answer during the review window before submission.

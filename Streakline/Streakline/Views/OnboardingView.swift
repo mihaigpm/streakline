@@ -38,13 +38,15 @@ struct OnboardingView: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
-            Image(systemName: "waveform.path.ecg")
-                .font(.largeTitle)
-                .foregroundStyle(DesignSystem.Colors.teal)
-                .accessibilityHidden(true)
-            Text("Build a streak that helps")
-                .font(DesignSystem.Typography.displayMedium)
-                .foregroundStyle(DesignSystem.Colors.textPrimary)
+            HStack(alignment: .firstTextBaseline, spacing: DesignSystem.Spacing.md) {
+                Image(systemName: "waveform.path.ecg")
+                    .font(.title2)
+                    .foregroundStyle(DesignSystem.Colors.teal)
+                    .accessibilityHidden(true)
+                Text("Build a streak that helps")
+                    .font(DesignSystem.Typography.displayMedium)
+                    .foregroundStyle(DesignSystem.Colors.textPrimary)
+            }
             Text("Choose a realistic starting target. Streakline will pair it with three guided workouts each week.")
                 .font(DesignSystem.Typography.body)
                 .foregroundStyle(DesignSystem.Colors.textSecondary)
