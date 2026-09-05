@@ -24,9 +24,14 @@ enum WeekManager {
         let thisMonday = mondayOfWeek(for: now)
 
         guard let latest = weeks.first else {
-            let first = AppWeek(weekNumber: 1, startDate: thisMonday)
-            seedWorkouts(for: first, context: context)
+            let first = AppWeek(
+                weekNumber: 1,
+                startDate: thisMonday,
+                startingDrinkBudget: ProgramPreferences.startingBudget,
+                drinkUnit: .current
+            )
             context.insert(first)
+            seedWorkouts(for: first, context: context)
             try? context.save()
             return first
         }
@@ -36,11 +41,16 @@ enum WeekManager {
         let latestMonday = mondayOfWeek(for: latest.startDate)
         if thisMonday > latestMonday {
             let weeksElapsed = calendar.dateComponents([.weekOfYear], from: latestMonday, to: thisMonday).weekOfYear ?? 1
-            let newWeek = AppWeek(weekNumber: latest.weekNumber + max(1, weeksElapsed), startDate: thisMonday)
+            let newWeek = AppWeek(
+                weekNumber: latest.weekNumber + max(1, weeksElapsed),
+                startDate: thisMonday,
+                startingDrinkBudget: latest.startingDrinkBudget,
+                drinkUnit: .current
+            )
             // Carry the Day C run/circuit alternation forward.
             newWeek.dayC_wasRun = latest.dayC_wasRun
-            seedWorkouts(for: newWeek, context: context)
             context.insert(newWeek)
+            seedWorkouts(for: newWeek, context: context)
             try? context.save()
             return newWeek
         }

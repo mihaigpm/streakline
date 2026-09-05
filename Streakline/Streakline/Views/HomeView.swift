@@ -10,15 +10,14 @@ struct HomeView: View {
     @Environment(\.modelContext) private var context
     @Query(sort: \AppWeek.weekNumber, order: .reverse) private var weeks: [AppWeek]
 
-    @AppStorage(DrinkUnit.storageKey) private var drinkUnitRaw = DrinkUnit.pints.rawValue
     /// Highest rank index already celebrated; -1 until first launch initialises it.
     @AppStorage("lastCelebratedRankIndex") private var lastCelebratedRankIndex = -1
     @State private var currentWeek: AppWeek?
     @State private var path = NavigationPath()
     @State private var rankUpToShow: Gamification.Rank?
     @State private var rankUpPending = false
+    @State private var saveErrorMessage: String?
 
-    private var unit: DrinkUnit { DrinkUnit(rawValue: drinkUnitRaw) ?? .pints }
     private var rankIndex: Int { Gamification.summary(for: weeks).rankIndex }
 
     var body: some View {
@@ -49,7 +48,8 @@ struct HomeView: View {
                     NavigationLink {
                         HistoryView()
                     } label: {
-                        Image(systemName: "calendar")
+                        Label("History", systemImage: "calendar")
+                            .labelStyle(.iconOnly)
                     }
                     .tint(DesignSystem.Colors.textSecondary)
                 }
@@ -57,7 +57,8 @@ struct HomeView: View {
                     NavigationLink {
                         SettingsView()
                     } label: {
-                        Image(systemName: "gearshape")
+                        Label("Settings", systemImage: "gearshape")
+                            .labelStyle(.iconOnly)
                     }
                     .tint(DesignSystem.Colors.textSecondary)
                 }
@@ -78,6 +79,11 @@ struct HomeView: View {
             lastCelebratedRankIndex = rankIndex
         }) { rank in
             RankUpView(rank: rank)
+        }
+        .alert("Your change couldn't be saved", isPresented: saveErrorBinding) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(saveErrorMessage ?? "Please try again.")
         }
     }
 
@@ -118,7 +124,7 @@ struct HomeView: View {
             DrinkLogStripView(
                 total: week.totalDrinks,
                 budget: week.drinkBudget,
-                unit: unit,
+                unit: week.drinkUnit,
                 dayStates: Gamification.dayStates(for: week),
                 onAdd: { addDrink(to: week) },
                 onSubtract: { subtractDrink(from: week) }
@@ -173,7 +179,7 @@ struct HomeView: View {
 
     private func drinkBudgetBadge(_ week: AppWeek) -> some View {
         let remaining = week.drinksRemaining
-        return Text("\(unit.format(remaining)) \(unit.noun(for: remaining)) left")
+        return Text("\(week.drinkUnit.format(remaining)) \(week.drinkUnit.noun(for: remaining)) left")
             .font(DesignSystem.Typography.labelLarge)
             .foregroundStyle(week.isOverBudget ? DesignSystem.Colors.red : DesignSystem.Colors.amber)
             .padding(.horizontal, DesignSystem.Spacing.md)
@@ -269,7 +275,7 @@ struct HomeView: View {
     #endif
 
     private func addDrink(to week: AppWeek) {
-        let step = unit.step
+        let step = week.drinkUnit.step
         let calendar = Calendar.current
         if let todays = week.drinkLogs.first(where: { calendar.isDateInToday($0.date) }) {
             todays.amount += step
@@ -279,17 +285,32 @@ struct HomeView: View {
             week.drinkLogs.append(log)
             context.insert(log)
         }
-        try? context.save()
+        saveContext()
     }
 
     private func subtractDrink(from week: AppWeek) {
         guard let recent = week.drinkLogs.sorted(by: { $0.date > $1.date }).first else { return }
-        recent.amount -= unit.step
+        recent.amount -= week.drinkUnit.step
         if recent.amount <= 0 {
             week.drinkLogs.removeAll { $0.persistentModelID == recent.persistentModelID }
             context.delete(recent)
         }
-        try? context.save()
+        saveContext()
+    }
+
+    private func saveContext() {
+        do {
+            try context.save()
+        } catch {
+            saveErrorMessage = error.localizedDescription
+        }
+    }
+
+    private var saveErrorBinding: Binding<Bool> {
+        Binding(
+            get: { saveErrorMessage != nil },
+            set: { if !$0 { saveErrorMessage = nil } }
+        )
     }
 }
 

@@ -118,14 +118,14 @@ def build_light():
 
 
 def build_dark():
-    img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+    img = Image.new("RGBA", (S, S), (0, 0, 0, 255))
     img.alpha_composite(radial_glow(S, (S * 0.52, S * 0.42), S * 0.72, TEAL, 40))
     draw_glyph(img)
     return img
 
 
 def build_tinted():
-    img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+    img = Image.new("RGBA", (S, S), BG + (255,))
     draw_glyph_mono(img)
     return img
 
@@ -137,8 +137,9 @@ def build_logo():
     return img
 
 
-def save(img, name):
-    img.convert("RGBA").resize((OUT, OUT), Image.LANCZOS).save(name)
+def save_icon(img, name):
+    # App Store icons must be fully opaque and contain no alpha channel.
+    img.convert("RGB").resize((OUT, OUT), Image.LANCZOS).save(name)
     print("wrote", name)
 
 
@@ -147,9 +148,9 @@ import os
 HERE = os.path.dirname(os.path.abspath(__file__))
 ASSETS = os.path.join(HERE, "..", "Streakline", "Assets.xcassets")
 DEST = os.path.join(ASSETS, "AppIcon.appiconset")
-save(build_light(), os.path.join(DEST, "icon_light.png"))
-save(build_dark(), os.path.join(DEST, "icon_dark.png"))
-save(build_tinted(), os.path.join(DEST, "icon_tinted.png"))
+save_icon(build_light(), os.path.join(DEST, "icon_light.png"))
+save_icon(build_dark(), os.path.join(DEST, "icon_dark.png"))
+save_icon(build_tinted(), os.path.join(DEST, "icon_tinted.png"))
 
 # Launch logo (centered glyph on transparent), rendered at @1x / @2x / @3x.
 LAUNCH = os.path.join(ASSETS, "LaunchLogo.imageset")

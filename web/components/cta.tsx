@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { site } from "@/lib/site";
+import { hasAppStoreUrl, hasTestFlightUrl, site } from "@/lib/site";
 
 function AppleGlyph({ className }: { className?: string }) {
   return (
@@ -15,23 +15,22 @@ function AppleGlyph({ className }: { className?: string }) {
 
 /** Official-style "Download on the App Store" badge, or a coming-soon state. */
 export function AppStoreBadge({ className }: { className?: string }) {
-  const live = site.appStoreUrl.length > 0;
   const inner = (
     <span
       className={`inline-flex items-center gap-3 rounded-xl border border-white/15 bg-black px-5 py-2.5 transition-colors ${
-        live ? "hover:border-white/30" : "opacity-90"
+        hasAppStoreUrl ? "hover:border-white/30" : "opacity-90"
       } ${className ?? ""}`}
     >
       <AppleGlyph className="h-7 w-7 text-white" />
       <span className="flex flex-col leading-tight text-left">
         <span className="text-[11px] font-medium text-ink-2">
-          {live ? "Download on the" : "Coming soon to the"}
+          {hasAppStoreUrl ? "Download on the" : "Coming soon to the"}
         </span>
         <span className="text-lg font-bold text-white">App Store</span>
       </span>
     </span>
   );
-  return live ? (
+  return hasAppStoreUrl ? (
     <a href={site.appStoreUrl} aria-label="Download on the App Store">
       {inner}
     </a>
@@ -40,21 +39,40 @@ export function AppStoreBadge({ className }: { className?: string }) {
   );
 }
 
-/** Primary action — the TestFlight beta while the App Store listing is pending. */
+/** Primary action for the best currently configured distribution channel. */
 export function PrimaryCTA({
   className,
-  label = "Join the beta",
+  label,
 }: {
   className?: string;
   label?: string;
 }) {
-  return (
-    <Link
-      href={site.testFlightUrl}
-      className={`group inline-flex items-center justify-center gap-2 rounded-xl bg-teal px-6 py-3.5 text-base font-extrabold text-[#04261f] shadow-[0_0_40px_-8px_#00e5c388] transition-transform hover:scale-[1.02] active:scale-[0.99] ${className ?? ""}`}
-    >
-      {label}
-      <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-0.5" />
+  const href = hasAppStoreUrl
+    ? site.appStoreUrl
+    : hasTestFlightUrl
+      ? site.testFlightUrl
+      : null;
+  const resolvedLabel =
+    label ?? (hasAppStoreUrl ? "Download the app" : hasTestFlightUrl ? "Join TestFlight" : "Coming soon");
+  const classes = `group inline-flex items-center justify-center gap-2 rounded-xl bg-teal px-6 py-3.5 text-base font-extrabold text-[#04261f] shadow-[0_0_40px_-8px_#00e5c388] transition-transform ${
+    href ? "hover:scale-[1.02] active:scale-[0.99]" : "cursor-default opacity-70"
+  } ${className ?? ""}`;
+  const inner = (
+    <>
+      {resolvedLabel}
+      {href && (
+        <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-0.5" />
+      )}
+    </>
+  );
+
+  return href ? (
+    <Link href={href} className={classes}>
+      {inner}
     </Link>
+  ) : (
+    <span className={classes} aria-label="Streakline is coming soon">
+      {inner}
+    </span>
   );
 }

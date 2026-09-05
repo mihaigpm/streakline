@@ -2,7 +2,28 @@
  * Single source of truth for site-wide copy, links and contact details.
  * Edit URLs / emails here once the App Store listing and inboxes exist.
  */
-export const site = {
+type SiteConfig = {
+  name: string;
+  domain: string;
+  url: string;
+  tagline: string;
+  description: string;
+  shortDescription: string;
+  appStoreUrl: string;
+  testFlightUrl: string;
+  email: string;
+  supportEmail: string;
+  privacyEmail: string;
+  social: {
+    x: string;
+    instagram: string;
+    github: string;
+  };
+  legalEntity: string;
+  lastUpdated: string;
+};
+
+export const site: SiteConfig = {
   name: "Streakline",
   domain: "streakline.fit",
   url: "https://streakline.fit",
@@ -12,10 +33,10 @@ export const site = {
   shortDescription:
     "A drinking-less and getting-fit habit tracker for iPhone. Shrinking drink budget, guided workouts, streaks.",
 
-  // Availability. Leave appStoreUrl empty until the public listing is live —
-  // the UI falls back to a "coming soon" state and the TestFlight CTA.
+  // Availability. Only paste a real product or invite URL. Empty and generic
+  // Apple landing-page URLs are intentionally treated as unavailable.
   appStoreUrl: "",
-  testFlightUrl: "https://testflight.apple.com/",
+  testFlightUrl: "",
 
   // Contact — point these at real inboxes on the streakline.fit domain.
   email: "hello@streakline.fit",
@@ -31,7 +52,36 @@ export const site = {
 
   // Used in legal copy.
   legalEntity: "Streakline",
-  lastUpdated: "June 2026",
-} as const;
+  lastUpdated: "September 5, 2026",
+};
 
 export type Site = typeof site;
+
+function hasAppleUrl(
+  value: string,
+  hostname: string,
+  pathPattern: RegExp,
+): boolean {
+  try {
+    const url = new URL(value);
+    return (
+      url.protocol === "https:" &&
+      url.hostname === hostname &&
+      pathPattern.test(url.pathname)
+    );
+  } catch {
+    return false;
+  }
+}
+
+export const hasAppStoreUrl = hasAppleUrl(
+  site.appStoreUrl,
+  "apps.apple.com",
+  /\/app\/(?:[^/]+\/)?id\d+\/?$/,
+);
+
+export const hasTestFlightUrl = hasAppleUrl(
+  site.testFlightUrl,
+  "testflight.apple.com",
+  /\/join\/[A-Za-z0-9]+\/?$/,
+);

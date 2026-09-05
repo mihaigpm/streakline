@@ -11,6 +11,7 @@ enum NotificationManager {
         let completedWorkouts: Int
         let totalDrinks: Double
         let drinkBudget: Int
+        let drinkUnit: DrinkUnit
 
         var isOverBudget: Bool { totalDrinks > Double(drinkBudget) }
     }
@@ -34,6 +35,11 @@ enum NotificationManager {
         } catch {
             return false
         }
+    }
+
+    static func cancelDailyReminder() {
+        UNUserNotificationCenter.current()
+            .removePendingNotificationRequests(withIdentifiers: [dailyReminderID])
     }
 
     /// (Re)schedule the daily reminder at the given time with state-aware copy.
@@ -69,9 +75,9 @@ enum NotificationManager {
     /// State-adaptive reminder body text, optionally tailed with XP motivation.
     static func body(
         for state: WeekState,
-        unit: DrinkUnit = .current,
         gamification: GamificationContext? = nil
     ) -> String {
+        let unit = state.drinkUnit
         var text: String
         if state.isOverBudget {
             text = "You're over your \(unit.noun(for: 1)) budget this week. No sweat, just stop here."

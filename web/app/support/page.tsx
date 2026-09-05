@@ -7,7 +7,7 @@ import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Support",
-  description: `Get help with ${site.name} — contact, common questions, and beta feedback.`,
+  description: `Get help with ${site.name} — contact information and common questions.`,
   alternates: { canonical: "/support" },
 };
 
@@ -24,8 +24,8 @@ const tips = [
   },
   {
     icon: MessageSquare,
-    title: "Found a bug in the beta?",
-    body: "Use the Share Beta Feedback option in TestFlight, or email us. Screenshots and the steps to reproduce help a lot.",
+    title: "Found a bug?",
+    body: "Email us with what happened, what you expected, and the steps to reproduce it. Screenshots help, but please remove any personal information first.",
   },
 ];
 

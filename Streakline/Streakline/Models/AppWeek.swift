@@ -7,6 +7,10 @@ final class AppWeek {
     var weekNumber: Int = 1
     /// Monday of this week.
     var startDate: Date = Date.now
+    /// Programme baseline selected during onboarding. Existing beta data defaults to 10.
+    var startingDrinkBudget: Int = 10
+    /// Unit snapshot for this week so history is never relabelled later.
+    var drinkUnitRaw: String = DrinkUnit.pints.rawValue
     /// For Day C, tracks whether the *next* session is a run (true) or a circuit (false).
     var dayC_wasRun: Bool = true
 
@@ -16,16 +20,27 @@ final class AppWeek {
     @Relationship(deleteRule: .cascade, inverse: \DrinkLog.week)
     var drinkLogs: [DrinkLog] = []
 
-    init(weekNumber: Int, startDate: Date) {
+    init(
+        weekNumber: Int,
+        startDate: Date,
+        startingDrinkBudget: Int = 10,
+        drinkUnit: DrinkUnit = .pints
+    ) {
         self.weekNumber = weekNumber
         self.startDate = startDate
+        self.startingDrinkBudget = startingDrinkBudget
+        self.drinkUnitRaw = drinkUnit.rawValue
         self.dayC_wasRun = true
+    }
+
+    var drinkUnit: DrinkUnit {
+        DrinkUnit(rawValue: drinkUnitRaw) ?? .pints
     }
 
     /// Max drinks allowed this week (in the user's chosen unit).
     /// Drops 1 every 2 weeks, floors at 5.
     var drinkBudget: Int {
-        max(5, 10 - ((weekNumber - 1) / 2))
+        max(5, startingDrinkBudget - ((weekNumber - 1) / 2))
     }
 
     /// Sum of all logged drinks this week.

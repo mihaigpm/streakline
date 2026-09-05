@@ -12,21 +12,25 @@
 		1355BFF65EB73161A0D0CBF2 /* ExerciseGuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBD3E8F252687158CD64A1AF /* ExerciseGuideView.swift */; };
 		1925B31C0D774E3CCA71AFF4 /* WorkoutCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1F1C91EB385F573AA7E1872 /* WorkoutCardView.swift */; };
 		20D2B844D659B90029E4491D /* DrinkUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2DC923C50CB3B31149B46F4 /* DrinkUnit.swift */; };
+		254A150498468EA648F4468E /* AppDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68507EFB5101844C727B510 /* AppDataManager.swift */; };
 		2DC16769B6848FD86BA51BC0 /* WorkoutDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36A2F111BFD59D704A9A9E65 /* WorkoutDetailView.swift */; };
 		36EAC2065FD510C4BD18B45F /* DrinkLogStripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E8BF3C9B189FBBEF6678EC0 /* DrinkLogStripView.swift */; };
 		42A6D5F08B2CE775FA79CE5A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656837E3B18215A6514EB004 /* SettingsView.swift */; };
 		49C3E49B0D7A3AA5CA13CBB4 /* Gamification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DB08271C24518E5995BEB8 /* Gamification.swift */; };
 		59A660B2C799BF5004257102 /* WeekManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0043259160E33B0724258D /* WeekManager.swift */; };
+		5A7EC6886B4D00FFE8B7F4F5 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D203C819D4B1FFABD2C2D1 /* OnboardingView.swift */; };
 		5FC57586D50D879057C0A4D2 /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21E3A1E463F6B1344272A5F /* DesignSystem.swift */; };
 		6147DEB76324A51FF2F92D49 /* Exercise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F84FF4247006E209E2C4C9 /* Exercise.swift */; };
 		651BF9BD404024269BB4F681 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A969CE6A7578B1BFC1C877F /* NotificationManager.swift */; };
 		67DA909B692B13A3B11E71D2 /* StreaklineApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA6267BBBB2ED38301BA6E0 /* StreaklineApp.swift */; };
 		6AA0467F75FE50C4246BD51E /* RankUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD396A2A0DE26A02615504C3 /* RankUpView.swift */; };
 		83CC279088163C79212D5E67 /* DrinkLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D5F2F89BC41DC18EC041CF5 /* DrinkLog.swift */; };
+		8DD5B7845ECE8FF892E2CDAF /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 0AA6861378A7D7E1B0A08EAF /* PrivacyInfo.xcprivacy */; };
 		8F44EC4FE566F440AF469612 /* WorkoutDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DCF2CA4A8303CDA8D53F02 /* WorkoutDay.swift */; };
 		8F6DE2DD0FE51495BC1F1945 /* ExerciseLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D10128C5891371381AD16CF /* ExerciseLibrary.swift */; };
 		9A24A189CA1A135E49C2C46B /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F5CE75DF9404E7B4083B7B /* HistoryView.swift */; };
 		A6DE9E63A58BA6FC415AA54A /* ProgressScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6AE49A691ED8976F3C765E5 /* ProgressScreen.swift */; };
+		B57073CF3146F04857D918B4 /* StreaklineCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 998636C4188C2DAD421232CF /* StreaklineCoreTests.swift */; };
 		C6738EA7656E429CF7422280 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A481FB37302DE4268474FA3A /* Assets.xcassets */; };
 		C6CABB4B6D9FCD3B7B11F0C4 /* WorkoutLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C11159C0BFD84525BD62478 /* WorkoutLog.swift */; };
 		E0A0EF6928BA069658C6CCED /* AppWeek.swift in Sources */ = {isa = PBXBuildFile; fileRef = 711AD7BD0E93C8FB9B3C4260 /* AppWeek.swift */; };
@@ -34,16 +38,29 @@
 		E223827967DE5DA99ABDDB65 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D942551B00777C635DEAF5 /* HomeView.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		57E0D99F85F252D9AF15CCB5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 214FFC5B46509D1E049572DF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A5C9BD2583BCC294CC2ECBD2;
+			remoteInfo = Streakline;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		02F84FF4247006E209E2C4C9 /* Exercise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exercise.swift; sourceTree = "<group>"; };
 		07D942551B00777C635DEAF5 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		0A0043259160E33B0724258D /* WeekManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekManager.swift; sourceTree = "<group>"; };
+		0AA6861378A7D7E1B0A08EAF /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		0CA6267BBBB2ED38301BA6E0 /* StreaklineApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreaklineApp.swift; sourceTree = "<group>"; };
 		248C0B8FED00D105C6DD8D47 /* ConfettiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfettiView.swift; sourceTree = "<group>"; };
+		2756955B4547B842044F38B1 /* StreaklineTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = StreaklineTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C11159C0BFD84525BD62478 /* WorkoutLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutLog.swift; sourceTree = "<group>"; };
 		2C33A17ECA8770640C864826 /* ProgressRingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressRingView.swift; sourceTree = "<group>"; };
 		2D10128C5891371381AD16CF /* ExerciseLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseLibrary.swift; sourceTree = "<group>"; };
 		2E76D307DA5D2497D0710334 /* WeekRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekRowView.swift; sourceTree = "<group>"; };
+		33D203C819D4B1FFABD2C2D1 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		36A2F111BFD59D704A9A9E65 /* WorkoutDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutDetailView.swift; sourceTree = "<group>"; };
 		38DB08271C24518E5995BEB8 /* Gamification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gamification.swift; sourceTree = "<group>"; };
 		49930DCD60BCC76AA08DA6EA /* Streakline.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Streakline.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -53,7 +70,9 @@
 		6A969CE6A7578B1BFC1C877F /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		711AD7BD0E93C8FB9B3C4260 /* AppWeek.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppWeek.swift; sourceTree = "<group>"; };
 		7E8BF3C9B189FBBEF6678EC0 /* DrinkLogStripView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrinkLogStripView.swift; sourceTree = "<group>"; };
+		998636C4188C2DAD421232CF /* StreaklineCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreaklineCoreTests.swift; sourceTree = "<group>"; };
 		A481FB37302DE4268474FA3A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A68507EFB5101844C727B510 /* AppDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDataManager.swift; sourceTree = "<group>"; };
 		B2DC923C50CB3B31149B46F4 /* DrinkUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrinkUnit.swift; sourceTree = "<group>"; };
 		B6AE49A691ED8976F3C765E5 /* ProgressScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressScreen.swift; sourceTree = "<group>"; };
 		BD396A2A0DE26A02615504C3 /* RankUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankUpView.swift; sourceTree = "<group>"; };
@@ -70,6 +89,7 @@
 			children = (
 				A481FB37302DE4268474FA3A /* Assets.xcassets */,
 				D9B47D92DA490EFA18ABA4F8 /* Info.plist */,
+				0AA6861378A7D7E1B0A08EAF /* PrivacyInfo.xcprivacy */,
 				0CA6267BBBB2ED38301BA6E0 /* StreaklineApp.swift */,
 				C6E15D32A650C44434AE41F4 /* Components */,
 				279FBAC1189180EA283A825C /* Models */,
@@ -77,6 +97,14 @@
 				C74B9CAF19DCC7C346F6ACAF /* Views */,
 			);
 			path = Streakline;
+			sourceTree = "<group>";
+		};
+		0E3BD654F009A419F0ABBC5B /* StreaklineTests */ = {
+			isa = PBXGroup;
+			children = (
+				998636C4188C2DAD421232CF /* StreaklineCoreTests.swift */,
+			);
+			path = StreaklineTests;
 			sourceTree = "<group>";
 		};
 		279FBAC1189180EA283A825C /* Models */ = {
@@ -96,6 +124,7 @@
 		3FB45435EC0793DF479032A4 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				A68507EFB5101844C727B510 /* AppDataManager.swift */,
 				E21E3A1E463F6B1344272A5F /* DesignSystem.swift */,
 				38DB08271C24518E5995BEB8 /* Gamification.swift */,
 				6A969CE6A7578B1BFC1C877F /* NotificationManager.swift */,
@@ -108,6 +137,7 @@
 			isa = PBXGroup;
 			children = (
 				01F73A139BF05D664ADD6949 /* Streakline */,
+				0E3BD654F009A419F0ABBC5B /* StreaklineTests */,
 				AEEB120576A214EEC1C5D0AE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -116,6 +146,7 @@
 			isa = PBXGroup;
 			children = (
 				49930DCD60BCC76AA08DA6EA /* Streakline.app */,
+				2756955B4547B842044F38B1 /* StreaklineTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -138,6 +169,7 @@
 				FBD3E8F252687158CD64A1AF /* ExerciseGuideView.swift */,
 				65F5CE75DF9404E7B4083B7B /* HistoryView.swift */,
 				07D942551B00777C635DEAF5 /* HomeView.swift */,
+				33D203C819D4B1FFABD2C2D1 /* OnboardingView.swift */,
 				B6AE49A691ED8976F3C765E5 /* ProgressScreen.swift */,
 				BD396A2A0DE26A02615504C3 /* RankUpView.swift */,
 				656837E3B18215A6514EB004 /* SettingsView.swift */,
@@ -167,6 +199,24 @@
 			productReference = 49930DCD60BCC76AA08DA6EA /* Streakline.app */;
 			productType = "com.apple.product-type.application";
 		};
+		C70B335A17C2D5E687E34979 /* StreaklineTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 44D888365D38468A1EDE85C8 /* Build configuration list for PBXNativeTarget "StreaklineTests" */;
+			buildPhases = (
+				083C48A7D10E37D53F74CA6E /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				62033A1138F6292928CC9E19 /* PBXTargetDependency */,
+			);
+			name = StreaklineTests;
+			packageProductDependencies = (
+			);
+			productName = StreaklineTests;
+			productReference = 2756955B4547B842044F38B1 /* StreaklineTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -175,9 +225,10 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
 			};
 			buildConfigurationList = 31A0F0B606759DFADCF1EC77 /* Build configuration list for PBXProject "Streakline" */;
-			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -187,10 +238,12 @@
 			mainGroup = 93684EDE3402E65A8B14EBD9;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
+			productRefGroup = AEEB120576A214EEC1C5D0AE /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				A5C9BD2583BCC294CC2ECBD2 /* Streakline */,
+				C70B335A17C2D5E687E34979 /* StreaklineTests */,
 			);
 		};
 /* End PBXProject section */
@@ -201,16 +254,26 @@
 			buildActionMask = 2147483647;
 			files = (
 				C6738EA7656E429CF7422280 /* Assets.xcassets in Resources */,
+				8DD5B7845ECE8FF892E2CDAF /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		083C48A7D10E37D53F74CA6E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B57073CF3146F04857D918B4 /* StreaklineCoreTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5A072AEA6BECDAF4AFC62A8A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				254A150498468EA648F4468E /* AppDataManager.swift in Sources */,
 				E0A0EF6928BA069658C6CCED /* AppWeek.swift in Sources */,
 				013170C24D4EFA4E4A7F20AD /* ConfettiView.swift in Sources */,
 				5FC57586D50D879057C0A4D2 /* DesignSystem.swift in Sources */,
@@ -224,6 +287,7 @@
 				9A24A189CA1A135E49C2C46B /* HistoryView.swift in Sources */,
 				E223827967DE5DA99ABDDB65 /* HomeView.swift in Sources */,
 				651BF9BD404024269BB4F681 /* NotificationManager.swift in Sources */,
+				5A7EC6886B4D00FFE8B7F4F5 /* OnboardingView.swift in Sources */,
 				E0A1B7BD50AFD652F2AB0076 /* ProgressRingView.swift in Sources */,
 				A6DE9E63A58BA6FC415AA54A /* ProgressScreen.swift in Sources */,
 				6AA0467F75FE50C4246BD51E /* RankUpView.swift in Sources */,
@@ -239,6 +303,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		62033A1138F6292928CC9E19 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A5C9BD2583BCC294CC2ECBD2 /* Streakline */;
+			targetProxy = 57E0D99F85F252D9AF15CCB5 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		01F81D0BDD214E3A8F8166A7 /* Release */ = {
@@ -370,6 +442,40 @@
 			};
 			name = Debug;
 		};
+		4CB19BFEF1B1218FE53E262A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mihaigarda.StreaklineTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Streakline.app/Streakline";
+			};
+			name = Release;
+		};
+		CFE3E38FC847651B0BEA403C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mihaigarda.StreaklineTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Streakline.app/Streakline";
+			};
+			name = Debug;
+		};
 		D5819C3E8F32C363539C7F67 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -421,6 +527,15 @@
 			buildConfigurations = (
 				452D4D65730AB23E5136126A /* Debug */,
 				01F81D0BDD214E3A8F8166A7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		44D888365D38468A1EDE85C8 /* Build configuration list for PBXNativeTarget "StreaklineTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CFE3E38FC847651B0BEA403C /* Debug */,
+				4CB19BFEF1B1218FE53E262A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

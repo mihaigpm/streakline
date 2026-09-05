@@ -4,16 +4,20 @@ import SwiftData
 /// Rank, XP, lifetime stats, and badges — the gamification hub.
 struct ProgressScreen: View {
     @Query(sort: \AppWeek.weekNumber, order: .reverse) private var weeks: [AppWeek]
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var summary: Gamification.Summary {
         Gamification.summary(for: weeks)
     }
 
-    private let badgeColumns = [
-        GridItem(.flexible(), spacing: DesignSystem.Spacing.md),
-        GridItem(.flexible(), spacing: DesignSystem.Spacing.md),
-        GridItem(.flexible(), spacing: DesignSystem.Spacing.md),
-    ]
+    private var badgeColumns: [GridItem] {
+        let count = dynamicTypeSize.isAccessibilitySize ? 1 : 3
+        return Array(
+            repeating: GridItem(.flexible(), spacing: DesignSystem.Spacing.md),
+            count: count
+        )
+    }
 
     var body: some View {
         ZStack {
@@ -60,7 +64,7 @@ struct ProgressScreen: View {
                 }
             }
             .frame(width: 180, height: 180)
-            .animation(DesignSystem.Motion.ring, value: summary.progressToNextRank)
+            .animation(reduceMotion ? nil : DesignSystem.Motion.ring, value: summary.progressToNextRank)
 
             Text(summary.rank.name)
                 .font(DesignSystem.Typography.displaySmall)
@@ -84,11 +88,21 @@ struct ProgressScreen: View {
     // MARK: - Stats
 
     private var statsRow: some View {
-        HStack(spacing: DesignSystem.Spacing.md) {
-            statCard(value: "\(summary.totalWorkouts)", label: "Workouts", symbol: "dumbbell.fill", color: DesignSystem.Colors.teal)
-            statCard(value: "\(summary.totalDryDays)", label: "Dry days", symbol: "drop.fill", color: DesignSystem.Colors.teal)
-            statCard(value: "\(summary.bestStreak)", label: "Best streak", symbol: "flame.fill", color: DesignSystem.Colors.amber)
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: DesignSystem.Spacing.md) {
+                statsCards
+            }
+            VStack(spacing: DesignSystem.Spacing.md) {
+                statsCards
+            }
         }
+    }
+
+    @ViewBuilder
+    private var statsCards: some View {
+        statCard(value: "\(summary.totalWorkouts)", label: "Workouts", symbol: "dumbbell.fill", color: DesignSystem.Colors.teal)
+        statCard(value: "\(summary.totalDryDays)", label: "Dry days", symbol: "drop.fill", color: DesignSystem.Colors.teal)
+        statCard(value: "\(summary.bestStreak)", label: "Best streak", symbol: "flame.fill", color: DesignSystem.Colors.amber)
     }
 
     private func statCard(value: String, label: String, symbol: String, color: Color) -> some View {
@@ -185,13 +199,11 @@ struct ProgressScreen: View {
             Text(badge.name)
                 .font(DesignSystem.Typography.labelLarge)
                 .foregroundStyle(badge.isUnlocked ? DesignSystem.Colors.textPrimary : DesignSystem.Colors.textTertiary)
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
+                .multilineTextAlignment(.center)
             Text(badge.detail)
                 .font(DesignSystem.Typography.labelSmall)
                 .foregroundStyle(DesignSystem.Colors.textTertiary)
                 .multilineTextAlignment(.center)
-                .lineLimit(2, reservesSpace: true)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, DesignSystem.Spacing.md)

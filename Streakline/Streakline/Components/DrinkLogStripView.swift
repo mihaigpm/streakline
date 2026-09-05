@@ -10,6 +10,7 @@ struct DrinkLogStripView: View {
     let dayStates: [Gamification.DayDrinkState]
     let onAdd: () -> Void
     let onSubtract: () -> Void
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var fraction: Double {
         guard budget > 0 else { return 0 }
@@ -63,7 +64,7 @@ struct DrinkLogStripView: View {
             RoundedRectangle(cornerRadius: DesignSystem.Radius.lg)
                 .strokeBorder(tint == DesignSystem.Colors.surface ? DesignSystem.Colors.border : tint, lineWidth: 1)
         )
-        .animation(DesignSystem.Motion.ring, value: total)
+        .animation(reduceMotion ? nil : DesignSystem.Motion.ring, value: total)
     }
 
     private var totalLabel: String {
@@ -85,7 +86,7 @@ struct DrinkLogStripView: View {
                 .foregroundStyle(dryCount > 0 ? DesignSystem.Colors.teal : DesignSystem.Colors.textTertiary)
                 .contentTransition(.numericText())
         }
-        .animation(DesignSystem.Motion.ring, value: dryCount)
+        .animation(reduceMotion ? nil : DesignSystem.Motion.ring, value: dryCount)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(dryCount) dry days this week")
     }
@@ -111,7 +112,7 @@ struct DrinkLogStripView: View {
             Image(systemName: systemName)
                 .font(.system(size: 18, weight: .bold))
                 .foregroundStyle(DesignSystem.Colors.textPrimary)
-                .frame(width: 40, height: 40)
+                .frame(width: 44, height: 44)
                 .background(DesignSystem.Colors.surfaceHigh, in: Circle())
         }
         .accessibilityLabel(systemName == "plus" ? "Add \(unit.format(unit.step)) \(unit.noun(for: unit.step))" : "Remove \(unit.format(unit.step)) \(unit.noun(for: unit.step))")

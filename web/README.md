@@ -42,9 +42,11 @@ deploy/               nginx config + deploy script for the droplet
 Edit `lib/site.ts`:
 
 - `appStoreUrl` — leave empty until the public App Store listing exists (the UI
-  falls back to a "Coming soon" badge + the TestFlight CTA). Fill it in to flip
-  the badge to a live "Download on the App Store" link.
-- `testFlightUrl` — your public TestFlight beta link.
+  falls back to a non-clickable "Coming soon" state). Fill it with the real
+  `https://apps.apple.com/.../id...` product URL to switch the site to launch
+  copy and live App Store CTAs.
+- `testFlightUrl` — optional real `https://testflight.apple.com/join/...`
+  invitation URL. Empty or generic Apple URLs are not rendered as links.
 - `email` / `supportEmail` / `privacyEmail` — real inboxes on the domain.
 
 ## Develop

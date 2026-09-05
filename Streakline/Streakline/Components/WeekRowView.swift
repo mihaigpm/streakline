@@ -23,6 +23,14 @@ struct WeekRowView: View {
             case .overBudget: "exclamationmark.triangle.fill"
             }
         }
+
+        var description: String {
+            switch self {
+            case .complete: "Complete"
+            case .partial: "In progress"
+            case .overBudget: "Drink target exceeded"
+            }
+        }
     }
 
     private var status: Status {
@@ -69,6 +77,12 @@ struct WeekRowView: View {
             RoundedRectangle(cornerRadius: DesignSystem.Radius.md)
                 .strokeBorder(DesignSystem.Colors.border, lineWidth: 1)
         )
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(
+            "Week \(week.weekNumber), \(dateRange), \(status.description), "
+            + "\(week.completedWorkouts) of 3 workouts, "
+            + "\(unit.format(week.totalDrinks)) of \(week.drinkBudget) \(unit.pluralNoun)"
+        )
+        .accessibilityHint("Opens week details")
     }
 }

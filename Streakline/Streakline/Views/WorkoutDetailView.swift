@@ -12,6 +12,7 @@ struct WorkoutDetailView: View {
     @State private var notes: String = ""
     @State private var guideContext: GuideContext?
     @State private var celebrating = false
+    @State private var saveErrorMessage: String?
 
     private struct GuideContext: Identifiable {
         let id = UUID()
@@ -80,6 +81,11 @@ struct WorkoutDetailView: View {
                 workoutCompleted: isCompleted,
                 onFinishWorkout: finishFromGuide
             )
+        }
+        .alert("Your workout couldn't be saved", isPresented: saveErrorBinding) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(saveErrorMessage ?? "Please try again.")
         }
     }
 
@@ -159,7 +165,10 @@ struct WorkoutDetailView: View {
                 }
             }
         }
-        .animation(DesignSystem.Motion.ring, value: doneCount)
+        .animation(reduceMotion ? nil : DesignSystem.Motion.ring, value: doneCount)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Exercise progress")
+        .accessibilityValue("\(doneCount) of \(exercises.count) complete")
     }
 
     // MARK: - Notes
@@ -180,7 +189,7 @@ struct WorkoutDetailView: View {
                 )
                 .onChange(of: notes) { _, newValue in
                     log?.notes = newValue
-                    try? context.save()
+                    saveContext()
                 }
         }
     }
@@ -216,6 +225,7 @@ struct WorkoutDetailView: View {
                     .font(.system(size: 26))
                     .foregroundStyle(done ? day.accentColor : DesignSystem.Colors.textTertiary)
                     .contentTransition(.symbolEffect(.replace))
+                    .frame(width: 44, height: 44)
             }
             .buttonStyle(.plain)
             .accessibilityLabel(done ? "Mark \(exercise.name) as not done" : "Mark \(exercise.name) as done")
@@ -257,7 +267,7 @@ struct WorkoutDetailView: View {
                 .strokeBorder(done ? day.accentColor.opacity(0.5) : DesignSystem.Colors.border, lineWidth: 1)
         )
         .opacity(done ? 0.82 : 1)
-        .animation(DesignSystem.Motion.cardPulse, value: done)
+        .animation(reduceMotion ? nil : DesignSystem.Motion.cardPulse, value: done)
     }
 
     // MARK: - Bottom bar
@@ -289,7 +299,7 @@ struct WorkoutDetailView: View {
             }
             .padding(.horizontal, DesignSystem.Spacing.lg)
             .padding(.bottom, DesignSystem.Spacing.sm)
-            .animation(DesignSystem.Motion.cardPulse, value: allExercisesDone)
+            .animation(reduceMotion ? nil : DesignSystem.Motion.cardPulse, value: allExercisesDone)
         }
     }
 
@@ -307,7 +317,7 @@ struct WorkoutDetailView: View {
     private func toggleExercise(_ exercise: Exercise) {
         let target = ensureLog()
         target.setExercise(exercise, done: !target.isExerciseDone(exercise))
-        try? context.save()
+        saveContext()
     }
 
     private func finishFromGuide() {
@@ -325,7 +335,7 @@ struct WorkoutDetailView: View {
             week.dayC_wasRun.toggle()
         }
 
-        try? context.save()
+        guard saveContext() else { return }
         UINotificationFeedbackGenerator().notificationOccurred(.success)
 
         if reduceMotion {
@@ -344,6 +354,25 @@ struct WorkoutDetailView: View {
         if day == .dayC {
             week.dayC_wasRun.toggle()
         }
-        try? context.save()
+        saveContext()
+    }
+
+    @discardableResult
+    private func saveContext() -> Bool {
+        do {
+            try context.save()
+            return true
+        } catch {
+            context.rollback()
+            saveErrorMessage = error.localizedDescription
+            return false
+        }
+    }
+
+    private var saveErrorBinding: Binding<Bool> {
+        Binding(
+            get: { saveErrorMessage != nil },
+            set: { if !$0 { saveErrorMessage = nil } }
+        )
     }
 }

@@ -11,6 +11,7 @@ struct ExerciseGuideView: View {
     let onFinishWorkout: () -> Void
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var selection: Int
 
     init(
@@ -76,7 +77,7 @@ struct ExerciseGuideView: View {
                 Image(systemName: "xmark")
                     .font(.system(size: 15, weight: .bold))
                     .foregroundStyle(DesignSystem.Colors.textSecondary)
-                    .frame(width: 36, height: 36)
+                    .frame(width: 44, height: 44)
                     .background(DesignSystem.Colors.surfaceHigh, in: Circle())
             }
             .accessibilityLabel("Close guide")
@@ -95,18 +96,26 @@ struct ExerciseGuideView: View {
     private var progressTrack: some View {
         HStack(spacing: DesignSystem.Spacing.xs) {
             ForEach(exercises.indices, id: \.self) { index in
-                Capsule()
-                    .fill(segmentColor(index))
-                    .frame(height: index == selection ? 6 : 4)
-                    .onTapGesture {
-                        withAnimation(DesignSystem.Motion.ring) { selection = index }
+                Button {
+                    withAnimation(reduceMotion ? nil : DesignSystem.Motion.ring) {
+                        selection = index
                     }
+                } label: {
+                    Capsule()
+                        .fill(segmentColor(index))
+                        .frame(height: index == selection ? 6 : 4)
+                        .frame(minHeight: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Exercise \(index + 1), \(exercises[index].name)")
+                .accessibilityValue(index == selection ? "Current" : (isDone(exercises[index]) ? "Done" : "Not done"))
             }
         }
         .padding(.horizontal, DesignSystem.Spacing.lg)
         .padding(.vertical, DesignSystem.Spacing.md)
-        .animation(DesignSystem.Motion.ring, value: selection)
-        .animation(DesignSystem.Motion.ring, value: doneCount)
+        .animation(reduceMotion ? nil : DesignSystem.Motion.ring, value: selection)
+        .animation(reduceMotion ? nil : DesignSystem.Motion.ring, value: doneCount)
     }
 
     private func segmentColor(_ index: Int) -> Color {
@@ -166,8 +175,8 @@ struct ExerciseGuideView: View {
         }
         .padding(.horizontal, DesignSystem.Spacing.lg)
         .padding(.bottom, DesignSystem.Spacing.sm)
-        .animation(DesignSystem.Motion.cardPulse, value: allDone)
-        .animation(DesignSystem.Motion.cardPulse, value: isDone(exercise))
+        .animation(reduceMotion ? nil : DesignSystem.Motion.cardPulse, value: allDone)
+        .animation(reduceMotion ? nil : DesignSystem.Motion.cardPulse, value: isDone(exercise))
     }
 
     // MARK: - Actions
@@ -179,9 +188,13 @@ struct ExerciseGuideView: View {
 
         // Auto-advance to the next unfinished exercise after a beat.
         if let next = nextIncompleteIndex() {
-            Task {
-                try? await Task.sleep(for: .milliseconds(500))
-                withAnimation(DesignSystem.Motion.ring) { selection = next }
+            if reduceMotion {
+                selection = next
+            } else {
+                Task {
+                    try? await Task.sleep(for: .milliseconds(500))
+                    withAnimation(DesignSystem.Motion.ring) { selection = next }
+                }
             }
         } else {
             UINotificationFeedbackGenerator().notificationOccurred(.success)

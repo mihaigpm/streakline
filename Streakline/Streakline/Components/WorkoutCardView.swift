@@ -4,6 +4,7 @@ import SwiftUI
 struct WorkoutCardView: View {
     let day: WorkoutDay
     let isCompleted: Bool
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
@@ -34,7 +35,8 @@ struct WorkoutCardView: View {
             }
         }
         .padding(DesignSystem.Spacing.md)
-        .frame(width: 170, height: 170, alignment: .topLeading)
+        .frame(width: 180, alignment: .topLeading)
+        .frame(minHeight: 170, alignment: .topLeading)
         .background(DesignSystem.Colors.surface, in: RoundedRectangle(cornerRadius: DesignSystem.Radius.lg))
         .overlay(
             RoundedRectangle(cornerRadius: DesignSystem.Radius.lg)
@@ -44,7 +46,7 @@ struct WorkoutCardView: View {
                 )
         )
         .opacity(isCompleted ? 0.7 : 1)
-        .animation(DesignSystem.Motion.cardPulse, value: isCompleted)
+        .animation(reduceMotion ? nil : DesignSystem.Motion.cardPulse, value: isCompleted)
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(day.title), \(day.subtitle)")
         .accessibilityValue(isCompleted ? "Completed" : "Not done")

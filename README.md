@@ -29,14 +29,16 @@ It is opinionated by design: the plan does the thinking, you log against it. One
 Streakline/            The iOS app
   project.yml          xcodegen project definition
   Streakline/          App sources (Models, Views, Components, Utilities)
+  StreaklineTests/     Core programme and persistence tests
   Tools/               Brand asset generator (app icon + launch logo)
+web/                   Next.js marketing, privacy, and support site
+docs/                  App Store metadata and release runbook
 .agents/               Agent skills used during development
-FitTrack_iOS_Spec.docx Original build spec (v1.0, pre-rename)
 ```
 
 ## Building
 
-Requirements: Xcode 16+, [xcodegen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`).
+Requirements: Xcode 26+, [xcodegen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`).
 
 ```bash
 cd Streakline
@@ -54,6 +56,10 @@ The app icon (light/dark/tinted) and launch logo are generated programmatically:
 cd Streakline
 python3 Tools/generate_icon.py   # requires Pillow
 ```
+
+## Releasing
+
+Run the unit tests before every upload and follow [`docs/AppStoreSubmission.md`](docs/AppStoreSubmission.md). App Store copy, privacy answers, review notes, and screenshot guidance live in [`docs/app-store/`](docs/app-store/).
 
 ## Roadmap
 

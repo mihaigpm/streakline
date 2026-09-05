@@ -30,7 +30,7 @@ export default function NotFound() {
           >
             Back home
           </Link>
-          <PrimaryCTA label="Join the beta" />
+          <PrimaryCTA />
         </div>
       </main>
       <SiteFooter />

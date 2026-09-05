@@ -78,8 +78,12 @@ struct RankUpView: View {
         }
         .onAppear {
             UINotificationFeedbackGenerator().notificationOccurred(.success)
-            withAnimation(.spring(response: 0.55, dampingFraction: 0.65)) {
+            if reduceMotion {
                 revealed = true
+            } else {
+                withAnimation(.spring(response: 0.55, dampingFraction: 0.65)) {
+                    revealed = true
+                }
             }
         }
         .accessibilityElement(children: .contain)

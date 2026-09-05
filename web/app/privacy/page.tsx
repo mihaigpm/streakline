@@ -57,13 +57,23 @@ export default function Privacy() {
 
           <Section title="Your control over your data">
             Your data lives on your device, so you are always in control. You can
-            reset your current week from within Settings, and deleting the app
-            removes all Streakline data from your iPhone permanently.
+            reset your current week or erase all Streakline data from within
+            Settings. Deleting the app also removes its locally stored data from
+            your iPhone.
           </Section>
 
           <Section title="Children">
             Because Streakline relates to alcohol tracking, it is intended for
             adults of legal drinking age and is not directed at children.
+          </Section>
+
+          <Section title="Health and safety">
+            Streakline is a habit and fitness tracker, not a medical device,
+            treatment service, or substitute for professional advice. If you are
+            concerned about your drinking, withdrawal, or immediate safety,
+            contact a qualified healthcare professional or an appropriate local
+            alcohol-support or emergency service. Do not rely on the app for
+            urgent help.
           </Section>
 
           <Section title="Changes to this policy">

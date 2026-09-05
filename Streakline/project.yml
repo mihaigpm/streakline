@@ -27,6 +27,8 @@ targets:
         LSRequiresIPhoneOS: true
         UIApplicationSupportsIndirectInputEvents: true
         UIUserInterfaceStyle: Dark
+        ITSAppUsesNonExemptEncryption: false
+        LSApplicationCategoryType: public.app-category.healthcare-fitness
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
         UILaunchScreen:
@@ -40,3 +42,27 @@ targets:
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         # iPhone-only (portrait). Set at target level so it overrides xcodegen's 1,2 default.
         TARGETED_DEVICE_FAMILY: "1"
+  StreaklineTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: StreaklineTests
+    dependencies:
+      - target: Streakline
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        TARGETED_DEVICE_FAMILY: "1"
+schemes:
+  Streakline:
+    build:
+      targets:
+        Streakline: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - StreaklineTests
+    archive:
+      config: Release

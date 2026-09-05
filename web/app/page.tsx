@@ -10,7 +10,7 @@ import {
   Check,
   Bell,
 } from "lucide-react";
-import { site } from "@/lib/site";
+import { hasAppStoreUrl, hasTestFlightUrl, site } from "@/lib/site";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { LogoMark } from "@/components/Logo";
@@ -23,7 +23,7 @@ const features = [
   {
     icon: TrendingDown,
     title: "A shrinking drink budget",
-    body: "Set a weekly budget in pints, units, or standard drinks. It shrinks a little each week, so cutting back feels gradual — not like going cold turkey.",
+    body: "Choose pints, units, or standard drinks and set your starting weekly budget. It drops by 1 every two weeks until it reaches the floor of 5.",
   },
   {
     icon: Dumbbell,
@@ -66,7 +66,7 @@ const steps = [
   {
     n: "03",
     title: "Keep the streak",
-    body: "Earn XP, climb the ranks, and watch your weekly budget shrink — week after week.",
+    body: "Earn XP, climb the ranks, and watch your weekly budget drop by 1 every two weeks until it reaches 5.",
   },
 ];
 
@@ -91,8 +91,12 @@ const xpRules = [
 
 const faqs = [
   {
-    q: "Is Streakline free?",
-    a: "Yes. Streakline is free while it is in beta on TestFlight. If a paid tier ever arrives, anything you have already tracked stays yours.",
+    q: "Where can I get Streakline?",
+    a: hasAppStoreUrl
+      ? "Streakline is available for iPhone on the App Store."
+      : hasTestFlightUrl
+        ? "Streakline is currently available to invited testers through TestFlight."
+        : "Streakline is coming soon to iPhone. The download button will appear here when it is available.",
   },
   {
     q: "Do I need a gym or equipment?",
@@ -100,7 +104,7 @@ const faqs = [
   },
   {
     q: "Can I track pints, units, or standard drinks?",
-    a: "All three. Streakline works in UK pints, UK units, or US-style standard drinks, and you can switch any time in Settings.",
+    a: "All three. Choose UK pints, UK units, or standard drinks during setup. A later change in Settings applies from the next week, while past weeks keep their original unit.",
   },
   {
     q: "Is my data private?",
@@ -108,15 +112,13 @@ const faqs = [
   },
   {
     q: "Is there an Android version?",
-    a: "Not yet. Streakline is iPhone-first. Join the beta and we will keep you posted if that changes.",
+    a: "Not yet. Streakline is currently built for iPhone.",
   },
   {
     q: "Is this medical advice?",
     a: "No. Streakline is a habit and fitness tracker, not medical or clinical advice. If alcohol is seriously affecting your health or your life, please talk to a doctor or a support service.",
   },
 ];
-
-const budget = [12, 11, 10, 9, 8, 7, 6, 5];
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -145,7 +147,7 @@ export default function Home() {
             <div data-reveal>
               <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-surface/60 px-3 py-1 text-xs font-bold text-ink-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-teal" />
-                iPhone · Private · In beta
+                iPhone · Private · {hasAppStoreUrl ? "Available now" : "Coming soon"}
               </span>
               <h1 className="mt-5 text-balance text-5xl font-black leading-[1.02] tracking-tight md:text-6xl">
                 Drink less. Move more.{" "}
@@ -157,7 +159,7 @@ export default function Home() {
                 and a streak you will not want to break.
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-4">
-                <PrimaryCTA label="Join the beta" />
+                <PrimaryCTA />
                 <AppStoreBadge />
               </div>
               <p className="mt-4 text-sm text-ink-3">
@@ -219,14 +221,15 @@ export default function Home() {
                 <span className="text-amber">inevitable</span>
               </h2>
               <p className="mt-4 text-lg leading-relaxed text-ink-2">
-                Quitting overnight rarely sticks. Streakline starts from where
-                you actually are and trims your weekly budget a little at a time.
-                Each week is a number you can beat — not a wall you crash into.
+                Choose your drink unit and a starting weekly budget during
+                onboarding. Streakline then lowers the target by 1 every two
+                weeks until it reaches the minimum of 5.
               </p>
               <ul className="mt-6 space-y-3">
                 {[
-                  "Start at your real weekly amount",
-                  "The budget steps down automatically",
+                  "Choose your unit and starting budget",
+                  "Drop by 1 every two weeks",
+                  "Stop decreasing at the floor of 5",
                   "Stay under to earn a perfect week",
                 ].map((t) => (
                   <li key={t} className="flex items-center gap-3 text-ink">
@@ -244,32 +247,26 @@ export default function Home() {
               data-reveal
               data-reveal-delay="100"
             >
-              <div className="flex items-baseline justify-between">
-                <span className="text-sm font-bold text-ink-2">Weekly budget</span>
-                <span className="text-sm font-extrabold text-amber">
-                  12 → 5 pints
-                </span>
+              <div>
+                <span className="text-sm font-bold text-ink-2">Your budget path</span>
+                <h3 className="mt-2 text-2xl font-black">Gradual, predictable progress</h3>
               </div>
-              <div className="mt-6 flex items-end gap-2">
-                {budget.map((v, i) => {
-                  const max = budget[0];
-                  const h = Math.round((v / max) * 160);
-                  const last = i === budget.length - 1;
-                  return (
-                    <div key={i} className="flex flex-1 flex-col items-center gap-2">
-                      <span className="text-[10px] font-bold text-ink-2">{v}</span>
-                      <div
-                        className={`w-full rounded-t-md ${
-                          last ? "bg-teal" : "bg-amber/70"
-                        }`}
-                        style={{ height: `${h}px` }}
-                      />
-                      <span className="text-[10px] font-semibold text-ink-3">
-                        W{i + 1}
-                      </span>
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                {[
+                  { value: "You choose", label: "Starting budget" },
+                  { value: "−1", label: "Every 2 weeks" },
+                  { value: "5", label: "Minimum budget" },
+                ].map((item) => (
+                  <div
+                    key={item.label}
+                    className="rounded-xl border border-border bg-surface-high p-4"
+                  >
+                    <div className="text-2xl font-black text-amber">{item.value}</div>
+                    <div className="mt-1 text-xs font-semibold text-ink-2">
+                      {item.label}
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -464,10 +461,15 @@ export default function Home() {
               Start your streak today
             </h2>
             <p className="mx-auto mt-4 max-w-md text-lg text-ink-2">
-              {site.tagline} Join the beta and build the habit that builds you.
+              {site.tagline}{" "}
+              {hasAppStoreUrl
+                ? "Download Streakline and build the habit that builds you."
+                : hasTestFlightUrl
+                  ? "Try Streakline through TestFlight."
+                  : "Streakline is coming soon to iPhone."}
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-              <PrimaryCTA label="Join the beta" />
+              <PrimaryCTA />
               <AppStoreBadge />
             </div>
           </div>

@@ -7,6 +7,7 @@ struct ProgressRingView: View {
     let workoutTarget: Int
     let drinkFraction: Double
     let isOverBudget: Bool
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var workoutFraction: Double {
         guard workoutTarget > 0 else { return 0 }
@@ -46,11 +47,16 @@ struct ProgressRingView: View {
 
             centerLabel
         }
-        .animation(DesignSystem.Motion.ring, value: workoutFraction)
-        .animation(DesignSystem.Motion.ring, value: drinkFraction)
+        .animation(reduceMotion ? nil : DesignSystem.Motion.ring, value: workoutFraction)
+        .animation(reduceMotion ? nil : DesignSystem.Motion.ring, value: drinkFraction)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Progress")
-        .accessibilityValue("\(workoutsCompleted) of \(workoutTarget) workouts done")
+        .accessibilityValue(
+            "\(workoutsCompleted) of \(workoutTarget) workouts done. "
+            + (isOverBudget
+               ? "Drink target exceeded."
+               : "\(Int((drinkFraction * 100).rounded())) percent of drink target used.")
+        )
     }
 
     private var centerLabel: some View {
@@ -59,7 +65,7 @@ struct ProgressRingView: View {
                 .font(DesignSystem.Typography.displayLarge)
                 .foregroundStyle(DesignSystem.Colors.textPrimary)
                 .contentTransition(.numericText())
-                .animation(DesignSystem.Motion.ring, value: workoutsCompleted)
+                .animation(reduceMotion ? nil : DesignSystem.Motion.ring, value: workoutsCompleted)
             Text("of \(workoutTarget) workouts")
                 .font(DesignSystem.Typography.labelLarge)
                 .foregroundStyle(DesignSystem.Colors.textSecondary)

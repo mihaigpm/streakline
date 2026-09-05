@@ -46,7 +46,7 @@ export function SiteFooter() {
             © {year} {site.legalEntity}. All rights reserved.
           </p>
           <p>
-            Streakline is a habit &amp; fitness tracker, not medical advice. Made for iPhone.
+            Habit &amp; fitness tracking only — not medical advice or emergency support.
           </p>
         </div>
       </div>

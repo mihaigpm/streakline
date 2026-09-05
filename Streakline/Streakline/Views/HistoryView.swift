@@ -3,10 +3,7 @@ import SwiftData
 
 struct HistoryView: View {
     @Query(sort: \AppWeek.weekNumber, order: .reverse) private var weeks: [AppWeek]
-    @AppStorage(DrinkUnit.storageKey) private var drinkUnitRaw = DrinkUnit.pints.rawValue
     @State private var selectedWeek: AppWeek?
-
-    private var unit: DrinkUnit { DrinkUnit(rawValue: drinkUnitRaw) ?? .pints }
 
     var body: some View {
         ZStack {
@@ -25,7 +22,7 @@ struct HistoryView: View {
                             Button {
                                 selectedWeek = week
                             } label: {
-                                WeekRowView(week: week, unit: unit)
+                                WeekRowView(week: week, unit: week.drinkUnit)
                             }
                             .buttonStyle(.plain)
                         }
@@ -37,7 +34,7 @@ struct HistoryView: View {
         .navigationTitle("History")
         .navigationBarTitleDisplayMode(.large)
         .sheet(item: $selectedWeek) { week in
-            WeekDetailSheet(week: week, unit: unit)
+            WeekDetailSheet(week: week, unit: week.drinkUnit)
                 .presentationDetents([.medium, .large])
                 .presentationBackground(DesignSystem.Colors.surfaceHigh)
         }

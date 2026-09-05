@@ -56,3 +56,16 @@ enum DrinkUnit: String, CaseIterable, Identifiable {
         return unit
     }
 }
+
+enum ProgramPreferences {
+    static let onboardingCompletedKey = "hasCompletedOnboarding"
+    static let startingBudgetKey = "startingDrinkBudget"
+    static let minimumStartingBudget = 5
+    static let maximumStartingBudget = 30
+
+    static var startingBudget: Int {
+        let stored = UserDefaults.standard.integer(forKey: startingBudgetKey)
+        let value = stored == 0 ? 10 : stored
+        return min(maximumStartingBudget, max(minimumStartingBudget, value))
+    }
+}

@@ -28,14 +28,15 @@ enum DesignSystem {
     // MARK: - Typography
 
     enum Typography {
-        static let displayLarge = Font.system(size: 56, weight: .black, design: .rounded)
-        static let displayMedium = Font.system(size: 36, weight: .black, design: .rounded)
-        static let displaySmall = Font.system(size: 28, weight: .bold, design: .rounded)
-        static let headlineLarge = Font.system(size: 20, weight: .bold, design: .rounded)
-        static let headlineSmall = Font.system(size: 16, weight: .semibold, design: .rounded)
-        static let labelLarge = Font.system(size: 13, weight: .semibold, design: .rounded)
-        static let labelSmall = Font.system(size: 11, weight: .medium, design: .rounded)
-        static let bodySmall = Font.system(size: 14, weight: .regular)
+        static let displayLarge = Font.system(.largeTitle, design: .rounded, weight: .black)
+        static let displayMedium = Font.system(.largeTitle, design: .rounded, weight: .black)
+        static let displaySmall = Font.system(.title, design: .rounded, weight: .bold)
+        static let headlineLarge = Font.system(.title3, design: .rounded, weight: .bold)
+        static let headlineSmall = Font.system(.headline, design: .rounded, weight: .semibold)
+        static let labelLarge = Font.system(.subheadline, design: .rounded, weight: .semibold)
+        static let labelSmall = Font.system(.caption, design: .rounded, weight: .medium)
+        static let body = Font.body
+        static let bodySmall = Font.subheadline
     }
 
     // MARK: - Spacing
