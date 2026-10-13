@@ -1,0 +1,346 @@
+# Streakline — Agent Handover
+
+> **Audience:** Future AI coding agents (and human contributors) picking up this repo cold.
+> **Last updated:** 2026-10-13.
+> **Repo:** `streakline`. Remote: `github.com:mihaigpm/streakline.git`, branch `main`.
+
+This document is the **fast on-ramp**. It says which file to read, where the code lives, which invariants hold, and which gotchas are already paid for.
+
+---
+
+## 1. What this product is
+
+**Streakline** is a private iPhone habit tracker. No account, no server, no paywall.
+
+1. **Setup** — pick a drink unit and a starting weekly target, optionally turn on a local reminder, then start.
+2. **Week** — three guided workouts (Day A, Day B, Day C) and a drink budget that drops by 1 every two weeks until it floors at 5.
+3. **Log** — one control to add or remove a drink, one path to tick exercises and finish a workout.
+4. **Progress** — XP, nine ranks, twelve badges, dry days, and a streak of perfect weeks. All of it is computed from the weeks stored on the phone.
+
+**Domain / support:** `streakline.fit`, `support@streakline.fit`.
+
+---
+
+## 2. Read this first (doc priority)
+
+| Priority | File | Use when |
+|----------|------|----------|
+| **P0** | `decisions.md` | Why something is built this way; append-only history |
+| **P0** | `checklist.md` | What's open vs done; session start |
+| **P0** | `ios-test-cases.md` | The only living manual test inventory |
+| **P0** | `CI.md` | Xcode Cloud build number and TestFlight |
+| **P1** | `Streakline/README.md` | iOS conventions, project generation, debug launch args |
+| **P1** | `brand.md` | Color, type, and voice — source of truth for UI and store copy |
+| **P1** | `README.md` | Product summary and how to build |
+| **P2** | `docs/AppStoreSubmission.md` | Archive and upload, when you are actually shipping |
+| **P2** | `docs/app-store/v1.0/` | Paste-ready listing draft. Check it against the binary before pasting |
+
+A `manifest.json` under the Xcode project is not the workflow. Start conditions and the TestFlight action live in App Store Connect. See `CI.md`.
+
+**Rule:** If this handover and the code disagree, **code wins** — then update this file in the same change. If `decisions.md` and another doc disagree, **`decisions.md` + live code** win.
+
+There is one test inventory. If `ios-test-cases.md` goes stale, say so at the top of that file and point at whatever replaced it. Do not keep a second plan up to date beside it.
+
+---
+
+## 3. Repo layout
+
+```
+streakline/
+├── AGENT_HANDOVER.md          ← you are here
+├── decisions.md
+├── checklist.md
+├── brand.md
+├── ios-test-cases.md
+├── CI.md
+├── README.md
+├── Streakline/                ← Xcode project (Swift 6, iOS 17+)
+│   ├── README.md              ← iOS conventions
+│   ├── project.yml            ← xcodegen source
+│   ├── Streakline.xcodeproj
+│   ├── Streakline/            ← app sources
+│   ├── StreaklineTests/
+│   └── Tools/generate_icon.py
+├── web/                       ← Next.js static site (privacy, support, landing)
+└── docs/                      ← App Store draft and submission runbook
+```
+
+---
+
+## 4. Release state (snapshot)
+
+Verify with `git log` and the Xcode project before trusting dates or build numbers.
+
+| Surface | Version | Status |
+|---------|---------|--------|
+| **iOS** | Marketing version `1.0`. Committed build number is **4** (`project.yml` and the app target). | Xcode Cloud archives to TestFlight and sets the build to `10000 +` the workflow run count. It does not commit that number. See `CI.md` |
+| **Web** | Static Next.js | `streakline.fit` — landing, privacy, support |
+
+`docs/app-store/v1.0/metadata.md` still says build 3. The binary's build number is the app target in `project.pbxproj`, not that draft.
+
+---
+
+## 5. Architecture — iOS
+
+**Stack:** Swift 6, SwiftUI, SwiftData, iOS **17+**, strict concurrency. iPhone, portrait, dark.
+
+**Entry:** `StreaklineApp` → `AppRootView`.
+
+- SwiftData fails to open → in-memory container and `StorageUnavailableView` (nothing persists).
+- Onboarding flag set, or any `AppWeek` already stored, or Debug `-skip-onboarding` → `HomeView`.
+- Otherwise → `OnboardingView`.
+
+There is no feature-folder MVVM layer. Screens use `@Query` and `@State`. Rules that must stay consistent live in stateless enums.
+
+### Key files
+
+| Area | Path |
+|------|------|
+| Entry and routing | `Streakline/Streakline/StreaklineApp.swift` |
+| Onboarding | `Streakline/Streakline/Views/OnboardingView.swift` |
+| Home | `Streakline/Streakline/Views/HomeView.swift` |
+| Workout | `Streakline/Streakline/Views/WorkoutDetailView.swift` |
+| Exercise guide | `Streakline/Streakline/Views/ExerciseGuideView.swift` |
+| Progress | `Streakline/Streakline/Views/ProgressScreen.swift` |
+| History | `Streakline/Streakline/Views/HistoryView.swift` |
+| Settings | `Streakline/Streakline/Views/SettingsView.swift` |
+| Week model | `Streakline/Streakline/Models/AppWeek.swift` |
+| Week advance and home streak | `Streakline/Streakline/Utilities/WeekManager.swift` |
+| XP, ranks, badges, dry days | `Streakline/Streakline/Utilities/Gamification.swift` |
+| Reset and erase | `Streakline/Streakline/Utilities/AppDataManager.swift` |
+| Local reminder | `Streakline/Streakline/Utilities/NotificationManager.swift` |
+| Drink units and starting target | `Streakline/Streakline/Models/DrinkUnit.swift` |
+| Exercise copy | `Streakline/Streakline/Models/ExerciseLibrary.swift` |
+| Tokens | `Streakline/Streakline/Utilities/DesignSystem.swift` |
+| Unit tests | `Streakline/StreaklineTests/StreaklineCoreTests.swift` |
+
+### iOS conventions
+
+See `Streakline/README.md`. Short version: one primary type per file, folders as they are now (`Models`, `Views`, `Components`, `Utilities`), strict concurrency, no third-party SDKs, no secrets in git.
+
+### iOS build
+
+```bash
+cd Streakline
+xcodegen generate   # keeps the build number in project.yml; Cloud replaces it later
+xcodebuild test -project Streakline.xcodeproj -scheme Streakline \
+  -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
+```
+
+Compile-only, when the simulator service is down:
+
+```bash
+xcodebuild -project Streakline/Streakline.xcodeproj -scheme Streakline \
+  -destination 'generic/platform=iOS' -configuration Debug build \
+  CODE_SIGNING_ALLOWED=NO
+```
+
+### Debug launch arguments
+
+Debug builds only. Release ignores them.
+
+| Argument | Effect |
+|----------|--------|
+| `-skip-onboarding` | Open Home even with no saved weeks |
+| `-show-rankup` | Present the rank-up cover for the Disciplined rank |
+| `-open-progress` | Push Progress |
+| `-open-day "Day A"` | Push that workout (`Day A`, `Day B`, or `Day C`) |
+| `-open-guide` | From a workout screen, open the exercise guide |
+
+---
+
+## 6. Product rules (do not break)
+
+### 6.1 Where data lives
+
+SwiftData on device: `AppWeek`, `WorkoutLog`, `DrinkLog`. Preferences in `UserDefaults`:
+
+| Key | Meaning |
+|-----|---------|
+| `hasCompletedOnboarding` | Setup finished |
+| `startingDrinkBudget` | Baseline chosen in setup (5–30, default 10) |
+| `drinkUnit` | `pints`, `units`, or `drinks` |
+| `notificationsEnabled` | Daily reminder toggle |
+| `reminderTime` | Time as `timeIntervalSinceReferenceDate`; 0 means 08:00 |
+| `lastCelebratedRankIndex` | Highest rank celebration already shown; `-1` until first Home launch |
+
+Deleting the app deletes the data. There is no Keychain session and no account to reset on a server.
+
+### 6.2 Routing
+
+```
+SwiftData won't open → Storage unavailable
+Else weeks exist, or onboarding flag, or Debug skip → Home
+Else → Onboarding
+```
+
+A phone that already has weeks but never set `hasCompletedOnboarding` skips setup, writes the current drink unit onto those weeks, and sets the flag. That path is the beta migration in `AppRootView`.
+
+### 6.3 Drink budget
+
+`max(5, startingDrinkBudget - ((weekNumber - 1) / 2))`.
+
+Default start is 10. Weeks 1–2 stay at the start, then the target drops by 1 every two weeks and stops at 5. The baseline is chosen in onboarding (stepper 5…30) and copied onto each new week. It is not recomputed from a later settings change.
+
+Each week stores `drinkUnitRaw`. Changing the unit in Settings applies on the **next** week. History keeps the unit it was logged in.
+
+Steps: pints `0.5`, UK units `1`, standard drinks `1`.
+
+### 6.4 Week boundary
+
+`WeekManager.mondayOfWeek` uses `Calendar.current`. The start of the week is that calendar's first weekday. A US region starts on Sunday. A UK region starts on Monday. Comments on `AppWeek.startDate` say Monday; the code follows the device calendar.
+
+Moving the clock forward by more than one week inserts one new `AppWeek` whose `weekNumber` jumps by the elapsed week count. Skipped numbers are not backfilled. The home streak needs consecutive week numbers, so a gap breaks it.
+
+### 6.5 Workouts
+
+Three placeholders are seeded per week: Day A (run + glute circuit), Day B (full-body weights), Day C (long run or circuit).
+
+Day C starts as a run (`dayC_wasRun == true`). Marking Day C complete flips the flag. Undo flips it back. The next week copies the flag as it stands; rollover itself does not flip it.
+
+"Mark as done" completes the workout even if exercises are unticked. The label becomes "Finish workout" once every exercise is ticked. The guide can finish the workout only after every exercise is ticked.
+
+### 6.6 Streak, dry days, XP
+
+**Home streak** is the run of fully complete weeks **before** the current week. The current week never counts, even when it is already perfect. A week is fully complete at 3 workouts and drinks at or under budget. The pill is hidden at 0.
+
+**Best streak** on Progress can include the current week.
+
+**Dry days** are fully elapsed days in that week with no drink logged. Today is never dry. Future days are not dry.
+
+**XP** is derived, never stored:
+
+| Event | XP |
+|-------|----|
+| Exercise ticked | +10 |
+| Workout completed | +50 |
+| Dry day | +15 |
+| Fully complete week | +150 |
+
+Ranks: Rookie 0, Starter 150, Consistent 400, Committed 800, Disciplined 1400, Relentless 2200, Machine 3200, Unbreakable 4500, Legend 6000.
+
+A rank-up cover waits until the user is back on Home. If XP drops below the celebrated rank, the baseline drops quietly so the same rank can celebrate again.
+
+### 6.7 Reminders
+
+One local repeating notification, id `fittrack.daily.reminder`. Default 08:00. Copy depends on workouts left, whether the week is over budget, and XP to the next rank. Permission is requested only when the user turns the toggle on. Denial leaves the toggle off. The app reschedules when it becomes active, and only after onboarding is complete.
+
+Do not rename the notification id without removing the pending request that uses the old id.
+
+### 6.8 Reset
+
+Settings → Reset current week clears this week's completions, notes, ticked exercises, and drinks. The week row stays.
+
+Settings → Erase all data deletes every week, cancels the reminder, resets unit to pints, clears the starting budget and rank baseline, and returns to onboarding.
+
+### 6.9 What v1 does not do
+
+- Accounts, sign-in, or a backend
+- Purchases, subscriptions, or a paywall
+- Analytics or crash SDKs
+- Camera, HealthKit, Watch, widgets, iCloud sync
+- Custom workout programmes
+
+### 6.10 Copy
+
+Streakline is a habit and fitness tracker for adults of legal drinking age. Onboarding and Settings already say it is not medical advice or treatment, and that someone at risk of withdrawal should get medical advice first. Keep that notice on those surfaces. Do not add treatment, diagnosis, or "safe limit" claims. New UI copy defers to `brand.md`.
+
+---
+
+## 7. Web
+
+`web/` is a static Next.js site: landing, `/privacy`, `/support`. URLs and contact addresses live in `web/lib/site.ts`. The App Store URL stays empty until Apple issues a real one.
+
+Do not claim analytics, accounts, or a server in the privacy page unless the app actually has them.
+
+---
+
+## 8. Testing for agents
+
+The case list is `ios-test-cases.md`. It was filled from this code, using the public skills named in that file.
+
+**Fresh user:** delete the app, or Settings → Erase all data. Both are enough. There is no server user to delete.
+
+**Unit tests** already cover the budget curve, week rollover and unit snapshot, best streak, notification copy, reset, and erase. Run those before inventing a UI test for the same math.
+
+**Real device** for notification permission and a delivered reminder. Simulator green does not prove that. There is no camera and no StoreKit path to prove.
+
+---
+
+## 9. Agent playbook
+
+| Task | Where to start |
+|------|----------------|
+| Change setup | `OnboardingView.swift` |
+| Change routing | `AppRootView` in `StreaklineApp.swift` |
+| Change the budget or week advance | `AppWeek.drinkBudget`, `WeekManager` |
+| Change XP, badges, dry days | `Gamification.swift` |
+| Change reminder copy | `NotificationManager.body` |
+| Change colors or type | `brand.md` first, then `DesignSystem.swift` and the asset catalog |
+| User-facing copy | `brand.md`, and keep the health notice |
+| Privacy-affecting feature | `web` privacy page, Settings, and a `decisions.md` entry |
+| Pre-release pass | `ios-test-cases.md`, then `docs/AppStoreSubmission.md` |
+| Store listing text | `docs/app-store/v1.0/` after checking it against the binary |
+
+---
+
+## 10. Pitfalls
+
+1. **Bundle id is `com.mihaigarda.threshold`.** The display name is Streakline. Changing the bundle id orphans the App Store Connect record. Do not "fix" it.
+2. **Cloud build numbers are `10000 +` the workflow run count.** `ci_post_clone.sh` writes that into `project.pbxproj` on the runner and does not commit it. A local archive still uses the number in git. Do not delete and recreate the TestFlight workflow, or the run count starts over and can reuse a build TestFlight already has.
+3. **`docs/app-store/v1.0/metadata.md` says build 3.** Trust the app target, then update the draft.
+4. **Week start follows the device calendar**, not a hard-coded Monday. Say which region you tested.
+5. **Home streak ignores the current week.** Progress "Best streak" does not. They are different numbers on purpose.
+6. **Drink unit on a week is a snapshot.** Settings changes the preference used for the next week.
+7. **Minus removes from the latest drink log by date**, not "today" specifically.
+8. **Over budget still shows "0 left"** on the home badge, in red. The strip shows the real total.
+9. **Beta migration rewrites `drinkUnitRaw`** on existing weeks when the onboarding flag was never set.
+10. **Notification id is still `fittrack.daily.reminder`.** Leave it, or cancel the old request in the same change.
+11. **Storage failure looks like an empty app** but writes go to memory and vanish. The screen says storage is unavailable.
+12. **Xcode Cloud `manifest.json`** can appear when the project is linked. It does not define start conditions or TestFlight. Those live in App Store Connect. `CI.md` describes the build-number script.
+
+---
+
+## 11. Git
+
+- **Do not commit** secrets, `xcuserdata`, or a future `Config.local.xcconfig`.
+- **Commit only when the user asks.**
+- **`project.yml` is the project definition.** The `xcodeproj` is committed so a clone opens. Regenerate after editing `project.yml`, with the build number set.
+
+---
+
+## 12. Backlog
+
+From `checklist.md`. Do not build these unless the task asks:
+
+- iCloud sync
+- More workout programmes
+- HealthKit, Apple Watch, home screen widget
+
+---
+
+## 13. When you finish a task
+
+1. Run the unit tests, or a `generic/platform=iOS` build if the simulator service is down. Say which one you ran.
+2. If behavior changed, update `ios-test-cases.md` in the same change.
+3. If you changed an architectural, privacy, or product rule, **append** `decisions.md`. Do not rewrite old entries.
+4. If the listing or the release steps changed, update `checklist.md` and the file under `docs/` that testers will paste from.
+5. If this handover and the code disagree, code wins — update this file in the same change.
+6. A TestFlight upload from Xcode Cloud takes its build number from `CI.md`. Do not recreate that workflow, or the counter starts over.
+
+---
+
+## 14. Quick reference
+
+| | Value |
+|---|--------|
+| Display name | Streakline |
+| Bundle id | `com.mihaigarda.threshold` |
+| Min OS | iOS 17 |
+| Devices | iPhone, portrait |
+| Appearance | Dark |
+| Auth | None |
+| Data | On device |
+| Category | Health & Fitness |
+
+*If this handover conflicts with code, **code wins** — then update this file in the same change.*

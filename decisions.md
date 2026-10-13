@@ -1,0 +1,111 @@
+# Decision log
+
+The canonical record of major project decisions, why they were made, and what would make us reconsider. Append-only — when a decision changes, add a new dated entry that supersedes the old one rather than editing history.
+
+Format: each entry has a date, a one-line decision, the reasoning, and a "reconsider if" trigger. Keep entries short. Strategy does not go in `checklist.md`.
+
+Dates below are the commit that put the decision in the tree, or 2026-10-13 where the decision is recorded from the code that was already there.
+
+---
+
+## Product
+
+### 2026-06-11 — One programme: train three days, shrink a weekly drink target
+
+- **Decision:** Streakline ships a fixed 3-day workout plan plus a weekly drink budget. The plan does the thinking. The user logs against it.
+- **Rationale:** The product is a personal streak, not a workout builder and not a drink diary with charts. Day A / B / C and a single +/- drink control are the whole loop.
+- **Reconsider if:** People who finish the built-in plan have nowhere to go, and a second programme can ship without a settings maze.
+
+### 2026-06-11 — Drink target starts at 10, drops by 1 every two weeks, floors at 5
+
+- **Decision:** Default `startingDrinkBudget` is 10. Onboarding can set 5…30. `drinkBudget` is `max(5, start - ((weekNumber - 1) / 2))`.
+- **Rationale:** The cut is slow enough to keep, and it stops at a floor instead of marching to zero. The number is a personal tracking target. Copy says it is not a medically safe limit.
+- **Reconsider if:** The floor or the two-week step is wrong for how people actually log, and the unit tests in `StreaklineCoreTests` are updated in the same change.
+
+### 2026-06-11 — Three drink units, snapshotted per week
+
+- **Decision:** Users count UK pints (step 0.5), UK units (step 1), or standard drinks (step 1). Each `AppWeek` stores the unit it was created with. Settings changes apply on the next week.
+- **Rationale:** History has to stay readable after a unit change. Relabelling old weeks would rewrite what "3" meant.
+- **Reconsider if:** A week needs to change unit mid-week without destroying the meaning of logs already stored.
+
+### 2026-06-11 — No account and no backend
+
+- **Decision:** SwiftData and `UserDefaults` on the phone are the whole store. No sign-in, no sync, no analytics SDK.
+- **Rationale:** The privacy claim in the app and on `streakline.fit` is that data stays on device. A backend would make that claim false.
+- **Reconsider if:** iCloud sync is actually built. That still is not a Streakline account. Update the privacy page and `decisions.md` in the same change.
+
+### 2026-06-11 — No paywall in v1
+
+- **Decision:** The app does not sell a subscription or a consumable.
+- **Rationale:** There is nothing gated. Adding a paywall before the loop is solid would invent a product the binary does not have.
+- **Reconsider if:** There is a real ongoing feature to charge for, and the listing, privacy answers, and tests are updated together.
+
+### 2026-06-11 — XP is computed from weeks
+
+- **Decision:** Exercise ticks, completed workouts, dry days, and perfect weeks produce XP in `Gamification.summary`. Nothing stores an XP total.
+- **Rationale:** A stored counter drifts the moment an undo or a week reset forgets to subtract. Deriving it means undo is free.
+- **Reconsider if:** The derivation becomes too expensive to run on every Home render, and a cache can be rebuilt from the same weeks.
+
+### 2026-06-11 — Home streak excludes the week you are in
+
+- **Decision:** The flame on Home counts fully complete weeks before the current week. Progress "Best streak" can include the current week once it is fully complete.
+- **Rationale:** A streak you can light on Monday by finishing early is a different claim from a finished week. The two numbers answer two questions.
+- **Reconsider if:** Testers consistently read the Home pill as "including this week" and the copy cannot fix that.
+
+### 2026-06-11 — Health notice stays on setup and Settings
+
+- **Decision:** The app is for adults of legal drinking age. It is a habit and fitness tracker, not medical advice or treatment. The withdrawal sentence stays on onboarding and in Settings.
+- **Rationale:** The product asks people to drink less. That sentence is the boundary. It is not a medical-device claim, and it is not optional decoration.
+- **Reconsider if:** A lawyer replaces the wording. Replace it in both screens and on the site together.
+
+---
+
+## Engineering
+
+### 2026-06-11 — Native SwiftUI, iOS 17+, iPhone only
+
+- **Decision:** Swift 6, SwiftUI, SwiftData, strict concurrency. Deployment target iOS 17. `TARGETED_DEVICE_FAMILY` is iPhone. Portrait. Dark.
+- **Rationale:** One platform, one appearance, no tablet layout to maintain.
+- **Reconsider if:** An iPad or Android client is a real project, with its own test column. Do not pretend this app is universal before that exists.
+
+### 2026-06-11 — Bundle id stays `com.mihaigarda.threshold`
+
+- **Decision:** The display name is Streakline. The bundle id is the existing App Store Connect id `com.mihaigarda.threshold`.
+- **Rationale:** `docs/AppStoreSubmission.md` treats that id as permanent. Renaming it creates a different app.
+- **Reconsider if:** App Store Connect has no record under this id and a rename is deliberate.
+
+### 2026-06-11 — Project file is generated, and also committed
+
+- **Decision:** `Streakline/project.yml` is the xcodegen definition. `Streakline.xcodeproj` is committed so a clone opens without a generate step.
+- **Rationale:** Agents and CI need a project on disk. Editing only the pbxproj gets overwritten on the next generate.
+- **Reconsider if:** Generate stops being the way the project is updated. Until then, change `project.yml`, set the build number there, then generate.
+
+### 2026-06-30 — Marketing site is a static Next.js export
+
+- **Decision:** `web/` is Next.js, `output: "export"`, served as static files for `streakline.fit`.
+- **Rationale:** Privacy and support URLs have to exist for the store. The site has no server features to justify a Node runtime.
+- **Reconsider if:** A page needs a server. Say so in the privacy policy if that page touches user data.
+
+### 2026-09-05 — iOS GitHub Actions workflow removed
+
+- **Decision:** There is no `.github` workflow that builds the iOS app.
+- **Rationale:** Commit `e2b4cf2` removed it. Uploads are a manual archive described in `docs/AppStoreSubmission.md`.
+- **Reconsider if:** A TestFlight workflow is created. Document it in a new `CI.md` at that moment, including how the build number is assigned. Do not recreate that workflow later or the counter restarts.
+
+### 2026-10-13 — One living test inventory
+
+- **Decision:** Manual cases live only in `ios-test-cases.md`. Older plans are not kept current beside it.
+- **Rationale:** Two inventories drift. The header of the living file is where a stale doc admits it and points at the replacement.
+- **Reconsider if:** A store runbook needs a procedure this file does not contain. Add the procedure to the living file, or mark the other doc stale in its first lines.
+
+### 2026-10-13 — TestFlight build number is 10000 plus the Xcode Cloud run count
+
+- **Decision:** `Streakline/ci_scripts/ci_post_clone.sh` overwrites `CURRENT_PROJECT_VERSION` on the Xcode Cloud runner with `10000 + CI_BUILD_NUMBER`. It does not commit. Local archives stay on the number in `project.yml` (4).
+- **Rationale:** TestFlight rejects a repeated marketing version and build number. The workflow run count started at 1, which is already used by manual builds 1–4. The offset matches the Posturato pipeline. Supersedes the upload path in the 2026-09-05 entry: GitHub Actions stays gone; this workflow is the TestFlight path.
+- **Reconsider if:** Someone deletes and recreates the workflow. The run count starts over and can reuse a build number. Do not do that. Raise the offset only if `10000 +` the current run collides with a build already on TestFlight.
+
+---
+
+## Superseded
+
+None yet. New entries go above this heading, in the section they belong to, with a later date. Do not edit the entries above to match a new decision.

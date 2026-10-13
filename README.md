@@ -6,6 +6,8 @@ Streakline is a personal fitness and alcohol-reduction tracker for iOS. It pairs
 
 It is opinionated by design: the plan does the thinking, you log against it. One tap to mark a workout done. One tap to log a drink.
 
+Agents start at [AGENT_HANDOVER.md](AGENT_HANDOVER.md). Decisions, the running checklist, brand, and the living test inventory sit next to it. iOS conventions are in [Streakline/README.md](Streakline/README.md).
+
 ## Features
 
 - **3-day workout plan** — Day A (run + glute circuit), Day B (full-body weights), Day C (long run / circuit, alternating weekly). Exercises are predefined with sets, reps, and coaching notes.
@@ -18,7 +20,7 @@ It is opinionated by design: the plan does the thinking, you log against it. One
 
 ## Tech stack
 
-- **SwiftUI + SwiftData** (iOS 17+), MVVM with `@Query`-driven views
+- **SwiftUI + SwiftData** (iOS 17+). Screens use `@Query`; shared rules live in stateless helpers
 - **Swift 6** with strict concurrency
 - **[xcodegen](https://github.com/yonaskolb/XcodeGen)** for project generation
 - Local notifications via UserNotifications — no backend
@@ -26,6 +28,12 @@ It is opinionated by design: the plan does the thinking, you log against it. One
 ## Repository layout
 
 ```
+AGENT_HANDOVER.md      Agent on-ramp
+decisions.md           Append-only decision log
+checklist.md           Open work and finished work
+brand.md               Color, type, and voice
+ios-test-cases.md      Living manual test inventory
+CI.md                  Xcode Cloud build number and TestFlight
 Streakline/            The iOS app
   project.yml          xcodegen project definition
   Streakline/          App sources (Models, Views, Components, Utilities)

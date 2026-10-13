@@ -1,0 +1,226 @@
+# iOS test cases — Streakline
+
+Manual inventory for the iPhone app, checked against the code on 2026-10-13.
+
+This is the only living test inventory. If it drifts, say so in this header and point at the file that replaced it. Do not keep a second plan up to date beside it.
+
+Legend: `[ ]` open · `[x]` pass · `[!]` fail · `[~]` skipped (note why)
+
+**Priority:** P0 blocks a build you would upload. P1 is a release regression. P2 is edge, cosmetic, or easy to miss.
+
+---
+
+## How these cases were shaped
+
+Filled from the current code (routing, onboarding, home, workouts, progress, history, settings, notifications), using four public skills as the checklist of what a mobile suite has to include.
+
+| Skill | What it adds here |
+|-------|-------------------|
+| [qa-testing-mobile](https://github.com/vasilyu1983/AI-Agents-public/tree/main/skills/universal/qa-testing-mobile) | Device tiers, permissions, offline, backgrounding, accessibility, and when not to automate. |
+| [qa-testing-ios](https://github.com/vasilyu1983/AI-Agents-public/tree/main/skills/universal/qa-testing-ios) | Simulator green is not notification proof. Real device for the permission dialog and a delivered reminder. |
+| [mobile-testing](https://github.com/petrkindlmann/qa-skills/blob/main/skills/mobile-testing/SKILL.md) | Grant and deny, cold start, background, poor network. Deep links and biometrics are omitted because the app has neither. |
+| [qa-test-planner](https://github.com/softaworks/agent-toolkit/blob/main/skills/qa-test-planner/SKILL.md) | One behavior per case. Preconditions, action, expected result, P0 / P1 / P2. |
+
+**Automation.** Budget math, week rollover, the unit snapshot, best streak, notification copy, reset, and erase belong in `Streakline/StreaklineTests/StreaklineCoreTests.swift` and already live there (XCTest). Permission dialogs, a delivered reminder, Dynamic Type, and layout stay manual. There is no XCUITest target. The app has no users and the UI is still the whole product, so a UI suite would be rewritten before it paid for itself. Do not add one until a flow stops moving and someone will fix flakes.
+
+**Not built, so not tested as if it were:** accounts, paywall, camera, HealthKit, Watch, widgets, iCloud, deep links, biometrics, push.
+
+---
+
+## Tester reset
+
+There is no server user. Either path is a fresh start.
+
+1. **Erase in the app:** Settings → Erase all data → confirm. Lands on onboarding. Unit returns to pints. Reminder is cancelled.
+2. **Delete the app.** SwiftData and `UserDefaults` go with it.
+
+Record the device **region** on any week-boundary case. The week starts on `Calendar.current`'s first weekday (Sunday in a US region, Monday in a UK region). Comments in `WeekManager` say Monday. The expected result below follows the code.
+
+Debug arguments (`-skip-onboarding`, `-open-day`, and the others in `Streakline/README.md`) work in Debug builds only.
+
+---
+
+## Device matrix
+
+Run TC-SMOKE on Tier 1 before an upload. Sample P1 on the small phone. Notifications are the only row that must be a real device.
+
+| Tier | Device | OS | Why |
+|------|--------|----|-----|
+| 1 | Any recent iPhone, real device | Current iOS | Notification grant, deny, and a delivered reminder |
+| 1 | iPhone simulator | Current Xcode iOS | Everything except a real permission dialog and delivery |
+| 2 | iPhone SE width and a Pro Max width, simulator | Current | Layout, Dynamic Type |
+| 2 | iPhone, real or simulator | iOS 17 | Minimum deployment target |
+
+iPad is out of scope. The target is iPhone-only.
+
+---
+
+## Smoke
+
+One path. If this fails, stop.
+
+### TC-SMOKE-001 — First session: setup, one drink, one workout
+
+**Priority:** P0 · **Type:** Functional
+
+**Preconditions:** Fresh install (reset procedure). Region noted. Notifications not pre-granted.
+
+**Steps**
+
+1. Cold launch.
+   **Expected:** Onboarding. Title "Build a streak that helps". No crash. No notification prompt yet.
+2. Leave the unit on Pints (UK) and the target on 10. Read the health notice. Tap "Start my streak". Do not turn the reminder on.
+   **Expected:** Home. "Week 1". Badge "10 pints left". Whole numbers have no trailing ".0". Rank pill "Rookie". No streak pill. Ring "0 of 3 workouts". Three cards: Day A, Day B, Day C. Drink strip "0 pints this week" and "10 pints budget". Minus is disabled.
+3. Tap plus once.
+   **Expected:** "0.5 pints this week". Badge "9.5 pints left". Today’s dry-day dot is the drank state (amber), not a dry day. The dry-day count stays 0 because today is not a finished dry day.
+4. Open Day A, tick one exercise, tap "Mark as done".
+   **Expected:** The workout completes without every exercise ticked. A success haptic, then a short celebration, then Home. Day A shows completed. Ring "1 of 3 workouts". Still no streak pill.
+5. Kill the app and cold launch.
+   **Expected:** Home, not onboarding. The drink and the completed workout are still there.
+
+---
+
+## 1. Launch and routing
+
+| ID | Pri | Preconditions | Action | Expected |
+|----|-----|---------------|--------|----------|
+| TC-ROUTE-001 | P0 | Fresh install | Cold launch | Onboarding. Not Home. |
+| TC-ROUTE-002 | P0 | Onboarding finished | Kill and cold launch | Home. Setup does not return. |
+| TC-ROUTE-003 | P0 | Any data on device | Settings → Erase all data → confirm | Onboarding. A later launch is still onboarding until "Start my streak". |
+| TC-ROUTE-004 | P1 | Weeks exist in the store, `hasCompletedOnboarding` is false (upgrade from a build that never set the flag) | Cold launch | Home, not onboarding. The flag becomes true. Those weeks’ drink unit is rewritten to the current `drinkUnit` preference. |
+| TC-ROUTE-005 | P1 | Debug build | Launch with `-skip-onboarding` and an empty store | Home. The migration in TC-ROUTE-004 does not run. |
+| TC-ROUTE-006 | P2 | Release build | Same arguments as TC-ROUTE-005 | Arguments do nothing. Fresh install still shows onboarding. |
+
+---
+
+## 2. Onboarding
+
+| ID | Pri | Preconditions | Action | Expected |
+|----|-----|---------------|--------|----------|
+| TC-ONB-001 | P0 | Fresh install | Open the unit picker | Three choices: Pints (UK), Units (UK), Standard drinks. |
+| TC-ONB-002 | P0 | Fresh install | Move the stepper from the default 10 down to the stop, then up to the stop | Stops at 5 and at 30. The noun matches the unit (pint/pints, unit/units, drink/drinks). 1 uses the singular. |
+| TC-ONB-003 | P0 | Unit = Units, target = 14 | Tap "Start my streak", then read Home | Badge uses "units". Budget is 14. |
+| TC-ONB-004 | P0 | Reminder off | Stay on setup and do not touch the toggle | iOS does not ask for notification permission. |
+| TC-ONB-005 | P0 | Reminder toggled on, then Deny | Respond to the system prompt | Toggle returns to off. Alert "Notifications are off" says to enable them later in iOS Settings. Home still opens after Start. |
+| TC-ONB-006 | P1 | Reminder toggled on, then Allow | Start | Toggle stays on. A daily reminder exists (confirm on a real device). |
+| TC-ONB-007 | P1 | Fresh install | Read the Important block | It says adults of legal drinking age, not medical advice or treatment, and to seek medical advice if withdrawal is a risk. The card above says the target is not a medically safe limit. |
+| TC-ONB-008 | P2 | Largest Dynamic Type | Scroll setup | Title, stepper, notice, and "Start my streak" stay reachable. Nothing is stuck under the button. |
+
+---
+
+## 3. Home, drinks, and the ring
+
+| ID | Pri | Preconditions | Action | Expected |
+|----|-----|---------------|--------|----------|
+| TC-HOME-001 | P0 | Week 1, 0 drinks, pints | Tap plus twice, then minus once | Totals go 0.5, then 1, then 0.5. The value 1 renders as "1", not "1.0". |
+| TC-HOME-002 | P0 | Total is 0 | Tap minus | Nothing changes. The button is disabled. |
+| TC-HOME-003 | P0 | Pints, budget 10 | Add to 7, then 7.5, then 10, then 10.5 | At 7 the strip is still the calm surface (the threshold is above 70%). At 7.5 the strip shifts amber. At 10 the badge is amber "0 pints left" and the week is not over. At 10.5 the badge is still "0 pints left", in red, and the strip is red. The ring’s inner arc is red. The strip’s number is the real total. |
+| TC-HOME-004 | P1 | Units or standard drinks | Tap plus | Step is 1, not 0.5. |
+| TC-HOME-005 | P1 | A drink logged on an earlier day and one today | Tap minus | The later log shrinks. At 0 that log is removed. |
+| TC-HOME-006 | P1 | Monday of the current week, no drinks on previous days | Read the dry-day row | Count is 0. Today is not dry. Dots for later days are future. |
+| TC-HOME-007 | P1 | Device date moved to the next day, no drinks on the day that just ended | Read the dry-day row | The elapsed day is dry (teal). The count includes it. Today is still not dry. |
+| TC-HOME-008 | P1 | No prior perfect week | Read the header | No "week streak" pill. Rank pill reads Rookie and opens Progress. |
+| TC-HOME-009 | P0 | Week 1 fully complete (3 workouts, drinks at or under budget), still inside week 1 | Read Home | Streak pill still hidden. Progress "Best streak" can already be 1. |
+| TC-HOME-010 | P0 | Week 1 fully complete, device date in the next week | Cold launch | A new week. Home streak pill reads "1 week streak". The word stays "week" at 2 and above as well. The new week’s workouts are incomplete and its drinks are 0. |
+| TC-HOME-011 | P2 | Reduce Motion on | Add a drink and finish a workout | Numbers update. The workout does not play the confetti wait; it dismisses. |
+
+---
+
+## 4. Workouts and the guide
+
+| ID | Pri | Preconditions | Action | Expected |
+|----|-----|---------------|--------|----------|
+| TC-WORK-001 | P0 | Home | Open Day A, Day B, Day C | Day A "Run + glute circuit" ~45 min. Day B "Full-body weights" ~50 min. Day C "Long run or circuit" ~50 min and, on a new programme, "Run week". |
+| TC-WORK-002 | P0 | Day A, not complete | Tick the circle on one exercise, leave the rest, tap "Mark as done" | Workout completes. Home shows Day A done. Ring increments by 1. |
+| TC-WORK-003 | P0 | Day not complete | Tick every exercise from the list | The bottom button label becomes "Finish workout". Tapping it completes the workout. |
+| TC-WORK-004 | P0 | Day complete | Tap Undo | Completion clears. The ring drops. Notes and ticked exercises stay (Undo only clears the completion flag and time). |
+| TC-WORK-005 | P0 | Day C showing "Run week" | Finish Day C, open Day C again | Variant reads "Circuit week". The exercise list is the circuit, not the run. |
+| TC-WORK-006 | P1 | Day C just finished as a run | Undo | Variant returns to "Run week". |
+| TC-WORK-007 | P1 | Day C flipped, then the clock moves to the next week | Open Day C on the new week | The new week keeps the flag. Rollover itself does not flip it. |
+| TC-WORK-008 | P1 | A workout | Type a note, leave, come back | The note is still there. |
+| TC-WORK-009 | P0 | Guide opened from the first exercise | Swipe through, tap "Mark exercise done" | That exercise ticks. The list behind the guide matches. "Finish workout" appears in the guide only after every exercise is ticked, and it completes the workout. |
+| TC-WORK-010 | P1 | Guide open | Tap the close control before finishing | Guide dismisses. Workout stays incomplete if it was incomplete. Ticks already made stay. |
+| TC-WORK-011 | P2 | Reduce Motion on | Finish a workout | No confetti hold. The screen dismisses. |
+
+---
+
+## 5. Week advance, budget, streak
+
+Unit tests cover the arithmetic. These cases check the device calendar and the clock.
+
+| ID | Pri | Preconditions | Action | Expected |
+|----|-----|---------------|--------|----------|
+| TC-WEEK-001 | P0 | Starting budget 10, inside week 1 | Read the badge | 10 left before any drinks. |
+| TC-WEEK-002 | P0 | Starting budget 10, device date at the start of programme week 3 | Cold launch | Week 3. Budget 9. Weeks 1 and 2, if you open History, still show budget 10. |
+| TC-WEEK-003 | P1 | Starting budget 10, far enough ahead that the formula would go below 5 | Cold launch | Budget is 5, not lower. Progress can unlock "The Long Game" once a stored week has budget 5. |
+| TC-WEEK-004 | P1 | US region (first weekday Sunday) and, on another run, a Monday-first region | Note the date Home treats as the start of "this week" | It matches the device’s first weekday. It is not always Monday. |
+| TC-WEEK-005 | P1 | Week 1 perfect, clock jumps two weeks | Cold launch | `weekNumber` increases by the elapsed weeks. The skipped number is not inserted. Home streak is 0 because the weeks are not consecutive. |
+| TC-WEEK-006 | P1 | Week 1 perfect but over budget | Enter the next week | No streak pill. Three workouts alone are not a perfect week. |
+
+---
+
+## 6. Progress, history, rank-up
+
+| ID | Pri | Preconditions | Action | Expected |
+|----|-----|---------------|--------|----------|
+| TC-PROG-001 | P0 | New user | Open the rank pill | Progress. 0 XP, Rookie, "150 XP to Starter". Legend lists +10 exercise, +50 workout, +15 dry day, +150 perfect week. Twelve badges, all locked. |
+| TC-PROG-002 | P1 | One exercise ticked and one workout completed | Open Progress | XP includes 10 for the tick and 50 for the workout. "First Steps" unlocks on the first completed workout. |
+| TC-PROG-003 | P1 | XP crosses a rank threshold while a workout screen is open | Finish and land on Home | The rank-up cover presents on Home, not over the workout. Dismissing it means the same rank does not cover again. |
+| TC-PROG-004 | P1 | A rank was celebrated, then Undo drops XP below that rank, then the rank is earned again | Watch Home | The cover shows again for the re-earned rank. |
+| TC-PROG-005 | P1 | At least one week | Open History, tap the week | Sheet shows the week number, date span, workouts as n/3, and drinks over that week’s own budget and unit. |
+| TC-PROG-006 | P2 | Accessibility Dynamic Type on Progress | Open Progress | Badge grid is one column. Rank and XP stay readable. |
+
+---
+
+## 7. Settings
+
+| ID | Pri | Preconditions | Action | Expected |
+|----|-----|---------------|--------|----------|
+| TC-SET-001 | P0 | Current week is pints, with drinks logged | Change Drink unit to Units | This week’s labels stay pints. The footer says the change applies from the next week. The next week uses units. History rows keep their own unit. |
+| TC-SET-002 | P0 | Current week has completions, notes, ticks, and drinks. An older week exists | Reset current week → confirm | This week’s workouts are not complete, notes and ticks are empty, drinks are 0. The older week is unchanged. The week number does not reset to 1. |
+| TC-SET-003 | P0 | Several weeks, reminder on | Erase all data → confirm | Onboarding. After Start with defaults: Week 1, pints, budget 10, no reminder scheduled. |
+| TC-SET-004 | P1 | Reminder off, permission not determined | Turn Daily reminder on and allow | Time picker appears, default 08:00. A repeating reminder is scheduled. |
+| TC-SET-005 | P1 | Permission previously denied | Turn Daily reminder on | Toggle snaps off. Alert offers "Open iOS Settings". |
+| TC-SET-006 | P1 | Reminder on | Change the time, background the app, return | The pending reminder matches the new time. Body matches the week: no workouts yet mentions Day A; 1 or 2 left names the count; all 3 tells you to hold the line; over budget says to stop here. |
+| TC-SET-007 | P1 | Any build | Open Privacy Policy, Support, Email Support | Privacy and Support open `https://streakline.fit/privacy/` and `https://streakline.fit/support/`. Email opens `mailto:support@streakline.fit`. |
+| TC-SET-008 | P2 | Any build | Read Health notice and the version line | Same health notice as setup. Version line matches the binary’s marketing version and build, not a draft in `docs/`. |
+
+---
+
+## 8. Offline, background, cold start
+
+The app does not call a Streakline server. Links are the only network.
+
+| ID | Pri | Preconditions | Action | Expected |
+|----|-----|---------------|--------|----------|
+| TC-LIFE-001 | P0 | Airplane mode | Finish setup if needed, log a drink, complete a workout, kill, cold launch | Data is still there. No error about being offline. |
+| TC-LIFE-002 | P1 | Airplane mode | Settings → Privacy Policy | The link fails because the phone is offline. Local data is unchanged. |
+| TC-LIFE-003 | P1 | Mid-workout, note typed, one exercise ticked | Send the app to the background for a minute, return, then kill and cold launch | Note and tick are still there. |
+| TC-LIFE-004 | P1 | Reminder enabled, onboarding complete | Cold launch after the week’s drinks or workouts changed | The pending reminder body matches the new week state (real device). |
+| TC-LIFE-005 | P2 | Poor network (conditioner, high latency) | Use the app, ignore Safari | Logging never waits on the network. |
+
+---
+
+## 9. Accessibility
+
+| ID | Pri | Preconditions | Action | Expected |
+|----|-----|---------------|--------|----------|
+| TC-A11Y-001 | P1 | VoiceOver | Move through the ring, the rank pill, and a workout’s exercise progress | Ring announces workouts done and whether the drink target is exceeded. Rank pill announces the rank and that it opens progress. Exercise progress announces "n of m complete". |
+| TC-A11Y-002 | P1 | Differentiate Without Color, if you can set it | Over-budget week | Over budget is not color alone: the badge reads "0 left" and the strip shows a total above the budget. |
+| TC-A11Y-003 | P2 | Bold Text, larger text, SE width | Home and a workout | Week title, cards, and the drink strip remain tappable. Horizontal workout cards still scroll. |
+
+---
+
+## What the unit tests already own
+
+Do not duplicate these as the only evidence. A device pass still matters for the rows above.
+
+| Test | Behavior |
+|------|----------|
+| `testCustomBudgetDropsEveryTwoWeeksAndStopsAtFive` | Drop every two weeks, floor 5 |
+| `testExistingDataDefaultsRemainCompatible` | Default start 10, week 3 budget 9, pints |
+| `testWeekRolloverPreservesBaselineAndUsesProspectiveUnit` | New week keeps the baseline, takes the current unit, leaves the old week’s unit |
+| `testConsecutiveCompletedWeeksProduceBestStreak` | Two perfect weeks, best streak 2 |
+| `testNotificationCopyUsesTheWeeksUnit` | Reminder body uses the week’s unit |
+| `testResetClearsCurrentWeekButPreservesWeek` | Reset clears logs and keeps the week |
+| `testEraseAllDeletesHistory` | Erase deletes the weeks |
