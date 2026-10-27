@@ -1,7 +1,8 @@
 import Foundation
 
-/// How the user counts alcohol. The weekly budget engine is unit-agnostic;
-/// this only controls labels and the +/- increment.
+/// How the user counts alcohol. This controls labels, the +/- increment,
+/// and the guideline floor for a new week. Logged amounts stay in the unit
+/// of the week they were saved in.
 enum DrinkUnit: String, CaseIterable, Identifiable {
     case pints
     case units
