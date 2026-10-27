@@ -1,6 +1,15 @@
 import Foundation
 import SwiftData
 
+/// Which floor a saved week uses. Stored as a string so rows written before
+/// this property existed migrate to the old floor without a rewrite.
+enum BudgetRule: String {
+    /// Floors at 5 of the week's unit. The default for missing values.
+    case legacy
+    /// Floors at the UK guideline in the week's unit. WeekManager sets this on new weeks.
+    case guideline
+}
+
 /// One week of the Streakline programme. Week 1 is the first week of app use.
 @Model
 final class AppWeek {
@@ -11,6 +20,9 @@ final class AppWeek {
     var startingDrinkBudget: Int = 10
     /// Unit snapshot for this week so history is never relabelled later.
     var drinkUnitRaw: String = DrinkUnit.pints.rawValue
+    /// "legacy" keeps the old floor of 5. "guideline" uses the UK low-risk floor.
+    /// Omitted values migrate as legacy so a saved week does not change.
+    var budgetRuleRaw: String = "legacy"
     /// For Day C, tracks whether the *next* session is a run (true) or a circuit (false).
     var dayC_wasRun: Bool = true
 
@@ -24,12 +36,14 @@ final class AppWeek {
         weekNumber: Int,
         startDate: Date,
         startingDrinkBudget: Int = 10,
-        drinkUnit: DrinkUnit = .pints
+        drinkUnit: DrinkUnit = .pints,
+        budgetRule: BudgetRule = .legacy
     ) {
         self.weekNumber = weekNumber
         self.startDate = startDate
         self.startingDrinkBudget = startingDrinkBudget
         self.drinkUnitRaw = drinkUnit.rawValue
+        self.budgetRuleRaw = budgetRule.rawValue
         self.dayC_wasRun = true
     }
 
@@ -37,10 +51,25 @@ final class AppWeek {
         DrinkUnit(rawValue: drinkUnitRaw) ?? .pints
     }
 
-    /// Max drinks allowed this week (in the user's chosen unit).
-    /// Drops 1 every 2 weeks, floors at 5.
+    /// Missing or unknown values stay on the legacy floor.
+    var budgetRule: BudgetRule {
+        BudgetRule(rawValue: budgetRuleRaw) ?? .legacy
+    }
+
+    /// Max drinks allowed this week, in this week's unit.
+    /// Drops by 1 of that unit every 2 weeks.
+    /// Legacy weeks floor at 5. Guideline weeks floor at the UK guideline
+    /// in the week's unit, and a starting budget already under that floor is left there.
     var drinkBudget: Int {
-        max(5, startingDrinkBudget - ((weekNumber - 1) / 2))
+        let tapered = startingDrinkBudget - ((weekNumber - 1) / 2)
+        switch budgetRule {
+        case .legacy:
+            return max(5, tapered)
+        case .guideline:
+            let displayFloor = AlcoholUnits.displayFloor(for: drinkUnit)
+            let floor = min(startingDrinkBudget, displayFloor)
+            return max(floor, tapered)
+        }
     }
 
     /// Sum of all logged drinks this week.

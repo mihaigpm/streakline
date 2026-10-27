@@ -85,7 +85,7 @@ struct OnboardingView: View {
             Label("Gradual by design", systemImage: "chart.line.downtrend.xyaxis")
                 .font(DesignSystem.Typography.headlineLarge)
                 .foregroundStyle(DesignSystem.Colors.amber)
-            Text("Your target drops by 1 every two weeks until it reaches 5. This is a personal tracking target, not a medically safe limit.")
+            Text("Your target drops by 1 every two weeks and does not go below the guideline of \(AlcoholUnits.displayFloorLabel(for: unit)). If you start under that, it stays where you set it. This is a personal tracking target, not a medically safe limit.")
                 .font(DesignSystem.Typography.body)
                 .foregroundStyle(DesignSystem.Colors.textSecondary)
         }

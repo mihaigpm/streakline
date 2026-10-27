@@ -24,11 +24,13 @@ enum WeekManager {
         let thisMonday = mondayOfWeek(for: now)
 
         guard let latest = weeks.first else {
+            // New weeks opt into the guideline floor. Rows already saved stay legacy.
             let first = AppWeek(
                 weekNumber: 1,
                 startDate: thisMonday,
                 startingDrinkBudget: ProgramPreferences.startingBudget,
-                drinkUnit: .current
+                drinkUnit: .current,
+                budgetRule: .guideline
             )
             context.insert(first)
             seedWorkouts(for: first, context: context)
@@ -45,7 +47,8 @@ enum WeekManager {
                 weekNumber: latest.weekNumber + max(1, weeksElapsed),
                 startDate: thisMonday,
                 startingDrinkBudget: latest.startingDrinkBudget,
-                drinkUnit: .current
+                drinkUnit: .current,
+                budgetRule: .guideline
             )
             // Carry the Day C run/circuit alternation forward.
             newWeek.dayC_wasRun = latest.dayC_wasRun

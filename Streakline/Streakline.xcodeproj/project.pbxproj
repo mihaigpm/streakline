@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		013170C24D4EFA4E4A7F20AD /* ConfettiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248C0B8FED00D105C6DD8D47 /* ConfettiView.swift */; };
+		9D2C7F4A1B8E4560C3D7A9F1 /* AlcoholUnits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8B1A6C0D9F4327B5A1E6C8 /* AlcoholUnits.swift */; };
 		01C816BA97CEA1F95595ADBB /* WeekRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E76D307DA5D2497D0710334 /* WeekRowView.swift */; };
 		1355BFF65EB73161A0D0CBF2 /* ExerciseGuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBD3E8F252687158CD64A1AF /* ExerciseGuideView.swift */; };
 		1925B31C0D774E3CCA71AFF4 /* WorkoutCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1F1C91EB385F573AA7E1872 /* WorkoutCardView.swift */; };
@@ -50,6 +51,7 @@
 
 /* Begin PBXFileReference section */
 		02F84FF4247006E209E2C4C9 /* Exercise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exercise.swift; sourceTree = "<group>"; };
+		4E8B1A6C0D9F4327B5A1E6C8 /* AlcoholUnits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlcoholUnits.swift; sourceTree = "<group>"; };
 		07D942551B00777C635DEAF5 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		0A0043259160E33B0724258D /* WeekManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekManager.swift; sourceTree = "<group>"; };
 		0AA6861378A7D7E1B0A08EAF /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -110,6 +112,7 @@
 		279FBAC1189180EA283A825C /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				4E8B1A6C0D9F4327B5A1E6C8 /* AlcoholUnits.swift */,
 				711AD7BD0E93C8FB9B3C4260 /* AppWeek.swift */,
 				4D5F2F89BC41DC18EC041CF5 /* DrinkLog.swift */,
 				B2DC923C50CB3B31149B46F4 /* DrinkUnit.swift */,
@@ -271,6 +274,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D2C7F4A1B8E4560C3D7A9F1 /* AlcoholUnits.swift in Sources */,
 				254A150498468EA648F4468E /* AppDataManager.swift in Sources */,
 				E0A0EF6928BA069658C6CCED /* AppWeek.swift in Sources */,
 				013170C24D4EFA4E4A7F20AD /* ConfettiView.swift in Sources */,

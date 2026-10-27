@@ -31,6 +31,10 @@ struct SettingsView: View {
         )
     }
 
+    private var selectedUnit: DrinkUnit {
+        DrinkUnit(rawValue: drinkUnitRaw) ?? .pints
+    }
+
     private var appVersion: String {
         let v = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
         let b = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
@@ -49,7 +53,7 @@ struct SettingsView: View {
             } header: {
                 Text("Tracking")
             } footer: {
-                Text("Unit changes apply from the next week, so existing history keeps its original meaning. Your target started at \(ProgramPreferences.startingBudget) and drops by 1 every two weeks to 5.")
+                Text("Unit changes apply from the next week, so existing history keeps its original meaning. New weeks drop by 1 every two weeks and do not go below the guideline of \(AlcoholUnits.displayFloorLabel(for: selectedUnit)). A starting target already under that stays there. Weeks already saved keep their original target.")
             }
 
             Section("Reminders") {
