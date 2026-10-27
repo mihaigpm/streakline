@@ -417,6 +417,125 @@ final class StreaklineCoreTests: XCTestCase {
         XCTAssertEqual(try shieldsAvailable(), 1)
     }
 
+    func testDefaultPlanSplitsFridayAndSaturday() {
+        let pints = guidelineWeek(1, starting: 7, unit: .pints)
+        XCTAssertEqual(pints.drinkBudget, 7)
+        XCTAssertFalse(pints.planCustomized)
+        XCTAssertEqual(pints.plannedAmounts, [0, 0, 0, 0, 3.5, 3.5, 0])
+
+        let units = guidelineWeek(1, starting: 5, unit: .units)
+        XCTAssertEqual(units.drinkBudget, 5)
+        XCTAssertEqual(units.plannedAmounts, [0, 0, 0, 0, 2, 3, 0])
+        XCTAssertEqual(units.plannedMonday, -1)
+    }
+
+    func testCustomPlanStaysWithinTheBudget() {
+        let units = guidelineWeek(1, starting: 5, unit: .units)
+        let moved = units.adjusting(units.plannedAmounts, by: -1, onNight: 5)
+        let wednesday = units.adjusting(moved.amounts, by: 1, onNight: 2)
+        XCTAssertNil(wednesday.refusedUnplaced)
+        XCTAssertEqual(wednesday.amounts, [0, 0, 1, 0, 2, 2, 0])
+        units.saveCustomPlan(wednesday.amounts)
+        XCTAssertTrue(units.planCustomized)
+        XCTAssertEqual(units.plannedWednesday, 1)
+        XCTAssertEqual(units.drinkBudget, 5)
+
+        units.saveCustomPlan([0, 0, 0, 0, 0, 0, 0])
+        XCTAssertEqual(units.plannedAmounts, [0, 0, 0, 0, 0, 0, 0])
+
+        units.saveCustomPlan([0, 0, 5, 0, 0, 0, 0])
+        let refused = units.adjusting(units.plannedAmounts, by: 1, onNight: 0)
+        XCTAssertEqual(refused.amounts, units.plannedAmounts)
+        XCTAssertEqual(refused.refusedUnplaced, 0)
+        XCTAssertEqual(units.planLimitMessage(unplaced: 0), "0 units left")
+        XCTAssertEqual(units.drinkBudget, 5)
+
+        units.saveCustomPlan([0, 0, 6, 0, 0, 0, 0])
+        XCTAssertEqual(units.plannedWednesday, 5)
+
+        let pints = guidelineWeek(1, starting: 7, unit: .pints)
+        let short = [0.0, 0, 0, 0, 3.5, 3, 0]
+        let placed = pints.adjusting(short, by: 0.5, onNight: 2)
+        XCTAssertEqual(placed.amounts[2], 0.5)
+        XCTAssertNil(placed.refusedUnplaced)
+        let over = pints.adjusting(short, by: 1, onNight: 2)
+        XCTAssertEqual(over.amounts, short)
+        XCTAssertEqual(over.refusedUnplaced, 0.5)
+        XCTAssertEqual(pints.planLimitMessage(unplaced: 0.5), "0.5 pints left")
+        XCTAssertEqual(pints.drinkBudget, 7)
+    }
+
+    func testLoggingIgnoresTheNightPlan() throws {
+        let calendar = Calendar.current
+        let monday = WeekManager.mondayOfWeek(for: .now, calendar: calendar)
+        let wednesday = try XCTUnwrap(calendar.date(byAdding: .day, value: 2, to: monday))
+        let week = AppWeek(
+            weekNumber: 1,
+            startDate: monday,
+            startingDrinkBudget: 7,
+            drinkUnit: .pints,
+            budgetRule: .guideline
+        )
+        context.insert(week)
+
+        let before = Gamification.dayStates(for: week, now: wednesday, calendar: calendar)
+        XCTAssertEqual(before, [.dry, .dry, .today, .future, .planned, .planned, .future])
+        XCTAssertEqual(Gamification.dryDayCount(in: week, now: wednesday, calendar: calendar), 2)
+        XCTAssertEqual(week.plannedAmounts[0], 0)
+
+        let log = DrinkLog(date: monday, amount: week.drinkUnit.step)
+        log.week = week
+        week.drinkLogs.append(log)
+        context.insert(log)
+
+        XCTAssertEqual(week.totalDrinks, 0.5)
+        XCTAssertFalse(week.planCustomized)
+        XCTAssertEqual(week.plannedAmounts[0], 0)
+        XCTAssertEqual(week.drinkBudget, 7)
+        let after = Gamification.dayStates(for: week, now: wednesday, calendar: calendar)
+        XCTAssertEqual(after[0], .drank)
+        XCTAssertEqual(after[4], .planned)
+        XCTAssertEqual(Gamification.dryDayCount(in: week, now: wednesday, calendar: calendar), 1)
+    }
+
+    func testResetPlanReturnsToTheWeekendDefault() {
+        let week = guidelineWeek(1, starting: 5, unit: .units)
+        week.saveCustomPlan([0, 0, 2, 0, 0, 3, 0])
+        XCTAssertTrue(week.planCustomized)
+
+        week.resetPlanToWeekend()
+
+        XCTAssertFalse(week.planCustomized)
+        XCTAssertEqual(week.plannedMonday, -1)
+        XCTAssertEqual(week.plannedWednesday, -1)
+        XCTAssertEqual(week.plannedSaturday, -1)
+        XCTAssertEqual(week.plannedAmounts, [0, 0, 0, 0, 2, 3, 0])
+        XCTAssertEqual(week.drinkBudget, 5)
+    }
+
+    func testNewWeekDoesNotCopyACustomNightPlan() throws {
+        UserDefaults.standard.set(10, forKey: ProgramPreferences.startingBudgetKey)
+        UserDefaults.standard.set(DrinkUnit.pints.rawValue, forKey: DrinkUnit.storageKey)
+
+        let firstDate = try programmeDate(year: 2026, month: 8, day: 3)
+        let first = WeekManager.currentWeek(in: context, now: firstDate)
+        first.saveCustomPlan([0, 0, 2, 0, 0, 0, 0])
+        try context.save()
+        XCTAssertTrue(first.planCustomized)
+        XCTAssertEqual(first.plannedWednesday, 2)
+
+        let second = WeekManager.currentWeek(in: context, now: try addingDays(7, to: firstDate))
+        XCTAssertNotEqual(second.weekNumber, first.weekNumber)
+        XCTAssertFalse(second.planCustomized)
+        XCTAssertEqual(second.plannedMonday, -1)
+        XCTAssertEqual(second.plannedWednesday, -1)
+        XCTAssertEqual(second.plannedAmounts[2], 0)
+        XCTAssertEqual(second.plannedAmounts[4], 5)
+        XCTAssertEqual(second.plannedAmounts[5], 5)
+        XCTAssertTrue(first.planCustomized)
+        XCTAssertEqual(first.plannedWednesday, 2)
+    }
+
     func testNotificationCopyUsesTheWeeksUnit() {
         let state = NotificationManager.WeekState(
             completedWorkouts: 3,

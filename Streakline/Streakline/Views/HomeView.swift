@@ -18,6 +18,7 @@ struct HomeView: View {
     @State private var rankUpToShow: Gamification.Rank?
     @State private var rankUpPending = false
     @State private var saveErrorMessage: String?
+    @State private var isPlanningNights = false
 
     private var rankIndex: Int { Gamification.summary(for: weeks).rankIndex }
 
@@ -86,6 +87,13 @@ struct HomeView: View {
         } message: {
             Text(saveErrorMessage ?? "Please try again.")
         }
+        .sheet(isPresented: $isPlanningNights) {
+            if let week = currentWeek {
+                PlannedNightsSheet(week: week, onPersist: saveContext)
+                    .presentationDetents([.large])
+                    .presentationBackground(DesignSystem.Colors.background)
+            }
+        }
     }
 
     // MARK: - Rank-up celebration
@@ -128,7 +136,8 @@ struct HomeView: View {
                 unit: week.drinkUnit,
                 dayStates: Gamification.dayStates(for: week),
                 onAdd: { addDrink(to: week) },
-                onSubtract: { subtractDrink(from: week) }
+                onSubtract: { subtractDrink(from: week) },
+                onPlan: { isPlanningNights = true }
             )
             .padding(.horizontal, DesignSystem.Spacing.lg)
             .padding(.bottom, DesignSystem.Spacing.sm)
@@ -186,7 +195,14 @@ struct HomeView: View {
 
     private func drinkBudgetBadge(_ week: AppWeek) -> some View {
         let remaining = week.drinksRemaining
-        return Text("\(week.drinkUnit.format(remaining)) \(week.drinkUnit.noun(for: remaining)) left")
+        return Button {
+            isPlanningNights = true
+        } label: {
+            HStack(spacing: DesignSystem.Spacing.xs) {
+                Text("\(week.drinkUnit.format(remaining)) \(week.drinkUnit.noun(for: remaining)) left")
+                Image(systemName: "chevron.down")
+                    .font(.system(size: 9, weight: .bold))
+            }
             .font(DesignSystem.Typography.labelLarge)
             .foregroundStyle(week.isOverBudget ? DesignSystem.Colors.red : DesignSystem.Colors.amber)
             .padding(.horizontal, DesignSystem.Spacing.md)
@@ -195,6 +211,11 @@ struct HomeView: View {
                 (week.isOverBudget ? DesignSystem.Colors.red.opacity(0.15) : DesignSystem.Colors.amberDim),
                 in: Capsule()
             )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Plan nights")
+        .accessibilityValue("\(week.drinkUnit.format(remaining)) \(week.drinkUnit.noun(for: remaining)) left")
+        .accessibilityHint("Opens the night plan")
     }
 
     private func streakPill(_ streak: Int) -> some View {

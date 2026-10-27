@@ -27,6 +27,22 @@ final class AppWeek {
     var dayC_wasRun: Bool = true
     /// Set when a shield covered this week as it ended. Never set on the open week.
     var shieldUsed: Bool = false
+    /// True after a saved night plan. False uses the Friday and Saturday default.
+    var planCustomized: Bool = false
+    /// Monday amount in this week's unit. -1 means use the default.
+    var plannedMonday: Double = -1
+    /// Tuesday amount in this week's unit. -1 means use the default.
+    var plannedTuesday: Double = -1
+    /// Wednesday amount in this week's unit. -1 means use the default.
+    var plannedWednesday: Double = -1
+    /// Thursday amount in this week's unit. -1 means use the default.
+    var plannedThursday: Double = -1
+    /// Friday amount in this week's unit. -1 means use the default.
+    var plannedFriday: Double = -1
+    /// Saturday amount in this week's unit. -1 means use the default.
+    var plannedSaturday: Double = -1
+    /// Sunday amount in this week's unit. -1 means use the default.
+    var plannedSunday: Double = -1
 
     @Relationship(deleteRule: .cascade, inverse: \WorkoutLog.week)
     var workoutLogs: [WorkoutLog] = []
@@ -47,6 +63,14 @@ final class AppWeek {
         self.drinkUnitRaw = drinkUnit.rawValue
         self.budgetRuleRaw = budgetRule.rawValue
         self.dayC_wasRun = true
+        self.planCustomized = false
+        self.plannedMonday = -1
+        self.plannedTuesday = -1
+        self.plannedWednesday = -1
+        self.plannedThursday = -1
+        self.plannedFriday = -1
+        self.plannedSaturday = -1
+        self.plannedSunday = -1
     }
 
     var drinkUnit: DrinkUnit {
@@ -131,5 +155,88 @@ final class AppWeek {
     /// The persisted log for a given workout day, if it exists.
     func log(for day: WorkoutDay) -> WorkoutLog? {
         workoutLogs.first { $0.workoutDay == day }
+    }
+
+    /// Result of trying to move the night plan by one step.
+    struct PlanAdjustment: Equatable {
+        var amounts: [Double]
+        /// Unplaced budget when the extra was refused. Nil when the change landed.
+        var refusedUnplaced: Double?
+    }
+
+    /// Monday-through-Sunday amounts in this week's unit.
+    /// A fresh week puts the budget on Friday and Saturday. A saved plan uses the stored nights, including zeros.
+    var plannedAmounts: [Double] {
+        guard planCustomized else { return defaultPlan }
+        return [
+            plannedMonday, plannedTuesday, plannedWednesday, plannedThursday,
+            plannedFriday, plannedSaturday, plannedSunday,
+        ].map { $0 < 0 ? 0 : $0 }
+    }
+
+    /// Moves `delta` onto `night` (0 is Monday). A step that would pass the budget is refused whole.
+    /// Does not change `drinkBudget` or the saved plan.
+    func adjusting(_ amounts: [Double], by delta: Double, onNight night: Int) -> PlanAdjustment {
+        guard amounts.count == 7, (0..<7).contains(night) else {
+            return PlanAdjustment(amounts: amounts, refusedUnplaced: nil)
+        }
+        if delta <= 0 {
+            var next = amounts
+            next[night] = max(0, next[night] + delta)
+            return PlanAdjustment(amounts: next, refusedUnplaced: nil)
+        }
+        let budget = Double(drinkBudget)
+        let placed = amounts.reduce(0, +)
+        if placed + delta > budget + 0.000_001 {
+            return PlanAdjustment(amounts: amounts, refusedUnplaced: max(0, budget - placed))
+        }
+        var next = amounts
+        next[night] += delta
+        return PlanAdjustment(amounts: next, refusedUnplaced: nil)
+    }
+
+    /// Saves a plan that stays at or under the budget. A plan over the budget is left unsaved.
+    func saveCustomPlan(_ amounts: [Double]) {
+        guard amounts.count == 7 else { return }
+        let cleaned = amounts.map { max(0, $0) }
+        guard cleaned.reduce(0, +) <= Double(drinkBudget) + 0.000_001 else { return }
+        plannedMonday = cleaned[0]
+        plannedTuesday = cleaned[1]
+        plannedWednesday = cleaned[2]
+        plannedThursday = cleaned[3]
+        plannedFriday = cleaned[4]
+        plannedSaturday = cleaned[5]
+        plannedSunday = cleaned[6]
+        planCustomized = true
+    }
+
+    /// Clears a saved plan so Friday and Saturday share the budget again.
+    func resetPlanToWeekend() {
+        planCustomized = false
+        plannedMonday = -1
+        plannedTuesday = -1
+        plannedWednesday = -1
+        plannedThursday = -1
+        plannedFriday = -1
+        plannedSaturday = -1
+        plannedSunday = -1
+    }
+
+    /// How much of the budget is still unplaced, in this week's unit.
+    func planLimitMessage(unplaced: Double) -> String {
+        "\(drinkUnit.format(unplaced)) \(drinkUnit.noun(for: unplaced)) left"
+    }
+
+    /// Friday and Saturday split the budget in `DrinkUnit.step` increments.
+    /// Saturday keeps the leftover step when the two nights cannot match.
+    private var defaultPlan: [Double] {
+        let step = drinkUnit.step
+        guard drinkBudget > 0, step > 0 else {
+            return [0, 0, 0, 0, 0, 0, 0]
+        }
+        let steps = Int((Double(drinkBudget) / step).rounded())
+        let friday = Double(steps / 2) * step
+        let saturday = Double(drinkBudget) - friday
+        return [0, 0, 0, 0, friday, saturday, 0]
     }
 }

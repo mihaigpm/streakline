@@ -43,7 +43,7 @@ enum Gamification {
 
     // MARK: - Day states (for the dry-day dots)
 
-    enum DayDrinkState {
+    enum DayDrinkState: Equatable {
         /// Fully elapsed day with no drinks.
         case dry
         /// Day with at least one drink logged.
@@ -52,6 +52,8 @@ enum Gamification {
         case today
         /// Day hasn't happened yet.
         case future
+        /// A later night with a planned amount, and no drinks logged yet.
+        case planned
     }
 
     // MARK: - Summary
@@ -125,14 +127,15 @@ enum Gamification {
 
     /// Number of fully elapsed days in this week with no drinks logged.
     /// Today never counts — the day isn't over yet.
-    static func dryDayCount(in week: AppWeek, now: Date = .now) -> Int {
-        dayStates(for: week, now: now).filter { $0 == .dry }.count
+    static func dryDayCount(in week: AppWeek, now: Date = .now, calendar: Calendar = .current) -> Int {
+        dayStates(for: week, now: now, calendar: calendar).filter { $0 == .dry }.count
     }
 
-    /// The 7 day states for a week, Monday-first.
-    static func dayStates(for week: AppWeek, now: Date = .now) -> [DayDrinkState] {
-        let calendar = Calendar.current
+    /// The 7 day states for a week, Monday-first from `week.startDate`.
+    /// A future night with a planned amount is `.planned`. Logging still wins over the plan.
+    static func dayStates(for week: AppWeek, now: Date = .now, calendar: Calendar = .current) -> [DayDrinkState] {
         let today = calendar.startOfDay(for: now)
+        let plan = week.plannedAmounts
         return (0..<7).map { offset in
             guard let day = calendar.date(byAdding: .day, value: offset, to: week.startDate) else {
                 return .future
@@ -142,7 +145,9 @@ enum Gamification {
                 calendar.isDate($0.date, inSameDayAs: dayStart) && $0.amount > 0
             }
             if hasDrinks { return .drank }
-            if dayStart > today { return .future }
+            if dayStart > today {
+                return plan[offset] > 0 ? .planned : .future
+            }
             if dayStart == today { return .today }
             return .dry
         }
