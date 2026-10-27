@@ -15,6 +15,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { LogoMark } from "@/components/Logo";
 import { PrimaryCTA, AppStoreBadge } from "@/components/cta";
+import { ScrollReveal } from "@/components/ScrollReveal";
 import { PhoneFrame } from "@/components/phone/PhoneFrame";
 import { HomeMock } from "@/components/phone/HomeMock";
 import { ProgressMock } from "@/components/phone/ProgressMock";
@@ -138,6 +139,7 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <ScrollReveal />
       <SiteHeader />
 
       <main>

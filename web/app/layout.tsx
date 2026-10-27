@@ -55,17 +55,22 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-// Bulletproof scroll-reveal: vanilla JS, independent of React hydration.
-// Adds `.js` before first paint (so the hidden start state applies without a
-// flash), observes elements on DOMContentLoaded, and a safety timer guarantees
-// nothing can ever stay hidden. Opts out under reduced-motion.
-const revealScript = `(function(){var d=document,r=d.documentElement;try{if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;}catch(e){}r.classList.add('js');function show(el){el.classList.add('is-visible');}function init(){var els=[].slice.call(d.querySelectorAll('[data-reveal]'));if(!('IntersectionObserver'in window)){els.forEach(show);return;}var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var el=e.target;if(el.dataset.revealDelay)el.style.animationDelay=el.dataset.revealDelay+'ms';show(el);io.unobserve(el);}});},{rootMargin:'0px 0px -10% 0px',threshold:.12});els.forEach(function(el){io.observe(el);});setTimeout(function(){els.forEach(show);},2500);}if(d.readyState!=='loading')init();else d.addEventListener('DOMContentLoaded',init);})();`;
+// Adds `.js` before first paint so [data-reveal] can start hidden without a
+// flash. Does not touch element classes or styles — those are applied after
+// hydration by ScrollReveal. Opts out under reduced motion, which leaves the
+// content visible. `suppressHydrationWarning` on <html> covers this one class.
+const revealScript = `(function(){try{if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;}catch(e){}document.documentElement.classList.add('js');})();`;
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${nunito.variable} h-full`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${nunito.variable} h-full`}
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+    >
       <body className="min-h-full antialiased">
         <script dangerouslySetInnerHTML={{ __html: revealScript }} />
         {children}

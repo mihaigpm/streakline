@@ -35,7 +35,7 @@ export const site: SiteConfig = {
 
   // Availability. Only paste a real product or invite URL. Empty and generic
   // Apple landing-page URLs are intentionally treated as unavailable.
-  appStoreUrl: "",
+  appStoreUrl: "https://apps.apple.com/us/app/streakline/id6778569830",
   testFlightUrl: "",
 
   // Contact — point these at real inboxes on the streakline.fit domain.
