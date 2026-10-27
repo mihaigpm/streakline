@@ -125,6 +125,7 @@ One path. If this fails, stop.
 | TC-HOME-010 | P0 | Week 1 fully complete, device date in the next week | Cold launch | A new week. Home streak pill reads "1 week streak". The word stays "week" at 2 and above as well. A quiet "1 shield" caption is under the pills. The new week’s workouts are incomplete and its drinks are 0. |
 | TC-HOME-011 | P2 | Reduce Motion on | Add a drink and finish a workout | Numbers update. The workout does not play the confetti wait; it dismisses. |
 | TC-HOME-012 | P0 | Week 1 has 2 workouts and drinks at or under budget, device date in the next week | Cold launch | Home streak pill reads "1 week streak". There is no "1 shield" caption. Progress does not add the +150 perfect-week XP. |
+| TC-HOME-013 | P0 | Guideline week, pints, 3 drinks logged, one slot still open | Read the drink strip, then tap the estimate | The line shows 3 pints, about £16.50, and about 660 kcal, and names the open session. At 0 drinks the line is absent. The sheet repeats the three figures and says the estimates are not a measure of the night. Over budget still shows spend and calories and does not show money saved. The session sentence disappears when all three slots are complete. |
 
 ---
 
@@ -234,3 +235,7 @@ Do not duplicate these as the only evidence. A device pass still matters for the
 | `testNotificationCopyUsesTheWeeksUnit` | Reminder body uses the week’s unit |
 | `testResetClearsCurrentWeekButPreservesWeek` | Reset clears logs and keeps the week |
 | `testEraseAllDeletesHistory` | Erase deletes the weeks and the shield row |
+| `testThreeGuidelinePintsShowAboutSixteenFiftyAndSixSixtyKcal` | 3 guideline pints are about £16.50 and about 660 kcal |
+| `testOverBudgetReceiptHasZeroUnspentAndNoSaving` | Over budget keeps spend and calories, unspent is 0, and the line does not say saved |
+| `testSessionClauseDisappearsWhenEverySlotIsComplete` | The session clause is omitted when all three slots are done |
+| `testOneOpenSlotAfterADrinkNamesTheNextWeekday` | One open long run after Friday drinks says Saturday's long run is still open |

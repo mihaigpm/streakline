@@ -8,9 +8,12 @@ struct DrinkLogStripView: View {
     let budget: Int
     let unit: DrinkUnit
     let dayStates: [Gamification.DayDrinkState]
+    /// Nil until the week has a drink. Amount, estimated spend, estimated calories, and any open slot.
+    let receiptLine: String?
     let onAdd: () -> Void
     let onSubtract: () -> Void
     let onPlan: () -> Void
+    let onReceipt: () -> Void
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var fraction: Double {
@@ -64,6 +67,24 @@ struct DrinkLogStripView: View {
                         .opacity(total <= 0 ? 0.4 : 1)
                     stepperButton(systemName: "plus", action: onAdd)
                 }
+            }
+
+            if let receiptLine {
+                Button(action: onReceipt) {
+                    HStack(alignment: .firstTextBaseline, spacing: DesignSystem.Spacing.xs) {
+                        Text(receiptLine)
+                            .font(DesignSystem.Typography.labelSmall)
+                            .foregroundStyle(DesignSystem.Colors.amber)
+                            .multilineTextAlignment(.leading)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(DesignSystem.Colors.textTertiary)
+                            .accessibilityHidden(true)
+                    }
+                }
+                .buttonStyle(.plain)
+                .accessibilityHint("Opens the estimate")
             }
 
             dryDayDots
@@ -151,17 +172,20 @@ struct DrinkLogStripView: View {
             DrinkLogStripView(
                 total: 2, budget: 8, unit: .pints,
                 dayStates: [.dry, .dry, .drank, .today, .planned, .planned, .future],
-                onAdd: {}, onSubtract: {}, onPlan: {}
+                receiptLine: "2 pints · about £11.00 · about 440 kcal · Easy run is still open",
+                onAdd: {}, onSubtract: {}, onPlan: {}, onReceipt: {}
             )
             DrinkLogStripView(
                 total: 7, budget: 8, unit: .units,
                 dayStates: [.drank, .drank, .dry, .today, .future, .future, .future],
-                onAdd: {}, onSubtract: {}, onPlan: {}
+                receiptLine: "7 units · about £16.80 · about 665 kcal",
+                onAdd: {}, onSubtract: {}, onPlan: {}, onReceipt: {}
             )
             DrinkLogStripView(
                 total: 9, budget: 8, unit: .drinks,
                 dayStates: [.drank, .drank, .drank, .today, .future, .future, .future],
-                onAdd: {}, onSubtract: {}, onPlan: {}
+                receiptLine: "9 drinks · about £54.00 · about 1260 kcal",
+                onAdd: {}, onSubtract: {}, onPlan: {}, onReceipt: {}
             )
         }
         .padding()

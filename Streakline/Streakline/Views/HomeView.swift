@@ -19,6 +19,7 @@ struct HomeView: View {
     @State private var rankUpPending = false
     @State private var saveErrorMessage: String?
     @State private var isPlanningNights = false
+    @State private var isShowingReceipt = false
 
     private var rankIndex: Int { Gamification.summary(for: weeks).rankIndex }
 
@@ -94,6 +95,13 @@ struct HomeView: View {
                     .presentationBackground(DesignSystem.Colors.background)
             }
         }
+        .sheet(isPresented: $isShowingReceipt) {
+            if let week = currentWeek, week.totalDrinks > 0 {
+                ReceiptSheet(receipt: ReceiptEstimates(week: week))
+                    .presentationDetents([.medium])
+                    .presentationBackground(DesignSystem.Colors.background)
+            }
+        }
     }
 
     // MARK: - Rank-up celebration
@@ -127,17 +135,20 @@ struct HomeView: View {
             }
             .padding(.horizontal, DesignSystem.Spacing.lg)
             .padding(.top, DesignSystem.Spacing.sm)
-            .padding(.bottom, 120)
+            .padding(.bottom, 180)
         }
         .safeAreaInset(edge: .bottom) {
+            let receipt = ReceiptEstimates(week: week)
             DrinkLogStripView(
                 total: week.totalDrinks,
                 budget: week.drinkBudget,
                 unit: week.drinkUnit,
                 dayStates: Gamification.dayStates(for: week),
+                receiptLine: receipt.showsOnStrip ? receipt.line : nil,
                 onAdd: { addDrink(to: week) },
                 onSubtract: { subtractDrink(from: week) },
-                onPlan: { isPlanningNights = true }
+                onPlan: { isPlanningNights = true },
+                onReceipt: { isShowingReceipt = true }
             )
             .padding(.horizontal, DesignSystem.Spacing.lg)
             .padding(.bottom, DesignSystem.Spacing.sm)

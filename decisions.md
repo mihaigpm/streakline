@@ -70,6 +70,12 @@ Dates below are the commit that put the decision in the tree, or 2026-10-13 wher
 - **Rationale:** One missed session was deleting long streaks and the app with them. Three of three stays the perfect week. The inventory is a SwiftData row because sync will need it later.
 - **Reconsider if:** A paid shield raises the cap. That is a later prompt, and it does not sell the first one.
 
+### 2026-10-27 — The drink receipt is a labelled estimate, priced in the week's unit
+
+- **Decision:** `ReceiptEstimates` prices logged drinks with rough 2026 UK averages: pint £5.50 / 220 kcal, UK unit £2.40 / 95 kcal, standard drink £6.00 / 140 kcal. Copy says "about" on every price and calorie. Unspent is zero when the week is over budget and is not shown as money saved. Nothing new is stored. Training does not change the price.
+- **Rationale:** The number worth a screenshot is what the night cost. It has to look like an estimate, not a till receipt and not a blood-alcohol figure.
+- **Reconsider if:** Those averages stop being a fair planning figure, or the disclosure sentence has to change.
+
 ---
 
 ## Engineering

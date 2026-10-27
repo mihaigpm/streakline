@@ -52,3 +52,4 @@ Not in scope unless a task asks. Reasons live in `decisions.md` and the README r
 - [x] **2026-10-13** Xcode Cloud build number: `Streakline/ci_scripts/ci_post_clone.sh` sets `10000 +` the workflow run count. `CI.md`. `project.yml` build number aligned to 4 for local archives.
 - [x] **2026-10-27** Session slots. Onboarding stores `programmePreset`. New weeks seed Hard / Strong / Long templates. A swap is one slot, this week only. "I already trained" completes that slot. An empty `sessionTemplateRaw` keeps Day A / B / C.
 - [x] **2026-10-27** Streak shield. Two sessions under budget hold the streak. Three sessions remain the perfect week. One shield, earned on rollover from a perfect week and spent on a miss. Not for sale.
+- [x] **2026-10-27** Drink receipt. The home strip estimates spend and calories from the week's own unit once the total is above 0. Over budget does not show money saved. The open-session clause drops when all three slots are done.
