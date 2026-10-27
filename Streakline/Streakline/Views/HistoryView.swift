@@ -78,9 +78,9 @@ private struct WeekDetailSheet: View {
                             .foregroundStyle(DesignSystem.Colors.textPrimary)
                         ForEach(completedLogs) { log in
                             HStack {
-                                Image(systemName: log.workoutDay.sfSymbol)
+                                Image(systemName: log.sessionSymbol())
                                     .foregroundStyle(log.workoutDay.accentColor)
-                                Text(log.workoutDay.title)
+                                Text(log.sessionTitle())
                                     .foregroundStyle(DesignSystem.Colors.textPrimary)
                                 Spacer()
                                 if let date = log.completedAt {

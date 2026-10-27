@@ -198,6 +198,7 @@ struct SettingsView: View {
             reminderTimeInterval = SettingsView.defaultReminderInterval
             drinkUnitRaw = DrinkUnit.pints.rawValue
             UserDefaults.standard.removeObject(forKey: ProgramPreferences.startingBudgetKey)
+            UserDefaults.standard.removeObject(forKey: ProgrammePreset.storageKey)
             UserDefaults.standard.removeObject(forKey: "lastCelebratedRankIndex")
             NotificationManager.cancelDailyReminder()
             hasCompletedOnboarding = false

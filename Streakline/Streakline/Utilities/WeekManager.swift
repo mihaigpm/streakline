@@ -62,10 +62,16 @@ enum WeekManager {
     }
 
     /// Inserts the three workout placeholders for a fresh week.
+    ///
+    /// A stored programme preset copies its templates onto the new logs.
+    /// No preset leaves `sessionTemplateRaw` empty, which keeps the legacy lists.
+    /// A swap on an older week is not copied forward.
     @MainActor
     private static func seedWorkouts(for week: AppWeek, context: ModelContext) {
+        let preset = ProgrammePreset.current
         for day in WorkoutDay.allCases {
-            let log = WorkoutLog(workoutDay: day)
+            let templateRaw = preset?.templateID(for: day) ?? ""
+            let log = WorkoutLog(workoutDay: day, sessionTemplateRaw: templateRaw)
             log.week = week
             week.workoutLogs.append(log)
             context.insert(log)

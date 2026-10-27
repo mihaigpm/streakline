@@ -29,6 +29,10 @@
 		8DD5B7845ECE8FF892E2CDAF /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 0AA6861378A7D7E1B0A08EAF /* PrivacyInfo.xcprivacy */; };
 		8F44EC4FE566F440AF469612 /* WorkoutDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DCF2CA4A8303CDA8D53F02 /* WorkoutDay.swift */; };
 		8F6DE2DD0FE51495BC1F1945 /* ExerciseLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D10128C5891371381AD16CF /* ExerciseLibrary.swift */; };
+		F1A2B3C4D5E6F708192A3B02 /* ProgrammePreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6F708192A3B01 /* ProgrammePreset.swift */; };
+		F1A2B3C4D5E6F708192A3B04 /* SessionTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6F708192A3B03 /* SessionTemplate.swift */; };
+		F1A2B3C4D5E6F708192A3B06 /* SessionTemplateLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6F708192A3B05 /* SessionTemplateLibrary.swift */; };
+		F1A2B3C4D5E6F708192A3B08 /* SessionTemplateMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6F708192A3B07 /* SessionTemplateMenu.swift */; };
 		9A24A189CA1A135E49C2C46B /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F5CE75DF9404E7B4083B7B /* HistoryView.swift */; };
 		A6DE9E63A58BA6FC415AA54A /* ProgressScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6AE49A691ED8976F3C765E5 /* ProgressScreen.swift */; };
 		B57073CF3146F04857D918B4 /* StreaklineCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 998636C4188C2DAD421232CF /* StreaklineCoreTests.swift */; };
@@ -82,6 +86,10 @@
 		D9B47D92DA490EFA18ABA4F8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		E21E3A1E463F6B1344272A5F /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
 		F0DCF2CA4A8303CDA8D53F02 /* WorkoutDay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutDay.swift; sourceTree = "<group>"; };
+		F1A2B3C4D5E6F708192A3B01 /* ProgrammePreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgrammePreset.swift; sourceTree = "<group>"; };
+		F1A2B3C4D5E6F708192A3B03 /* SessionTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTemplate.swift; sourceTree = "<group>"; };
+		F1A2B3C4D5E6F708192A3B05 /* SessionTemplateLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTemplateLibrary.swift; sourceTree = "<group>"; };
+		F1A2B3C4D5E6F708192A3B07 /* SessionTemplateMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTemplateMenu.swift; sourceTree = "<group>"; };
 		FBD3E8F252687158CD64A1AF /* ExerciseGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseGuideView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -118,6 +126,9 @@
 				B2DC923C50CB3B31149B46F4 /* DrinkUnit.swift */,
 				02F84FF4247006E209E2C4C9 /* Exercise.swift */,
 				2D10128C5891371381AD16CF /* ExerciseLibrary.swift */,
+				F1A2B3C4D5E6F708192A3B01 /* ProgrammePreset.swift */,
+				F1A2B3C4D5E6F708192A3B05 /* SessionTemplateLibrary.swift */,
+				F1A2B3C4D5E6F708192A3B03 /* SessionTemplate.swift */,
 				F0DCF2CA4A8303CDA8D53F02 /* WorkoutDay.swift */,
 				2C11159C0BFD84525BD62478 /* WorkoutLog.swift */,
 			);
@@ -158,6 +169,7 @@
 			isa = PBXGroup;
 			children = (
 				248C0B8FED00D105C6DD8D47 /* ConfettiView.swift */,
+				F1A2B3C4D5E6F708192A3B07 /* SessionTemplateMenu.swift */,
 				7E8BF3C9B189FBBEF6678EC0 /* DrinkLogStripView.swift */,
 				2C33A17ECA8770640C864826 /* ProgressRingView.swift */,
 				2E76D307DA5D2497D0710334 /* WeekRowView.swift */,
@@ -285,6 +297,10 @@
 				6147DEB76324A51FF2F92D49 /* Exercise.swift in Sources */,
 				1355BFF65EB73161A0D0CBF2 /* ExerciseGuideView.swift in Sources */,
 				8F6DE2DD0FE51495BC1F1945 /* ExerciseLibrary.swift in Sources */,
+				F1A2B3C4D5E6F708192A3B02 /* ProgrammePreset.swift in Sources */,
+				F1A2B3C4D5E6F708192A3B08 /* SessionTemplateMenu.swift in Sources */,
+				F1A2B3C4D5E6F708192A3B06 /* SessionTemplateLibrary.swift in Sources */,
+				F1A2B3C4D5E6F708192A3B04 /* SessionTemplate.swift in Sources */,
 				49C3E49B0D7A3AA5CA13CBB4 /* Gamification.swift in Sources */,
 				9A24A189CA1A135E49C2C46B /* HistoryView.swift in Sources */,
 				E223827967DE5DA99ABDDB65 /* HomeView.swift in Sources */,

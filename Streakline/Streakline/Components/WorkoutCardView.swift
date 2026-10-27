@@ -3,31 +3,40 @@ import SwiftUI
 /// A single horizontally-scrollable workout card on the home screen.
 struct WorkoutCardView: View {
     let day: WorkoutDay
+    let title: String
+    let subtitle: String
+    let symbol: String
     let isCompleted: Bool
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
-            HStack {
-                Image(systemName: day.sfSymbol)
-                    .font(.system(size: 26, weight: .semibold))
-                    .foregroundStyle(day.accentColor)
-                Spacer()
-                if isCompleted {
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.system(size: 22))
-                        .foregroundStyle(DesignSystem.Colors.teal)
-                        .transition(.scale.combined(with: .opacity))
-                }
-            }
+            Image(systemName: symbol)
+                .font(.system(size: 26, weight: .semibold))
+                .foregroundStyle(day.accentColor)
+                .accessibilityHidden(true)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.trailing, DesignSystem.Spacing.xl)
 
             Spacer(minLength: 0)
 
             VStack(alignment: .leading, spacing: DesignSystem.Spacing.xs) {
-                Text(day.title)
-                    .font(DesignSystem.Typography.headlineLarge)
-                    .foregroundStyle(DesignSystem.Colors.textPrimary)
-                Text(day.subtitle)
+                HStack(alignment: .firstTextBaseline) {
+                    Text(title)
+                        .font(DesignSystem.Typography.headlineLarge)
+                        .foregroundStyle(DesignSystem.Colors.textPrimary)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                    Spacer(minLength: DesignSystem.Spacing.xs)
+                    if isCompleted {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 22))
+                            .foregroundStyle(DesignSystem.Colors.teal)
+                            .transition(.scale.combined(with: .opacity))
+                            .accessibilityHidden(true)
+                    }
+                }
+                Text(subtitle)
                     .font(DesignSystem.Typography.bodySmall)
                     .foregroundStyle(DesignSystem.Colors.textSecondary)
                     .lineLimit(2)
@@ -48,7 +57,7 @@ struct WorkoutCardView: View {
         .opacity(isCompleted ? 0.7 : 1)
         .animation(reduceMotion ? nil : DesignSystem.Motion.cardPulse, value: isCompleted)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(day.title), \(day.subtitle)")
+        .accessibilityLabel("\(day.slotName), \(title), \(subtitle)")
         .accessibilityValue(isCompleted ? "Completed" : "Not done")
         .accessibilityHint("Opens workout details")
     }
@@ -58,8 +67,20 @@ struct WorkoutCardView: View {
     ZStack {
         DesignSystem.Colors.background.ignoresSafeArea()
         HStack {
-            WorkoutCardView(day: .dayA, isCompleted: false)
-            WorkoutCardView(day: .dayB, isCompleted: true)
+            WorkoutCardView(
+                day: .dayA,
+                title: "Easy run",
+                subtitle: "Steady run and glute circuit",
+                symbol: "figure.run",
+                isCompleted: false
+            )
+            WorkoutCardView(
+                day: .dayB,
+                title: "Full body",
+                subtitle: "Weights for the whole body",
+                symbol: "dumbbell.fill",
+                isCompleted: true
+            )
         }
     }
 }

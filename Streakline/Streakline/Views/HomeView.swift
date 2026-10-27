@@ -227,14 +227,58 @@ struct HomeView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: DesignSystem.Spacing.md) {
                     ForEach(WorkoutDay.allCases) { day in
-                        NavigationLink(value: day) {
-                            WorkoutCardView(day: day, isCompleted: week.log(for: day)?.isCompleted ?? false)
-                        }
-                        .buttonStyle(.plain)
+                        workoutCard(day, in: week)
                     }
                 }
                 .padding(.vertical, DesignSystem.Spacing.xs)
             }
+        }
+    }
+
+    private func workoutCard(_ day: WorkoutDay, in week: AppWeek) -> some View {
+        let log = week.log(for: day)
+        return ZStack(alignment: .topTrailing) {
+            Button {
+                path.append(day)
+            } label: {
+                WorkoutCardView(
+                    day: day,
+                    title: log?.sessionTitle() ?? day.title,
+                    subtitle: log?.sessionSubtitle() ?? day.subtitle,
+                    symbol: log?.sessionSymbol() ?? day.sfSymbol,
+                    isCompleted: log?.isCompleted ?? false
+                )
+            }
+            .buttonStyle(.plain)
+
+            SessionTemplateMenu(slot: day, selectedRaw: log?.sessionTemplateRaw ?? "") { template in
+                selectTemplate(template, for: day, in: week)
+            }
+            .padding(DesignSystem.Spacing.xs)
+        }
+    }
+
+    private func selectTemplate(_ template: SessionTemplate, for day: WorkoutDay, in week: AppWeek) {
+        let log: WorkoutLog
+        if let existing = week.log(for: day) {
+            log = existing
+        } else {
+            log = WorkoutLog(workoutDay: day)
+            log.week = week
+            week.workoutLogs.append(log)
+            context.insert(log)
+        }
+        let marksLoggedComplete = template == .logged && !log.isCompleted
+        log.apply(template: template, in: week)
+        do {
+            try context.save()
+        } catch {
+            context.rollback()
+            saveErrorMessage = error.localizedDescription
+            return
+        }
+        if marksLoggedComplete {
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
         }
     }
 

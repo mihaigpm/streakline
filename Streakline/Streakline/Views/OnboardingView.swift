@@ -5,6 +5,7 @@ struct OnboardingView: View {
 
     @AppStorage(DrinkUnit.storageKey) private var drinkUnitRaw = DrinkUnit.pints.rawValue
     @AppStorage(ProgramPreferences.startingBudgetKey) private var startingBudget = 10
+    @AppStorage(ProgrammePreset.storageKey) private var programmePresetRaw = ""
     @AppStorage("notificationsEnabled") private var notificationsEnabled = false
 
     @State private var notificationDenied = false
@@ -21,6 +22,7 @@ struct OnboardingView: View {
                 VStack(alignment: .leading, spacing: DesignSystem.Spacing.xl) {
                     header
                     setupCard
+                    programmeCard
                     howItWorksCard
                     reminderCard
                     safetyNotice
@@ -47,7 +49,7 @@ struct OnboardingView: View {
                     .font(DesignSystem.Typography.displayMedium)
                     .foregroundStyle(DesignSystem.Colors.textPrimary)
             }
-            Text("Choose a realistic starting target. Streakline will pair it with three guided workouts each week.")
+            Text("Choose a realistic starting target and the kind of week you already live. Streakline keeps it to three sessions.")
                 .font(DesignSystem.Typography.body)
                 .foregroundStyle(DesignSystem.Colors.textSecondary)
         }
@@ -76,6 +78,58 @@ struct OnboardingView: View {
                 }
             }
             .tint(DesignSystem.Colors.teal)
+        }
+        .cardStyle()
+    }
+
+    private var programmeCard: some View {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
+            Text("Which week do you live?")
+                .font(DesignSystem.Typography.headlineLarge)
+                .foregroundStyle(DesignSystem.Colors.textPrimary)
+            Text("Three sessions. You can swap any one of them later.")
+                .font(DesignSystem.Typography.bodySmall)
+                .foregroundStyle(DesignSystem.Colors.textSecondary)
+
+            ForEach(ProgrammePreset.allCases) { preset in
+                let selected = programmePresetRaw == preset.rawValue
+                Button {
+                    programmePresetRaw = preset.rawValue
+                } label: {
+                    HStack(alignment: .center, spacing: DesignSystem.Spacing.md) {
+                        VStack(alignment: .leading, spacing: DesignSystem.Spacing.xs) {
+                            Text(preset.title)
+                                .font(DesignSystem.Typography.headlineSmall)
+                                .foregroundStyle(DesignSystem.Colors.textPrimary)
+                            Text(preset.detail)
+                                .font(DesignSystem.Typography.bodySmall)
+                                .foregroundStyle(DesignSystem.Colors.textSecondary)
+                                .multilineTextAlignment(.leading)
+                        }
+                        Spacer(minLength: DesignSystem.Spacing.sm)
+                        if selected {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundStyle(DesignSystem.Colors.teal)
+                                .accessibilityHidden(true)
+                        }
+                    }
+                    .padding(DesignSystem.Spacing.md)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(
+                        selected ? DesignSystem.Colors.tealDim : DesignSystem.Colors.surfaceHigh,
+                        in: RoundedRectangle(cornerRadius: DesignSystem.Radius.md)
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: DesignSystem.Radius.md)
+                            .strokeBorder(
+                                selected ? DesignSystem.Colors.teal : DesignSystem.Colors.border,
+                                lineWidth: selected ? 2 : 1
+                            )
+                    )
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(selected ? .isSelected : AccessibilityTraits())
+            }
         }
         .cardStyle()
     }
@@ -144,7 +198,13 @@ struct OnboardingView: View {
                 .padding(.vertical, DesignSystem.Spacing.md)
                 .background(DesignSystem.Colors.teal, in: RoundedRectangle(cornerRadius: DesignSystem.Radius.lg))
         }
-        .accessibilityHint("Saves your target and opens the home screen")
+        .disabled(programmePresetRaw.isEmpty)
+        .opacity(programmePresetRaw.isEmpty ? 0.4 : 1)
+        .accessibilityHint(
+            programmePresetRaw.isEmpty
+                ? "Choose Running, Gym, or Home first"
+                : "Saves your target and opens the home screen"
+        )
     }
 }
 

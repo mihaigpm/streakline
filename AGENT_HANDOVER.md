@@ -13,7 +13,7 @@ This document is the **fast on-ramp**. It says which file to read, where the cod
 **Streakline** is a private iPhone habit tracker. No account, no server, no paywall.
 
 1. **Setup** — pick a drink unit and a starting weekly target, optionally turn on a local reminder, then start.
-2. **Week** — three guided workouts (Day A, Day B, Day C) and a drink budget that drops by 1 every two weeks until it floors at 5.
+2. **Week** — three sessions (Hard, Strong, Long) whose template you can swap, and a drink budget that drops by 1 every two weeks until it floors at 5.
 3. **Log** — one control to add or remove a drink, one path to tick exercises and finish a workout.
 4. **Progress** — XP, nine ranks, twelve badges, dry days, and a streak of perfect weeks. All of it is computed from the weeks stored on the phone.
 
@@ -111,6 +111,8 @@ There is no feature-folder MVVM layer. Screens use `@Query` and `@State`. Rules 
 | Local reminder | `Streakline/Streakline/Utilities/NotificationManager.swift` |
 | Drink units and starting target | `Streakline/Streakline/Models/DrinkUnit.swift` |
 | Exercise copy | `Streakline/Streakline/Models/ExerciseLibrary.swift` |
+| Session templates | `Streakline/Streakline/Models/SessionTemplate.swift` |
+| Programme preset | `Streakline/Streakline/Models/ProgrammePreset.swift` |
 | Tokens | `Streakline/Streakline/Utilities/DesignSystem.swift` |
 | Unit tests | `Streakline/StreaklineTests/StreaklineCoreTests.swift` |
 
@@ -194,11 +196,17 @@ Moving the clock forward by more than one week inserts one new `AppWeek` whose `
 
 ### 6.5 Workouts
 
-Three placeholders are seeded per week: Day A (run + glute circuit), Day B (full-body weights), Day C (long run or circuit).
+Three slots are seeded per week. Their stored raw values stay `Day A` (Hard), `Day B` (Strong), and `Day C` (Long).
 
-Day C starts as a run (`dayC_wasRun == true`). Marking Day C complete flips the flag. Undo flips it back. The next week copies the flag as it stands; rollover itself does not flip it.
+`WorkoutLog.sessionTemplateRaw` picks the list. Empty means the original template: Day A is the run plus glute circuit, Day B is full-body weights, Day C is the long run or circuit. `dayC_wasRun` alternates only that empty Day C template. Marking a legacy Day C complete flips the flag. Undo flips it back. The next week copies the flag. Rollover itself does not flip it. A non-empty template does not flip the flag.
 
-"Mark as done" completes the workout even if exercises are unticked. The label becomes "Finish workout" once every exercise is ticked. The guide can finish the workout only after every exercise is ticked.
+Onboarding stores `programmePreset` (`running`, `gym`, or `home`). A new week copies that preset. Running is `easy-run`, `full-body`, `long-run`. Gym is `intervals`, `full-body`, `long-circuit`. Home is `sport`, `home-circuit`, `long-circuit`. No preset leaves the logs empty, so they stay on the legacy lists. Swapping a template changes that slot for this week only, clears its ticks and completion, and leaves the other slots alone. The next week seeds from the preset again.
+
+`logged` is "I already trained". Choosing it marks that slot complete, shows the title "Trained", and does not open the exercise guide. It still counts toward the ring of 3.
+
+Cards, the detail screen, and history show the template name. Empty logs still show Day A, Day B, and Day C.
+
+"Mark as done" completes a guided workout even if exercises are unticked. The label becomes "Finish workout" once every exercise is ticked. The guide can finish the workout only after every exercise is ticked.
 
 ### 6.6 Streak, dry days, XP
 
@@ -231,7 +239,7 @@ Do not rename the notification id without removing the pending request that uses
 
 Settings → Reset current week clears this week's completions, notes, ticked exercises, and drinks. The week row stays.
 
-Settings → Erase all data deletes every week, cancels the reminder, resets unit to pints, clears the starting budget and rank baseline, and returns to onboarding.
+Settings → Erase all data deletes every week, cancels the reminder, resets unit to pints, clears the starting budget, the programme preset, and the rank baseline, and returns to onboarding.
 
 ### 6.9 What v1 does not do
 
@@ -239,7 +247,7 @@ Settings → Erase all data deletes every week, cancels the reminder, resets uni
 - Purchases, subscriptions, or a paywall
 - Analytics or crash SDKs
 - Camera, HealthKit, Watch, widgets, iCloud sync
-- Custom workout programmes
+- An open workout builder or a fourth session
 
 ### 6.10 Copy
 
@@ -314,7 +322,7 @@ The case list is `ios-test-cases.md`. It was filled from this code, using the pu
 From `checklist.md`. Do not build these unless the task asks:
 
 - iCloud sync
-- More workout programmes
+- A fourth session or an open workout builder
 - HealthKit, Apple Watch, home screen widget
 
 ---

@@ -58,6 +58,12 @@ Dates below are the commit that put the decision in the tree, or 2026-10-13 wher
 - **Rationale:** The product asks people to drink less. That sentence is the boundary. It is not a medical-device claim, and it is not optional decoration.
 - **Reconsider if:** A lawyer replaces the wording. Replace it in both screens and on the site together.
 
+### 2026-10-27 — Three slots with templates, not a fixed circuit
+
+- **Decision:** The week stays three sessions, stored as `Day A`, `Day B`, and `Day C`. Each log stores `sessionTemplateRaw`. Empty keeps the original Day A / B / C lists, including Day C run/circuit alternation. Onboarding stores `programmePreset` (`running`, `gym`, `home`) and new weeks seed those templates. A swap changes that slot for this week only. `logged` completes the slot, titles the card "Trained", and does not open the guide.
+- **Rationale:** People keep the week and reject the fixed glute circuit. The dose stays three. A session trained somewhere else still counts. This is not a workout builder. Supersedes the fixed-plan part of 2026-06-11 — One programme. The drink budget is unchanged.
+- **Reconsider if:** A fourth slot or an open exercise builder is actually required.
+
 ---
 
 ## Engineering
