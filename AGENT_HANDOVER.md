@@ -1,7 +1,7 @@
 # Streakline — Agent Handover
 
 > **Audience:** Future AI coding agents (and human contributors) picking up this repo cold.
-> **Last updated:** 2026-10-13.
+> **Last updated:** 2026-10-27.
 > **Repo:** `streakline`. Remote: `github.com:mihaigpm/streakline.git`, branch `main`.
 
 This document is the **fast on-ramp**. It says which file to read, where the code lives, which invariants hold, and which gotchas are already paid for.
@@ -15,7 +15,7 @@ This document is the **fast on-ramp**. It says which file to read, where the cod
 1. **Setup** — pick a drink unit and a starting weekly target, optionally turn on a local reminder, then start.
 2. **Week** — three sessions (Hard, Strong, Long) whose template you can swap, and a drink budget that drops by 1 every two weeks until it floors at 5.
 3. **Log** — one control to add or remove a drink, one path to tick exercises and finish a workout.
-4. **Progress** — XP, nine ranks, twelve badges, dry days, and a streak of perfect weeks. All of it is computed from the weeks stored on the phone.
+4. **Progress** — XP, nine ranks, twelve badges, dry days, and a streak that holds on two sessions. A perfect week is still three. All of it is computed from the weeks stored on the phone, plus one shield row.
 
 **Domain / support:** `streakline.fit`, `support@streakline.fit`.
 
@@ -105,6 +105,7 @@ There is no feature-folder MVVM layer. Screens use `@Query` and `@State`. Rules 
 | History | `Streakline/Streakline/Views/HistoryView.swift` |
 | Settings | `Streakline/Streakline/Views/SettingsView.swift` |
 | Week model | `Streakline/Streakline/Models/AppWeek.swift` |
+| Shield inventory | `Streakline/Streakline/Models/ProgrammeState.swift` |
 | Week advance and home streak | `Streakline/Streakline/Utilities/WeekManager.swift` |
 | XP, ranks, badges, dry days | `Streakline/Streakline/Utilities/Gamification.swift` |
 | Reset and erase | `Streakline/Streakline/Utilities/AppDataManager.swift` |
@@ -155,7 +156,7 @@ Debug builds only. Release ignores them.
 
 ### 6.1 Where data lives
 
-SwiftData on device: `AppWeek`, `WorkoutLog`, `DrinkLog`. Preferences in `UserDefaults`:
+SwiftData on device: `AppWeek`, `WorkoutLog`, `DrinkLog`, and one `ProgrammeState` row for the shield. Preferences in `UserDefaults`:
 
 | Key | Meaning |
 |-----|---------|
@@ -210,9 +211,13 @@ Cards, the detail screen, and history show the template name. Empty logs still s
 
 ### 6.6 Streak, dry days, XP
 
-**Home streak** is the run of fully complete weeks **before** the current week. The current week never counts, even when it is already perfect. A week is fully complete at 3 workouts and drinks at or under budget. The pill is hidden at 0.
+**Home streak** counts past weeks only. The open week never counts. A past week counts when it `holdsStreak` (2 sessions and drinks at or under budget) or when `shieldUsed` is true. A missing week number stops the run. The pill is hidden at 0.
 
-**Best streak** on Progress can include the current week.
+**Perfect week** (`isPerfectWeek`, and `isFullyComplete`) is still 3 sessions and drinks at or under budget. That is the only +150 XP and the only perfect-week badge. Two sessions do not get it.
+
+**Shield.** One `ProgrammeState` row, created when the first shield is earned. Cap is 1. It is not for sale. `WeekManager` settles it only when a week rolls over, for the week that just ended. A perfect week earns one shield when the inventory is empty. A week that does not hold the streak spends it, sets `shieldUsed`, and that week still counts. The same week never earns and spends. The open week does not spend. Home shows a quiet "1 shield" caption while one is available.
+
+**Best streak** on Progress uses the same hold-or-shield rule and can include the current week once that week qualifies.
 
 **Dry days** are fully elapsed days in that week with no drink logged. Today is never dry. Future days are not dry.
 
@@ -239,7 +244,7 @@ Do not rename the notification id without removing the pending request that uses
 
 Settings → Reset current week clears this week's completions, notes, ticked exercises, and drinks. The week row stays.
 
-Settings → Erase all data deletes every week, cancels the reminder, resets unit to pints, clears the starting budget, the programme preset, and the rank baseline, and returns to onboarding.
+Settings → Erase all data deletes every week and the shield row, cancels the reminder, resets unit to pints, clears the starting budget, the programme preset, and the rank baseline, and returns to onboarding.
 
 ### 6.9 What v1 does not do
 
@@ -269,7 +274,7 @@ The case list is `ios-test-cases.md`. It was filled from this code, using the pu
 
 **Fresh user:** delete the app, or Settings → Erase all data. Both are enough. There is no server user to delete.
 
-**Unit tests** already cover the budget curve, week rollover and unit snapshot, best streak, notification copy, reset, and erase. Run those before inventing a UI test for the same math.
+**Unit tests** already cover the budget curve, week rollover and unit snapshot, the hold-or-shield streak, shield earn and spend, best streak, notification copy, reset, and erase. Run those before inventing a UI test for the same math.
 
 **Real device** for notification permission and a delivered reminder. Simulator green does not prove that. There is no camera and no StoreKit path to prove.
 

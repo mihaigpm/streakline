@@ -150,7 +150,8 @@ enum Gamification {
 
     // MARK: - Streaks
 
-    /// Longest run of consecutive fully-complete weeks.
+    /// Longest run of weeks that held the streak or spent a shield.
+    /// A gap in week numbers breaks the run. The open week counts once it qualifies, which Home's streak does not.
     static func bestStreak(in weeks: [AppWeek]) -> Int {
         let sorted = weeks.sorted { $0.weekNumber < $1.weekNumber }
         var best = 0
@@ -158,7 +159,7 @@ enum Gamification {
         var lastNumber: Int?
         for week in sorted {
             let consecutive = lastNumber.map { week.weekNumber == $0 + 1 } ?? true
-            run = week.isFullyComplete ? (consecutive ? run + 1 : 1) : 0
+            run = week.countsTowardStreak ? (consecutive ? run + 1 : 1) : 0
             best = max(best, run)
             lastNumber = week.weekNumber
         }
@@ -202,12 +203,12 @@ enum Gamification {
             ),
             Badge(
                 id: "streak-2", name: "Back to Back",
-                detail: "2 perfect weeks in a row",
+                detail: "2 weeks that held the streak",
                 symbol: "flame", isUnlocked: bestStreak >= 2
             ),
             Badge(
                 id: "streak-4", name: "Month Strong",
-                detail: "4 perfect weeks in a row",
+                detail: "4 weeks that held the streak",
                 symbol: "flame.fill", isUnlocked: bestStreak >= 4
             ),
             Badge(

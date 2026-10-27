@@ -10,7 +10,7 @@ final class StreaklineCoreTests: XCTestCase {
     override func setUpWithError() throws {
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         container = try ModelContainer(
-            for: AppWeek.self, WorkoutLog.self, DrinkLog.self,
+            for: AppWeek.self, WorkoutLog.self, DrinkLog.self, ProgrammeState.self,
             configurations: configuration
         )
         context = container.mainContext
@@ -339,6 +339,84 @@ final class StreaklineCoreTests: XCTestCase {
         XCTAssertGreaterThan(Gamification.summary(for: [first, second]).xp, 0)
     }
 
+    func testTwoOfThreeSessionsHoldTheStreakWithoutPerfectWeekXP() throws {
+        let start = try programmeDate(year: 2026, month: 8, day: 3)
+        let first = try advance(to: start, completing: 2)
+        let second = try advance(to: try addingDays(7, to: start), completing: 2)
+        let third = try advance(to: try addingDays(14, to: start), completing: 2)
+        let fourth = try advance(to: try addingDays(21, to: start), completing: 0)
+
+        XCTAssertEqual(fourth.weekNumber, 4)
+        XCTAssertEqual(WeekManager.streak(in: context, currentWeekNumber: fourth.weekNumber), 3)
+        XCTAssertTrue([first, second, third].allSatisfy(\.holdsStreak))
+        XCTAssertTrue([first, second, third].allSatisfy { !$0.isPerfectWeek && !$0.isFullyComplete })
+        XCTAssertEqual(try shieldsAvailable(), 0)
+
+        let summary = Gamification.summary(for: [first, second, third], now: first.startDate)
+        XCTAssertEqual(summary.totalWorkouts, 6)
+        XCTAssertEqual(summary.totalDryDays, 0)
+        XCTAssertEqual(summary.xp, 300)
+        XCTAssertEqual(Gamification.bestStreak(in: [first, second, third]), 3)
+        XCTAssertFalse(summary.badges.first { $0.id == "perfect-week" }?.isUnlocked ?? true)
+    }
+
+    func testOneSessionWithoutAShieldBreaksTheStreak() throws {
+        let start = try programmeDate(year: 2026, month: 8, day: 3)
+        let first = try advance(to: start, completing: 2)
+        let missed = try advance(to: try addingDays(7, to: start), completing: 1)
+        let third = try advance(to: try addingDays(14, to: start), completing: 2)
+        let current = try advance(to: try addingDays(21, to: start), completing: 0)
+
+        XCTAssertFalse(missed.holdsStreak)
+        XCTAssertFalse(missed.shieldUsed)
+        XCTAssertEqual(try shieldsAvailable(), 0)
+        XCTAssertEqual(WeekManager.streak(in: context, currentWeekNumber: current.weekNumber), 1)
+        XCTAssertEqual(Gamification.bestStreak(in: [first, missed, third]), 1)
+    }
+
+    func testPerfectWeekRolloverGrantsOneShield() throws {
+        let start = try programmeDate(year: 2026, month: 8, day: 3)
+        let first = try advance(to: start, completing: 3)
+        XCTAssertTrue(first.isPerfectWeek)
+        XCTAssertTrue(first.isFullyComplete)
+        XCTAssertEqual(try shieldsAvailable(), 0)
+
+        let second = try advance(to: try addingDays(7, to: start), completing: 0)
+        XCTAssertEqual(second.weekNumber, 2)
+        XCTAssertEqual(try shieldsAvailable(), 1)
+        XCTAssertFalse(first.shieldUsed)
+        XCTAssertEqual(WeekManager.streak(in: context, currentWeekNumber: second.weekNumber), 1)
+    }
+
+    func testMissedWeekSpendsShieldAndStaysOnTheStreak() throws {
+        let start = try programmeDate(year: 2026, month: 8, day: 3)
+        let first = try advance(to: start, completing: 3)
+        let missed = try advance(to: try addingDays(7, to: start), completing: 1)
+
+        XCTAssertEqual(try shieldsAvailable(), 1)
+        XCTAssertFalse(missed.shieldUsed, "An open week does not spend a shield")
+
+        let third = try advance(to: try addingDays(14, to: start), completing: 0)
+        XCTAssertTrue(missed.shieldUsed)
+        XCTAssertFalse(missed.holdsStreak)
+        XCTAssertEqual(try shieldsAvailable(), 0)
+        XCTAssertEqual(WeekManager.streak(in: context, currentWeekNumber: third.weekNumber), 2)
+        XCTAssertEqual(Gamification.bestStreak(in: [first, missed]), 2)
+    }
+
+    func testSecondPerfectWeekDoesNotRaiseShieldsAboveOne() throws {
+        let start = try programmeDate(year: 2026, month: 8, day: 3)
+        _ = try advance(to: start, completing: 3)
+        let second = try advance(to: try addingDays(7, to: start), completing: 3)
+        XCTAssertEqual(try shieldsAvailable(), 1)
+
+        let third = try advance(to: try addingDays(14, to: start), completing: 0)
+        XCTAssertEqual(third.weekNumber, 3)
+        XCTAssertTrue(second.isPerfectWeek)
+        XCTAssertFalse(second.shieldUsed)
+        XCTAssertEqual(try shieldsAvailable(), 1)
+    }
+
     func testNotificationCopyUsesTheWeeksUnit() {
         let state = NotificationManager.WeekState(
             completedWorkouts: 3,
@@ -369,11 +447,13 @@ final class StreaklineCoreTests: XCTestCase {
     func testEraseAllDeletesHistory() throws {
         let weeks = [completedWeek(number: 1), completedWeek(number: 2)]
         weeks.forEach(context.insert)
+        context.insert(ProgrammeState(shieldsAvailable: 1))
         try context.save()
 
         try AppDataManager.eraseAll(weeks, in: context)
 
         XCTAssertTrue(try context.fetch(FetchDescriptor<AppWeek>()).isEmpty)
+        XCTAssertTrue(try context.fetch(FetchDescriptor<ProgrammeState>()).isEmpty)
     }
 
     private func guidelineWeek(_ weekNumber: Int, starting: Int, unit: DrinkUnit) -> AppWeek {
@@ -384,6 +464,30 @@ final class StreaklineCoreTests: XCTestCase {
             drinkUnit: unit,
             budgetRule: .guideline
         )
+    }
+
+    private func programmeDate(year: Int, month: Int, day: Int) throws -> Date {
+        let calendar = Calendar(identifier: .iso8601)
+        return try XCTUnwrap(calendar.date(from: DateComponents(year: year, month: month, day: day)))
+    }
+
+    private func addingDays(_ days: Int, to date: Date) throws -> Date {
+        try XCTUnwrap(Calendar(identifier: .iso8601).date(byAdding: .day, value: days, to: date))
+    }
+
+    /// Opens the week that contains `date`, then marks the first `count` slots done.
+    private func advance(to date: Date, completing count: Int) throws -> AppWeek {
+        let week = WeekManager.currentWeek(in: context, now: date)
+        for day in WorkoutDay.allCases.prefix(count) {
+            try XCTUnwrap(week.log(for: day)).markCompleted()
+        }
+        try context.save()
+        return week
+    }
+
+    private func shieldsAvailable() throws -> Int {
+        let rows = try context.fetch(FetchDescriptor<ProgrammeState>())
+        return rows.first?.shieldsAvailable ?? 0
     }
 
     private func completedWeek(number: Int) -> AppWeek {

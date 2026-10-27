@@ -21,7 +21,7 @@ Filled from the current code (routing, onboarding, home, workouts, progress, his
 | [mobile-testing](https://github.com/petrkindlmann/qa-skills/blob/main/skills/mobile-testing/SKILL.md) | Grant and deny, cold start, background, poor network. Deep links and biometrics are omitted because the app has neither. |
 | [qa-test-planner](https://github.com/softaworks/agent-toolkit/blob/main/skills/qa-test-planner/SKILL.md) | One behavior per case. Preconditions, action, expected result, P0 / P1 / P2. |
 
-**Automation.** Budget math, week rollover, the unit snapshot, best streak, notification copy, reset, erase, programme-preset templates, the `logged` completion, and empty-template legacy lists belong in `Streakline/StreaklineTests/StreaklineCoreTests.swift` and already live there (XCTest). Permission dialogs, a delivered reminder, Dynamic Type, and layout stay manual. There is no XCUITest target. The app has no users and the UI is still the whole product, so a UI suite would be rewritten before it paid for itself. Do not add one until a flow stops moving and someone will fix flakes.
+**Automation.** Budget math, week rollover, the unit snapshot, the hold-or-shield streak, shield earn and spend, best streak, notification copy, reset, erase, programme-preset templates, the `logged` completion, and empty-template legacy lists belong in `Streakline/StreaklineTests/StreaklineCoreTests.swift` and already live there (XCTest). Permission dialogs, a delivered reminder, Dynamic Type, and layout stay manual. There is no XCUITest target. The app has no users and the UI is still the whole product, so a UI suite would be rewritten before it paid for itself. Do not add one until a flow stops moving and someone will fix flakes.
 
 **Not built, so not tested as if it were:** accounts, paywall, camera, HealthKit, Watch, widgets, iCloud, deep links, biometrics, push.
 
@@ -120,10 +120,11 @@ One path. If this fails, stop.
 | TC-HOME-005 | P1 | A drink logged on an earlier day and one today | Tap minus | The later log shrinks. At 0 that log is removed. |
 | TC-HOME-006 | P1 | Monday of the current week, no drinks on previous days | Read the dry-day row | Count is 0. Today is not dry. Dots for later days are future. |
 | TC-HOME-007 | P1 | Device date moved to the next day, no drinks on the day that just ended | Read the dry-day row | The elapsed day is dry (teal). The count includes it. Today is still not dry. |
-| TC-HOME-008 | P1 | No prior perfect week | Read the header | No "week streak" pill. Rank pill reads Rookie and opens Progress. |
-| TC-HOME-009 | P0 | Week 1 fully complete (3 workouts, drinks at or under budget), still inside week 1 | Read Home | Streak pill still hidden. Progress "Best streak" can already be 1. |
-| TC-HOME-010 | P0 | Week 1 fully complete, device date in the next week | Cold launch | A new week. Home streak pill reads "1 week streak". The word stays "week" at 2 and above as well. The new week’s workouts are incomplete and its drinks are 0. |
+| TC-HOME-008 | P1 | No prior week with 2 sessions under budget, and no shielded miss | Read the header | No "week streak" pill. Rank pill reads Rookie and opens Progress. No "1 shield" caption. |
+| TC-HOME-009 | P0 | Week 1 fully complete (3 workouts, drinks at or under budget), still inside week 1 | Read Home | Streak pill still hidden. No "1 shield" caption yet. Progress "Best streak" can already be 1. |
+| TC-HOME-010 | P0 | Week 1 fully complete, device date in the next week | Cold launch | A new week. Home streak pill reads "1 week streak". The word stays "week" at 2 and above as well. A quiet "1 shield" caption is under the pills. The new week’s workouts are incomplete and its drinks are 0. |
 | TC-HOME-011 | P2 | Reduce Motion on | Add a drink and finish a workout | Numbers update. The workout does not play the confetti wait; it dismisses. |
+| TC-HOME-012 | P0 | Week 1 has 2 workouts and drinks at or under budget, device date in the next week | Cold launch | Home streak pill reads "1 week streak". There is no "1 shield" caption. Progress does not add the +150 perfect-week XP. |
 
 ---
 
@@ -158,8 +159,8 @@ Unit tests cover the arithmetic. These cases check the device calendar and the c
 | TC-WEEK-002 | P0 | Starting budget 10, device date at the start of programme week 3 | Cold launch | Week 3. Budget 9. Weeks 1 and 2, if you open History, still show budget 10. |
 | TC-WEEK-003 | P1 | Starting budget 10, far enough ahead that the formula would go below 5 | Cold launch | Budget is 5, not lower. Progress can unlock "The Long Game" once a stored week has budget 5. |
 | TC-WEEK-004 | P1 | US region (first weekday Sunday) and, on another run, a Monday-first region | Note the date Home treats as the start of "this week" | It matches the device’s first weekday. It is not always Monday. |
-| TC-WEEK-005 | P1 | Week 1 perfect, clock jumps two weeks | Cold launch | `weekNumber` increases by the elapsed weeks. The skipped number is not inserted. Home streak is 0 because the weeks are not consecutive. |
-| TC-WEEK-006 | P1 | Week 1 perfect but over budget | Enter the next week | No streak pill. Three workouts alone are not a perfect week. |
+| TC-WEEK-005 | P1 | Week 1 perfect, clock jumps two weeks | Cold launch | `weekNumber` increases by the elapsed weeks. The skipped number is not inserted. Home streak is 0 because the weeks are not consecutive. The header can still say "1 shield", because the finished perfect week earned one. |
+| TC-WEEK-006 | P1 | Week 1 has 3 workouts but is over budget | Enter the next week | No streak pill. Over budget does not hold the streak. Three workouts alone are not a perfect week. |
 
 ---
 
@@ -225,6 +226,11 @@ Do not duplicate these as the only evidence. A device pass still matters for the
 | `testExistingDataDefaultsRemainCompatible` | Default start 10, week 3 budget 9, pints |
 | `testWeekRolloverPreservesBaselineAndUsesProspectiveUnit` | New week keeps the baseline, takes the current unit, leaves the old week’s unit |
 | `testConsecutiveCompletedWeeksProduceBestStreak` | Two perfect weeks, best streak 2 |
+| `testTwoOfThreeSessionsHoldTheStreakWithoutPerfectWeekXP` | Three past weeks of 2 sessions, streak 3, no +150 |
+| `testOneSessionWithoutAShieldBreaksTheStreak` | One session and no shield stops the run |
+| `testPerfectWeekRolloverGrantsOneShield` | A perfect week grants one shield on rollover |
+| `testMissedWeekSpendsShieldAndStaysOnTheStreak` | A miss spends the shield and stays on the streak |
+| `testSecondPerfectWeekDoesNotRaiseShieldsAboveOne` | A second perfect week leaves the inventory at 1 |
 | `testNotificationCopyUsesTheWeeksUnit` | Reminder body uses the week’s unit |
 | `testResetClearsCurrentWeekButPreservesWeek` | Reset clears logs and keeps the week |
-| `testEraseAllDeletesHistory` | Erase deletes the weeks |
+| `testEraseAllDeletesHistory` | Erase deletes the weeks and the shield row |

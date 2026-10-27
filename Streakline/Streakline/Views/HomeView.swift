@@ -9,6 +9,7 @@ enum HomeRoute: Hashable {
 struct HomeView: View {
     @Environment(\.modelContext) private var context
     @Query(sort: \AppWeek.weekNumber, order: .reverse) private var weeks: [AppWeek]
+    @Query private var programmeStates: [ProgrammeState]
 
     /// Highest rank index already celebrated; -1 until first launch initialises it.
     @AppStorage("lastCelebratedRankIndex") private var lastCelebratedRankIndex = -1
@@ -139,6 +140,7 @@ struct HomeView: View {
 
     private func weekHeader(_ week: AppWeek) -> some View {
         let streak = WeekManager.streak(in: context, currentWeekNumber: week.weekNumber)
+        let shieldAvailable = programmeStates.contains { $0.shieldsAvailable > 0 }
         return VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
             HStack(alignment: .top) {
                 Text("Week \(week.weekNumber)")
@@ -153,6 +155,11 @@ struct HomeView: View {
                 if streak > 0 {
                     streakPill(streak)
                 }
+            }
+            if shieldAvailable {
+                Text("1 shield")
+                    .font(DesignSystem.Typography.labelSmall)
+                    .foregroundStyle(DesignSystem.Colors.textSecondary)
             }
         }
     }
@@ -360,6 +367,6 @@ struct HomeView: View {
 
 #Preview {
     HomeView()
-        .modelContainer(for: [AppWeek.self, WorkoutLog.self, DrinkLog.self], inMemory: true)
+        .modelContainer(for: [AppWeek.self, WorkoutLog.self, DrinkLog.self, ProgrammeState.self], inMemory: true)
         .preferredColorScheme(.dark)
 }

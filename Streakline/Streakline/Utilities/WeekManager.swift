@@ -42,6 +42,7 @@ enum WeekManager {
         let calendar = Calendar.current
         let latestMonday = mondayOfWeek(for: latest.startDate)
         if thisMonday > latestMonday {
+            settleShield(for: latest, in: context)
             let weeksElapsed = calendar.dateComponents([.weekOfYear], from: latestMonday, to: thisMonday).weekOfYear ?? 1
             let newWeek = AppWeek(
                 weekNumber: latest.weekNumber + max(1, weeksElapsed),
@@ -78,8 +79,8 @@ enum WeekManager {
         }
     }
 
-    /// Number of consecutive fully-complete weeks immediately before the current week.
-    /// The current (in-progress) week never counts.
+    /// Consecutive past weeks that hold the streak or spent a shield, immediately before the current week.
+    /// The open week never counts. A missing week number stops the run.
     @MainActor
     static func streak(in context: ModelContext, currentWeekNumber: Int) -> Int {
         let descriptor = FetchDescriptor<AppWeek>(
@@ -90,10 +91,30 @@ enum WeekManager {
 
         var streak = 0
         var n = currentWeekNumber - 1
-        while n >= 1, let week = byNumber[n], week.isFullyComplete {
+        while n >= 1, let week = byNumber[n], week.countsTowardStreak {
             streak += 1
             n -= 1
         }
         return streak
+    }
+
+    /// Grants or spends one shield for the week that just ended. The open week is left alone.
+    /// A perfect week with an empty inventory earns the only shield. A miss spends it.
+    /// The same week never does both.
+    @MainActor
+    private static func settleShield(for endedWeek: AppWeek, in context: ModelContext) {
+        let stored = (try? context.fetch(FetchDescriptor<ProgrammeState>())) ?? []
+        let available = stored.first?.shieldsAvailable ?? 0
+
+        if endedWeek.isPerfectWeek && available == 0 {
+            let state = stored.first ?? ProgrammeState()
+            if stored.isEmpty {
+                context.insert(state)
+            }
+            state.shieldsAvailable = 1
+        } else if !endedWeek.holdsStreak, available > 0, !endedWeek.shieldUsed, let state = stored.first {
+            endedWeek.shieldUsed = true
+            state.shieldsAvailable = available - 1
+        }
     }
 }

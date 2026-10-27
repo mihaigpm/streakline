@@ -25,6 +25,8 @@ final class AppWeek {
     var budgetRuleRaw: String = "legacy"
     /// For Day C, tracks whether the *next* session is a run (true) or a circuit (false).
     var dayC_wasRun: Bool = true
+    /// Set when a shield covered this week as it ended. Never set on the open week.
+    var shieldUsed: Bool = false
 
     @Relationship(deleteRule: .cascade, inverse: \WorkoutLog.week)
     var workoutLogs: [WorkoutLog] = []
@@ -82,9 +84,24 @@ final class AppWeek {
         workoutLogs.filter(\.isCompleted).count
     }
 
-    /// A week is fully complete when all 3 workouts are done and drinks are within budget.
-    var isFullyComplete: Bool {
+    /// Two sessions and drinks at or under budget. Holds a streak. Does not earn perfect-week XP or a shield.
+    var holdsStreak: Bool {
+        completedWorkouts >= 2 && totalDrinks <= Double(drinkBudget)
+    }
+
+    /// Three sessions and drinks at or under budget. The only way to earn a shield, and the only perfect-week XP.
+    var isPerfectWeek: Bool {
         completedWorkouts >= 3 && totalDrinks <= Double(drinkBudget)
+    }
+
+    /// Perfect week. The name stays so older call sites still mean three sessions, not two.
+    var isFullyComplete: Bool {
+        isPerfectWeek
+    }
+
+    /// Keeps a streak when two sessions stayed under budget, or a shield was spent on a miss.
+    var countsTowardStreak: Bool {
+        holdsStreak || shieldUsed
     }
 
     /// Inclusive end date of the week (Sunday).

@@ -13,14 +13,14 @@ struct StreaklineApp: App {
     init() {
         do {
             modelContainer = try ModelContainer(
-                for: AppWeek.self, WorkoutLog.self, DrinkLog.self
+                for: AppWeek.self, WorkoutLog.self, DrinkLog.self, ProgrammeState.self
             )
             storageUnavailable = false
         } catch {
             do {
                 let fallback = ModelConfiguration(isStoredInMemoryOnly: true)
                 modelContainer = try ModelContainer(
-                    for: AppWeek.self, WorkoutLog.self, DrinkLog.self,
+                    for: AppWeek.self, WorkoutLog.self, DrinkLog.self, ProgrammeState.self,
                     configurations: fallback
                 )
                 storageUnavailable = true
