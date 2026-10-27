@@ -19,6 +19,10 @@ enum AppDataManager {
         for week in weeks {
             context.delete(week)
         }
+        let shields = try context.fetch(FetchDescriptor<ProgrammeState>())
+        for shield in shields {
+            context.delete(shield)
+        }
         try context.save()
     }
 }

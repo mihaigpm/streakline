@@ -51,3 +51,4 @@ Not in scope unless a task asks. Reasons live in `decisions.md` and the README r
 - [x] **2026-10-13** Agent on-ramp: `AGENT_HANDOVER.md`, `decisions.md`, `checklist.md`, `brand.md`, `Streakline/README.md`, `ios-test-cases.md`.
 - [x] **2026-10-13** Xcode Cloud build number: `Streakline/ci_scripts/ci_post_clone.sh` sets `10000 +` the workflow run count. `CI.md`. `project.yml` build number aligned to 4 for local archives.
 - [x] **2026-10-27** Session slots. Onboarding stores `programmePreset`. New weeks seed Hard / Strong / Long templates. A swap is one slot, this week only. "I already trained" completes that slot. An empty `sessionTemplateRaw` keeps Day A / B / C.
+- [x] **2026-10-27** Streak shield. Two sessions under budget hold the streak. Three sessions remain the perfect week. One shield, earned on rollover from a perfect week and spent on a miss. Not for sale.

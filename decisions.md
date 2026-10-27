@@ -64,6 +64,12 @@ Dates below are the commit that put the decision in the tree, or 2026-10-13 wher
 - **Rationale:** People keep the week and reject the fixed glute circuit. The dose stays three. A session trained somewhere else still counts. This is not a workout builder. Supersedes the fixed-plan part of 2026-06-11 — One programme. The drink budget is unchanged.
 - **Reconsider if:** A fourth slot or an open exercise builder is actually required.
 
+### 2026-10-27 — Two sessions hold the streak. One shield, not for sale.
+
+- **Decision:** A past week holds the streak at 2 sessions under budget, or when `shieldUsed` is set. Home still ignores the open week. `isFullyComplete` stays the 3-session perfect week and is the only +150 XP. Rolling over a perfect week grants one shield when `ProgrammeState.shieldsAvailable` is 0. Rolling over a miss spends it. Cap is 1. The shield is not sold. Supersedes the "fully complete" counting rule in 2026-06-11 — Home streak excludes the week you are in. That entry still stands on one point: Progress best streak can include the open week, now once the week holds or has spent a shield.
+- **Rationale:** One missed session was deleting long streaks and the app with them. Three of three stays the perfect week. The inventory is a SwiftData row because sync will need it later.
+- **Reconsider if:** A paid shield raises the cap. That is a later prompt, and it does not sell the first one.
+
 ---
 
 ## Engineering

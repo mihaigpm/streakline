@@ -219,6 +219,6 @@ struct SettingsView: View {
     NavigationStack {
         SettingsView()
     }
-    .modelContainer(for: [AppWeek.self, WorkoutLog.self, DrinkLog.self], inMemory: true)
+    .modelContainer(for: [AppWeek.self, WorkoutLog.self, DrinkLog.self, ProgrammeState.self], inMemory: true)
     .preferredColorScheme(.dark)
 }
