@@ -10,6 +10,15 @@ enum WorkoutDay: String, Codable, CaseIterable, Identifiable {
 
     var title: String { rawValue }
 
+    /// Role of this slot. Raw values stay "Day A", "Day B", and "Day C".
+    var slotName: String {
+        switch self {
+        case .dayA: "Hard"
+        case .dayB: "Strong"
+        case .dayC: "Long"
+        }
+    }
+
     var subtitle: String {
         switch self {
         case .dayA: "Run + glute circuit"

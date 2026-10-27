@@ -1,6 +1,6 @@
 # iOS test cases — Streakline
 
-Manual inventory for the iPhone app, checked against the code on 2026-10-13.
+Manual inventory for the iPhone app, checked against the code on 2026-10-27.
 
 This is the only living test inventory. If it drifts, say so in this header and point at the file that replaced it. Do not keep a second plan up to date beside it.
 
@@ -21,7 +21,7 @@ Filled from the current code (routing, onboarding, home, workouts, progress, his
 | [mobile-testing](https://github.com/petrkindlmann/qa-skills/blob/main/skills/mobile-testing/SKILL.md) | Grant and deny, cold start, background, poor network. Deep links and biometrics are omitted because the app has neither. |
 | [qa-test-planner](https://github.com/softaworks/agent-toolkit/blob/main/skills/qa-test-planner/SKILL.md) | One behavior per case. Preconditions, action, expected result, P0 / P1 / P2. |
 
-**Automation.** Budget math, week rollover, the unit snapshot, best streak, notification copy, reset, and erase belong in `Streakline/StreaklineTests/StreaklineCoreTests.swift` and already live there (XCTest). Permission dialogs, a delivered reminder, Dynamic Type, and layout stay manual. There is no XCUITest target. The app has no users and the UI is still the whole product, so a UI suite would be rewritten before it paid for itself. Do not add one until a flow stops moving and someone will fix flakes.
+**Automation.** Budget math, week rollover, the unit snapshot, best streak, notification copy, reset, erase, programme-preset templates, the `logged` completion, and empty-template legacy lists belong in `Streakline/StreaklineTests/StreaklineCoreTests.swift` and already live there (XCTest). Permission dialogs, a delivered reminder, Dynamic Type, and layout stay manual. There is no XCUITest target. The app has no users and the UI is still the whole product, so a UI suite would be rewritten before it paid for itself. Do not add one until a flow stops moving and someone will fix flakes.
 
 **Not built, so not tested as if it were:** accounts, paywall, camera, HealthKit, Watch, widgets, iCloud, deep links, biometrics, push.
 
@@ -69,12 +69,12 @@ One path. If this fails, stop.
 
 1. Cold launch.
    **Expected:** Onboarding. Title "Build a streak that helps". No crash. No notification prompt yet.
-2. Leave the unit on Pints (UK) and the target on 10. Read the health notice. Tap "Start my streak". Do not turn the reminder on.
-   **Expected:** Home. "Week 1". Badge "10 pints left". Whole numbers have no trailing ".0". Rank pill "Rookie". No streak pill. Ring "0 of 3 workouts". Three cards: Day A, Day B, Day C. Drink strip "0 pints this week" and "10 pints budget". Minus is disabled.
+2. Leave the unit on Pints (UK) and the target on 10. Choose Running. Read the health notice. Tap "Start my streak". Do not turn the reminder on.
+   **Expected:** "Start my streak" stays disabled until Running, Gym, or Home is chosen. Home. "Week 1". Badge "10 pints left". Whole numbers have no trailing ".0". Rank pill "Rookie". No streak pill. Ring "0 of 3 workouts". Three cards: Easy run, Full body, Long run. Not the titles Day A, Day B, Day C. Drink strip "0 pints this week" and "10 pints budget". Minus is disabled.
 3. Tap plus once.
    **Expected:** "0.5 pints this week". Badge "9.5 pints left". Today’s dry-day dot is the drank state (amber), not a dry day. The dry-day count stays 0 because today is not a finished dry day.
-4. Open Day A, tick one exercise, tap "Mark as done".
-   **Expected:** The workout completes without every exercise ticked. A success haptic, then a short celebration, then Home. Day A shows completed. Ring "1 of 3 workouts". Still no streak pill.
+4. Open Easy run, tick one exercise, tap "Mark as done".
+   **Expected:** The workout completes without every exercise ticked. A success haptic, then a short celebration, then Home. Easy run shows completed. Ring "1 of 3 workouts". Still no streak pill. The exercise list is still the run and glute circuit.
 5. Kill the app and cold launch.
    **Expected:** Home, not onboarding. The drink and the completed workout are still there.
 
@@ -104,7 +104,8 @@ One path. If this fails, stop.
 | TC-ONB-005 | P0 | Reminder toggled on, then Deny | Respond to the system prompt | Toggle returns to off. Alert "Notifications are off" says to enable them later in iOS Settings. Home still opens after Start. |
 | TC-ONB-006 | P1 | Reminder toggled on, then Allow | Start | Toggle stays on. A daily reminder exists (confirm on a real device). |
 | TC-ONB-007 | P1 | Fresh install | Read the Important block | It says adults of legal drinking age, not medical advice or treatment, and to seek medical advice if withdrawal is a risk. The card above says the target is not a medically safe limit. |
-| TC-ONB-008 | P2 | Largest Dynamic Type | Scroll setup | Title, stepper, notice, and "Start my streak" stay reachable. Nothing is stuck under the button. |
+| TC-ONB-008 | P2 | Largest Dynamic Type | Scroll setup | Title, stepper, week choices, notice, and "Start my streak" stay reachable. Nothing is stuck under the button. |
+| TC-ONB-009 | P0 | Fresh install | Read "Which week do you live?" and tap Start before choosing | Three choices: Running, Gym, Home. Start stays disabled. Choosing Home, then Start, opens Home with cards Sport, Home circuit, and Long circuit. |
 
 ---
 
@@ -130,17 +131,20 @@ One path. If this fails, stop.
 
 | ID | Pri | Preconditions | Action | Expected |
 |----|-----|---------------|--------|----------|
-| TC-WORK-001 | P0 | Home | Open Day A, Day B, Day C | Day A "Run + glute circuit" ~45 min. Day B "Full-body weights" ~50 min. Day C "Long run or circuit" ~50 min and, on a new programme, "Run week". |
-| TC-WORK-002 | P0 | Day A, not complete | Tick the circle on one exercise, leave the rest, tap "Mark as done" | Workout completes. Home shows Day A done. Ring increments by 1. |
+| TC-WORK-001 | P0 | New user, Running chosen | Open Easy run, Full body, Long run | Titles are the template names, not Day A / B / C. Easy run is the run plus glute circuit, about 45 min. Full body is the weights list, about 50 min. Long run is the long-run list, about 50 min. No "Run week" pill. |
+| TC-WORK-002 | P0 | Easy run, not complete | Tick the circle on one exercise, leave the rest, tap "Mark as done" | Workout completes. Home shows Easy run done. Ring increments by 1. |
 | TC-WORK-003 | P0 | Day not complete | Tick every exercise from the list | The bottom button label becomes "Finish workout". Tapping it completes the workout. |
 | TC-WORK-004 | P0 | Day complete | Tap Undo | Completion clears. The ring drops. Notes and ticked exercises stay (Undo only clears the completion flag and time). |
-| TC-WORK-005 | P0 | Day C showing "Run week" | Finish Day C, open Day C again | Variant reads "Circuit week". The exercise list is the circuit, not the run. |
-| TC-WORK-006 | P1 | Day C just finished as a run | Undo | Variant returns to "Run week". |
-| TC-WORK-007 | P1 | Day C flipped, then the clock moves to the next week | Open Day C on the new week | The new week keeps the flag. Rollover itself does not flip it. |
+| TC-WORK-005 | P0 | A week saved before templates, so Day C `sessionTemplateRaw` is empty and the screen shows "Run week" | Finish Day C, open Day C again | Variant reads "Circuit week". The exercise list is the circuit, not the run. A templated Long run does not flip this flag. |
+| TC-WORK-006 | P1 | Legacy Day C just finished as a run | Undo | Variant returns to "Run week". |
+| TC-WORK-007 | P1 | Legacy Day C flipped, then the clock moves to the next week, and the new week also has an empty Day C template | Open Day C on the new week | The new week keeps the flag. Rollover itself does not flip it. A week seeded from a preset does not show the run/circuit pill. |
 | TC-WORK-008 | P1 | A workout | Type a note, leave, come back | The note is still there. |
 | TC-WORK-009 | P0 | Guide opened from the first exercise | Swipe through, tap "Mark exercise done" | That exercise ticks. The list behind the guide matches. "Finish workout" appears in the guide only after every exercise is ticked, and it completes the workout. |
 | TC-WORK-010 | P1 | Guide open | Tap the close control before finishing | Guide dismisses. Workout stays incomplete if it was incomplete. Ticks already made stay. |
 | TC-WORK-011 | P2 | Reduce Motion on | Finish a workout | No confetti hold. The screen dismisses. |
+| TC-WORK-012 | P0 | New user, Home chosen | On the Strong card, open Change Strong and choose Full body | Home circuit becomes Full body. Sport and Long circuit stay. Ticks and completion on Strong clear. The other two slots do not change. The next week returns Strong to Home circuit. |
+| TC-WORK-013 | P0 | Any slot not complete | Choose "I already trained" | The slot completes in that action. The card title is "Trained". The ring moves by one. The exercise guide does not open. |
+| TC-WORK-014 | P1 | A log with an empty `sessionTemplateRaw` | Open that card | The title and exercises are still Day A, Day B, or Day C. Nothing rewrites the empty template. |
 
 ---
 
@@ -178,7 +182,7 @@ Unit tests cover the arithmetic. These cases check the device calendar and the c
 |----|-----|---------------|--------|----------|
 | TC-SET-001 | P0 | Current week is pints, with drinks logged | Change Drink unit to Units | This week’s labels stay pints. The footer says the change applies from the next week. The next week uses units. History rows keep their own unit. |
 | TC-SET-002 | P0 | Current week has completions, notes, ticks, and drinks. An older week exists | Reset current week → confirm | This week’s workouts are not complete, notes and ticks are empty, drinks are 0. The older week is unchanged. The week number does not reset to 1. |
-| TC-SET-003 | P0 | Several weeks, reminder on | Erase all data → confirm | Onboarding. After Start with defaults: Week 1, pints, budget 10, no reminder scheduled. |
+| TC-SET-003 | P0 | Several weeks, reminder on | Erase all data → confirm | Onboarding. The week choice is cleared. Start stays disabled until Running, Gym, or Home is chosen. After Start with Running and the other defaults: Week 1, pints, budget 10, cards Easy run, Full body, Long run, no reminder scheduled. |
 | TC-SET-004 | P1 | Reminder off, permission not determined | Turn Daily reminder on and allow | Time picker appears, default 08:00. A repeating reminder is scheduled. |
 | TC-SET-005 | P1 | Permission previously denied | Turn Daily reminder on | Toggle snaps off. Alert offers "Open iOS Settings". |
 | TC-SET-006 | P1 | Reminder on | Change the time, background the app, return | The pending reminder matches the new time. Body matches the week: no workouts yet mentions Day A; 1 or 2 left names the count; all 3 tells you to hold the line; over budget says to stop here. |

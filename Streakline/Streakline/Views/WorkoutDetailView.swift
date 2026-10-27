@@ -22,20 +22,27 @@ struct WorkoutDetailView: View {
     private var log: WorkoutLog? { week.log(for: day) }
     private var isCompleted: Bool { log?.isCompleted ?? false }
 
-    /// Day C alternates run/circuit based on the week flag.
+    /// Day C alternates run/circuit based on the week flag. Legacy templates only.
     private var dayCIsRun: Bool { week.dayC_wasRun }
 
-    private var exercises: [Exercise] { day.exercises(dayCIsRun: dayCIsRun) }
+    private var sessionTitle: String { log?.sessionTitle() ?? day.title }
+    private var sessionSubtitle: String { log?.sessionSubtitle() ?? day.subtitle }
+    private var sessionSymbol: String { log?.sessionSymbol() ?? day.sfSymbol }
+    private var isLoggedSession: Bool { log?.isLoggedSession ?? false }
+
+    private var exercises: [Exercise] {
+        log?.sessionExercises(dayCIsRun: dayCIsRun) ?? day.exercises(dayCIsRun: dayCIsRun)
+    }
 
     private var doneCount: Int {
         guard let log else { return 0 }
         return exercises.filter(log.isExerciseDone).count
     }
 
-    private var allExercisesDone: Bool { doneCount == exercises.count }
+    private var allExercisesDone: Bool { !exercises.isEmpty && doneCount == exercises.count }
 
     private var variantLabel: String? {
-        guard day == .dayC else { return nil }
+        guard day == .dayC, log?.usesLegacySession ?? true else { return nil }
         return dayCIsRun ? "Run week" : "Circuit week"
     }
 
@@ -46,9 +53,13 @@ struct WorkoutDetailView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: DesignSystem.Spacing.lg) {
                     header
-                    exerciseProgress
+                    if !isLoggedSession {
+                        exerciseProgress
+                    }
                     notesField
-                    exerciseList
+                    if !isLoggedSession {
+                        exerciseList
+                    }
                 }
                 .padding(.horizontal, DesignSystem.Spacing.lg)
                 .padding(.top, DesignSystem.Spacing.sm)
@@ -60,13 +71,23 @@ struct WorkoutDetailView: View {
                     .ignoresSafeArea()
             }
         }
-        .navigationTitle(day.title)
+        .navigationTitle(sessionTitle)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                SessionTemplateMenu(slot: day, selectedRaw: log?.sessionTemplateRaw ?? "") { template in
+                    selectTemplate(template)
+                }
+            }
+        }
         .safeAreaInset(edge: .bottom) { bottomBar }
         .onAppear {
             notes = log?.notes ?? ""
             #if DEBUG
-            if ProcessInfo.processInfo.arguments.contains("-open-guide"), guideContext == nil {
+            if !isLoggedSession,
+               ProcessInfo.processInfo.arguments.contains("-open-guide"),
+               guideContext == nil,
+               !exercises.isEmpty {
                 guideContext = GuideContext(startIndex: 0)
             }
             #endif
@@ -94,21 +115,24 @@ struct WorkoutDetailView: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
             HStack(spacing: DesignSystem.Spacing.md) {
-                Image(systemName: day.sfSymbol)
+                Image(systemName: sessionSymbol)
                     .font(.system(size: 34, weight: .bold))
                     .foregroundStyle(day.accentColor)
+                    .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(day.title)
+                    Text(sessionTitle)
                         .font(DesignSystem.Typography.displaySmall)
                         .foregroundStyle(DesignSystem.Colors.textPrimary)
-                    Text(day.subtitle)
+                    Text(sessionSubtitle)
                         .font(DesignSystem.Typography.bodySmall)
                         .foregroundStyle(DesignSystem.Colors.textSecondary)
                 }
             }
 
             HStack(spacing: DesignSystem.Spacing.sm) {
-                metaPill(systemName: "clock", text: day.estimatedDuration)
+                if !isLoggedSession {
+                    metaPill(systemName: "clock", text: log?.sessionDuration() ?? day.estimatedDuration)
+                }
                 if let variantLabel {
                     metaPill(systemName: "arrow.triangle.2.circlepath", text: variantLabel)
                 }
@@ -231,6 +255,7 @@ struct WorkoutDetailView: View {
             .accessibilityLabel(done ? "Mark \(exercise.name) as not done" : "Mark \(exercise.name) as done")
 
             Button {
+                guard !exercises.isEmpty else { return }
                 guideContext = GuideContext(startIndex: index)
             } label: {
                 HStack(spacing: DesignSystem.Spacing.md) {
@@ -286,7 +311,7 @@ struct WorkoutDetailView: View {
             .padding(.bottom, DesignSystem.Spacing.sm)
         } else {
             Button(action: markDone) {
-                Text(allExercisesDone ? "Finish workout" : "Mark as done")
+                Text(!isLoggedSession && allExercisesDone ? "Finish workout" : "Mark as done")
                     .font(DesignSystem.Typography.headlineLarge)
                     .foregroundStyle(DesignSystem.Colors.background)
                     .frame(maxWidth: .infinity)
@@ -325,15 +350,21 @@ struct WorkoutDetailView: View {
         markDone()
     }
 
+    private func selectTemplate(_ template: SessionTemplate) {
+        let target = ensureLog()
+        let marksLoggedComplete = template == .logged && !target.isCompleted
+        target.apply(template: template, in: week)
+        guideContext = nil
+        guard saveContext() else { return }
+        guard marksLoggedComplete else { return }
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        dismiss()
+    }
+
     private func markDone() {
         let target = ensureLog()
         target.notes = notes
-        target.markCompleted()
-
-        // Day C: flip the run/circuit flag for next time.
-        if day == .dayC {
-            week.dayC_wasRun.toggle()
-        }
+        target.markSessionCompleted(in: week)
 
         guard saveContext() else { return }
         UINotificationFeedbackGenerator().notificationOccurred(.success)
@@ -350,10 +381,7 @@ struct WorkoutDetailView: View {
     }
 
     private func undo() {
-        log?.undoCompletion()
-        if day == .dayC {
-            week.dayC_wasRun.toggle()
-        }
+        log?.undoSession(in: week)
         saveContext()
     }
 
