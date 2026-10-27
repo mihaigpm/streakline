@@ -38,9 +38,9 @@ enum AlcoholUnits {
     static func displayFloorLabel(for unit: DrinkUnit) -> String {
         let floor = displayFloor(for: unit)
         switch unit {
-        case .pints: "\(floor) pints"
-        case .units: "\(floor) units"
-        case .drinks: "\(floor) standard drinks"
+        case .pints: return "\(floor) pints"
+        case .units: return "\(floor) units"
+        case .drinks: return "\(floor) standard drinks"
         }
     }
 }
