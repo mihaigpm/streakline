@@ -52,6 +52,7 @@ enum WeekManager {
                 budgetRule: .guideline
             )
             // Carry the Day C run/circuit alternation forward.
+            // A night plan stays on the week that saved it. The new week starts from the weekend default.
             newWeek.dayC_wasRun = latest.dayC_wasRun
             context.insert(newWeek)
             seedWorkouts(for: newWeek, context: context)

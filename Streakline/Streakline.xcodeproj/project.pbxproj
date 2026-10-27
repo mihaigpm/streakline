@@ -42,6 +42,7 @@
 		E0A0EF6928BA069658C6CCED /* AppWeek.swift in Sources */ = {isa = PBXBuildFile; fileRef = 711AD7BD0E93C8FB9B3C4260 /* AppWeek.swift */; };
 		E0A1B7BD50AFD652F2AB0076 /* ProgressRingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33A17ECA8770640C864826 /* ProgressRingView.swift */; };
 		E223827967DE5DA99ABDDB65 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D942551B00777C635DEAF5 /* HomeView.swift */; };
+		C4E8A1B72D6F4093A5E1C8D1 /* PlannedNightsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4E8A1B72D6F4093A5E1C8D0 /* PlannedNightsSheet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -93,6 +94,7 @@
 		F1A2B3C4D5E6F708192A3B05 /* SessionTemplateLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTemplateLibrary.swift; sourceTree = "<group>"; };
 		F1A2B3C4D5E6F708192A3B07 /* SessionTemplateMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTemplateMenu.swift; sourceTree = "<group>"; };
 		FBD3E8F252687158CD64A1AF /* ExerciseGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseGuideView.swift; sourceTree = "<group>"; };
+		C4E8A1B72D6F4093A5E1C8D0 /* PlannedNightsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlannedNightsSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -188,6 +190,7 @@
 				65F5CE75DF9404E7B4083B7B /* HistoryView.swift */,
 				07D942551B00777C635DEAF5 /* HomeView.swift */,
 				33D203C819D4B1FFABD2C2D1 /* OnboardingView.swift */,
+				C4E8A1B72D6F4093A5E1C8D0 /* PlannedNightsSheet.swift */,
 				B6AE49A691ED8976F3C765E5 /* ProgressScreen.swift */,
 				BD396A2A0DE26A02615504C3 /* RankUpView.swift */,
 				656837E3B18215A6514EB004 /* SettingsView.swift */,
@@ -308,6 +311,7 @@
 				49C3E49B0D7A3AA5CA13CBB4 /* Gamification.swift in Sources */,
 				9A24A189CA1A135E49C2C46B /* HistoryView.swift in Sources */,
 				E223827967DE5DA99ABDDB65 /* HomeView.swift in Sources */,
+				C4E8A1B72D6F4093A5E1C8D1 /* PlannedNightsSheet.swift in Sources */,
 				651BF9BD404024269BB4F681 /* NotificationManager.swift in Sources */,
 				5A7EC6886B4D00FFE8B7F4F5 /* OnboardingView.swift in Sources */,
 				E0A1B7BD50AFD652F2AB0076 /* ProgressRingView.swift in Sources */,

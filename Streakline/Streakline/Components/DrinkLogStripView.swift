@@ -2,7 +2,7 @@ import SwiftUI
 
 /// Compact drink counter at the bottom of the home screen.
 /// Background shifts amber over 70% of budget, red when over budget.
-/// Also shows the week's dry-day dots: teal = dry, amber = drank, outlined = today.
+/// Also shows the week's dry-day dots: teal = dry, amber = drank, outlined = today, amber ring = planned.
 struct DrinkLogStripView: View {
     let total: Double
     let budget: Int
@@ -10,6 +10,7 @@ struct DrinkLogStripView: View {
     let dayStates: [Gamification.DayDrinkState]
     let onAdd: () -> Void
     let onSubtract: () -> Void
+    let onPlan: () -> Void
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var fraction: Double {
@@ -41,9 +42,18 @@ struct DrinkLogStripView: View {
                         .font(DesignSystem.Typography.headlineSmall)
                         .foregroundStyle(DesignSystem.Colors.textPrimary)
                         .contentTransition(.numericText())
-                    Text("\(budget) \(unit.pluralNoun) budget")
+                    Button(action: onPlan) {
+                        HStack(spacing: DesignSystem.Spacing.xs) {
+                            Text("\(budget) \(unit.pluralNoun) budget")
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 9, weight: .bold))
+                        }
                         .font(DesignSystem.Typography.labelSmall)
                         .foregroundStyle(DesignSystem.Colors.textSecondary)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Plan nights, \(budget) \(unit.pluralNoun) budget")
+                    .accessibilityHint("Opens the night plan")
                 }
 
                 Spacer()
@@ -76,19 +86,30 @@ struct DrinkLogStripView: View {
     }
 
     private var dryDayDots: some View {
-        HStack(spacing: DesignSystem.Spacing.sm) {
-            ForEach(Array(dayStates.enumerated()), id: \.offset) { _, state in
-                dot(for: state)
+        Button(action: onPlan) {
+            HStack(spacing: DesignSystem.Spacing.sm) {
+                ForEach(Array(dayStates.enumerated()), id: \.offset) { _, state in
+                    dot(for: state)
+                }
+                Spacer()
+                Text("\(dryCount) dry \(dryCount == 1 ? "day" : "days")")
+                    .font(DesignSystem.Typography.labelSmall)
+                    .foregroundStyle(dryCount > 0 ? DesignSystem.Colors.teal : DesignSystem.Colors.textTertiary)
+                    .contentTransition(.numericText())
             }
-            Spacer()
-            Text("\(dryCount) dry \(dryCount == 1 ? "day" : "days")")
-                .font(DesignSystem.Typography.labelSmall)
-                .foregroundStyle(dryCount > 0 ? DesignSystem.Colors.teal : DesignSystem.Colors.textTertiary)
-                .contentTransition(.numericText())
         }
+        .buttonStyle(.plain)
         .animation(reduceMotion ? nil : DesignSystem.Motion.ring, value: dryCount)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(dryCount) dry days this week")
+        .accessibilityLabel(dotsLabel)
+        .accessibilityHint("Opens the night plan")
+    }
+
+    private var dotsLabel: String {
+        let planned = dayStates.filter { $0 == .planned }.count
+        let dry = "\(dryCount) dry \(dryCount == 1 ? "day" : "days") this week"
+        guard planned > 0 else { return dry }
+        let nights = planned == 1 ? "night" : "nights"
+        return "\(dry), \(planned) planned \(nights)"
     }
 
     @ViewBuilder
@@ -104,6 +125,10 @@ struct DrinkLogStripView: View {
                 .frame(width: 9, height: 9)
         case .future:
             Circle().fill(DesignSystem.Colors.surfaceHigh).frame(width: 9, height: 9)
+        case .planned:
+            Circle()
+                .strokeBorder(DesignSystem.Colors.amber.opacity(0.85), lineWidth: 1.5)
+                .frame(width: 9, height: 9)
         }
     }
 
@@ -125,18 +150,18 @@ struct DrinkLogStripView: View {
         VStack {
             DrinkLogStripView(
                 total: 2, budget: 8, unit: .pints,
-                dayStates: [.dry, .dry, .drank, .today, .future, .future, .future],
-                onAdd: {}, onSubtract: {}
+                dayStates: [.dry, .dry, .drank, .today, .planned, .planned, .future],
+                onAdd: {}, onSubtract: {}, onPlan: {}
             )
             DrinkLogStripView(
                 total: 7, budget: 8, unit: .units,
                 dayStates: [.drank, .drank, .dry, .today, .future, .future, .future],
-                onAdd: {}, onSubtract: {}
+                onAdd: {}, onSubtract: {}, onPlan: {}
             )
             DrinkLogStripView(
                 total: 9, budget: 8, unit: .drinks,
                 dayStates: [.drank, .drank, .drank, .today, .future, .future, .future],
-                onAdd: {}, onSubtract: {}
+                onAdd: {}, onSubtract: {}, onPlan: {}
             )
         }
         .padding()
