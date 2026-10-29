@@ -71,6 +71,4 @@ Run the unit tests before every upload and follow [`docs/AppStoreSubmission.md`]
 
 ## Roadmap
 
-- iCloud sync via CloudKit + SwiftData
-- Preset workout programs beyond the built-in plan
-- HealthKit integration, Apple Watch companion, home screen widget
+The build order and a paste-ready prompt for each feature live in [`docs/agent-prompts`](docs/agent-prompts/README.md). Run one agent per file, in the order that page lists.
