@@ -675,6 +675,219 @@ final class StreaklineCoreTests: XCTestCase {
         XCTAssertEqual(receipt.kcal, 0)
     }
 
+    func testSaturdayMorningAfterFridayDrinksNamesTheOpenSlot() throws {
+        let calendar = morningCalendar
+        let start = calendar.startOfDay(for: try morningDate(year: 2026, month: 10, day: 26, hour: 8, calendar: calendar))
+        let friday = try morningDate(year: 2026, month: 10, day: 30, hour: 21, calendar: calendar)
+        let saturday = try morningDate(year: 2026, month: 10, day: 31, hour: 8, calendar: calendar)
+        XCTAssertEqual(calendar.component(.weekday, from: friday), 6)
+        XCTAssertEqual(calendar.component(.weekday, from: saturday), 7)
+
+        let week = morningWeek(number: 1, start: start)
+        attachDrink(amount: 2, on: friday, to: week)
+        attachSlot(.dayA, template: .easyRun, to: week, completedAt: friday)
+        attachSlot(.dayB, template: .fullBody, to: week)
+        attachSlot(.dayC, template: .longRun, to: week)
+
+        let line = MorningLine.sentence(week: week, now: saturday, calendar: calendar)
+        XCTAssertEqual(
+            line,
+            "You drank last night. Full body still counts, and it\u{2019}s worth more if you show up."
+        )
+        XCTAssertFalse(line?.contains("Day A") ?? true)
+        XCTAssertFalse(line?.contains("Day B") ?? true)
+    }
+
+    func testSoberMorningAndAFinishedWeekShowNoMorningLine() throws {
+        let calendar = morningCalendar
+        let start = calendar.startOfDay(for: try morningDate(year: 2026, month: 10, day: 26, hour: 8, calendar: calendar))
+        let friday = try morningDate(year: 2026, month: 10, day: 30, hour: 21, calendar: calendar)
+        let saturday = try morningDate(year: 2026, month: 10, day: 31, hour: 8, calendar: calendar)
+
+        let sober = morningWeek(number: 1, start: start)
+        attachSlot(.dayA, template: .easyRun, to: sober)
+        XCTAssertNil(MorningLine.sentence(week: sober, now: saturday, calendar: calendar))
+
+        let zero = morningWeek(number: 2, start: start)
+        attachDrink(amount: 0, on: friday, to: zero)
+        attachSlot(.dayA, template: .easyRun, to: zero)
+        XCTAssertNil(MorningLine.sentence(week: zero, now: saturday, calendar: calendar))
+
+        let done = morningWeek(number: 3, start: start)
+        attachDrink(amount: 2, on: friday, to: done)
+        attachSlot(.dayA, template: .easyRun, to: done, completedAt: saturday)
+        attachSlot(.dayB, template: .fullBody, to: done, completedAt: saturday)
+        attachSlot(.dayC, template: .longRun, to: done, completedAt: saturday)
+        XCTAssertNil(MorningLine.sentence(week: done, now: saturday, calendar: calendar))
+    }
+
+    func testMondayMorningReadsSundayDrinksFromThePreviousWeek() throws {
+        let calendar = morningCalendar
+        let previousStart = calendar.startOfDay(for: try morningDate(year: 2026, month: 10, day: 26, hour: 8, calendar: calendar))
+        let sunday = try morningDate(year: 2026, month: 11, day: 1, hour: 22, calendar: calendar)
+        let monday = try morningDate(year: 2026, month: 11, day: 2, hour: 8, calendar: calendar)
+        XCTAssertEqual(calendar.component(.weekday, from: monday), 2)
+
+        let previous = morningWeek(number: 1, start: previousStart)
+        attachDrink(amount: 1, on: sunday, to: previous)
+        let current = morningWeek(number: 2, start: calendar.startOfDay(for: monday))
+        attachSlot(.dayA, template: .easyRun, to: current)
+
+        let line = MorningLine.sentence(
+            week: current,
+            now: monday,
+            calendar: calendar,
+            previousWeek: previous
+        )
+        XCTAssertEqual(
+            line,
+            "You drank last night. Easy run still counts, and it\u{2019}s worth more if you show up."
+        )
+        XCTAssertNil(MorningLine.sentence(week: current, now: monday, calendar: calendar))
+    }
+
+    func testMorningAfterDrinksPaysEightyAndADryMorningStaysFifty() throws {
+        let calendar = morningCalendar
+        let monday = try morningDate(year: 2026, month: 10, day: 26, hour: 8, calendar: calendar)
+        let start = calendar.startOfDay(for: monday)
+        let wednesday = try morningDate(year: 2026, month: 10, day: 28, hour: 9, calendar: calendar)
+        let friday = try morningDate(year: 2026, month: 10, day: 30, hour: 21, calendar: calendar)
+        let saturday = try morningDate(year: 2026, month: 10, day: 31, hour: 8, calendar: calendar)
+
+        let week = morningWeek(number: 1, start: start)
+        attachDrink(amount: 2, on: friday, to: week)
+        attachSlot(.dayA, template: .easyRun, to: week, completedAt: wednesday)
+        attachSlot(.dayB, template: .fullBody, to: week, completedAt: saturday, exercises: ["Squat"])
+        attachSlot(.dayC, template: .longRun, to: week)
+
+        let summary = Gamification.summary(for: [week], now: start, calendar: calendar)
+        XCTAssertEqual(summary.totalDryDays, 0)
+        XCTAssertEqual(summary.totalWorkouts, 2)
+        XCTAssertFalse(week.isFullyComplete)
+        XCTAssertEqual(summary.xp, 140)
+        XCTAssertEqual(week.drinkBudget, 10)
+        XCTAssertEqual(try shieldsAvailable(), 0)
+    }
+
+    func testTwoSlotsTheMorningAfterEachEarnEighty() throws {
+        let calendar = morningCalendar
+        let start = calendar.startOfDay(for: try morningDate(year: 2026, month: 10, day: 26, hour: 8, calendar: calendar))
+        let friday = try morningDate(year: 2026, month: 10, day: 30, hour: 21, calendar: calendar)
+        let saturday = try morningDate(year: 2026, month: 10, day: 31, hour: 8, calendar: calendar)
+
+        let week = morningWeek(number: 1, start: start)
+        attachDrink(amount: 1, on: friday, to: week)
+        attachSlot(.dayA, template: .easyRun, to: week, completedAt: saturday, exercises: ["Run"])
+        attachSlot(.dayB, template: .fullBody, to: week, completedAt: saturday)
+        attachSlot(.dayC, template: .longRun, to: week)
+
+        let summary = Gamification.summary(for: [week], now: start, calendar: calendar)
+        XCTAssertEqual(summary.totalWorkouts, 2)
+        XCTAssertFalse(week.isFullyComplete)
+        XCTAssertEqual(summary.xp, 170)
+    }
+
+    func testCompletionWithoutATimeStaysAtFifty() throws {
+        let calendar = morningCalendar
+        let start = calendar.startOfDay(for: try morningDate(year: 2026, month: 10, day: 26, hour: 8, calendar: calendar))
+        let friday = try morningDate(year: 2026, month: 10, day: 30, hour: 21, calendar: calendar)
+        let saturday = try morningDate(year: 2026, month: 10, day: 31, hour: 8, calendar: calendar)
+
+        let week = morningWeek(number: 1, start: start)
+        attachDrink(amount: 2, on: friday, to: week)
+        let log = attachSlot(.dayA, template: .easyRun, to: week, completedWithoutTime: true)
+        XCTAssertTrue(log.isCompleted)
+        XCTAssertNil(log.completedAt)
+
+        let summary = Gamification.summary(for: [week], now: start, calendar: calendar)
+        XCTAssertEqual(summary.totalDryDays, 0)
+        XCTAssertEqual(summary.xp, 50)
+    }
+
+    func testUndoDropsTheMorningAfterBonus() throws {
+        let calendar = morningCalendar
+        let start = calendar.startOfDay(for: try morningDate(year: 2026, month: 10, day: 26, hour: 8, calendar: calendar))
+        let friday = try morningDate(year: 2026, month: 10, day: 30, hour: 21, calendar: calendar)
+        let saturday = try morningDate(year: 2026, month: 10, day: 31, hour: 8, calendar: calendar)
+
+        let week = morningWeek(number: 1, start: start)
+        attachDrink(amount: 2, on: friday, to: week)
+        let log = attachSlot(.dayA, template: .easyRun, to: week, completedAt: saturday)
+        XCTAssertEqual(Gamification.summary(for: [week], now: start, calendar: calendar).xp, 80)
+
+        log.undoCompletion()
+        let after = Gamification.summary(for: [week], now: start, calendar: calendar)
+        XCTAssertEqual(after.xp, 0)
+        XCTAssertEqual(after.totalWorkouts, 0)
+        XCTAssertNil(log.completedAt)
+    }
+
+    func testMondayWorkoutAfterSundayDrinksIsEighty() throws {
+        let calendar = morningCalendar
+        let previousStart = calendar.startOfDay(for: try morningDate(year: 2026, month: 10, day: 26, hour: 8, calendar: calendar))
+        let sunday = try morningDate(year: 2026, month: 11, day: 1, hour: 22, calendar: calendar)
+        let monday = try morningDate(year: 2026, month: 11, day: 2, hour: 8, calendar: calendar)
+
+        let previous = morningWeek(number: 1, start: previousStart)
+        attachDrink(amount: 1, on: sunday, to: previous)
+        let current = morningWeek(number: 2, start: calendar.startOfDay(for: monday))
+        attachSlot(.dayA, template: .easyRun, to: current, completedAt: monday)
+
+        let summary = Gamification.summary(for: [previous, current], now: previousStart, calendar: calendar)
+        XCTAssertEqual(summary.totalDryDays, 0)
+        XCTAssertEqual(summary.xp, 80)
+    }
+
+    func testPerfectWeekBonusStaysOneHundredFifty() throws {
+        let calendar = morningCalendar
+        let start = calendar.startOfDay(for: try morningDate(year: 2026, month: 10, day: 26, hour: 8, calendar: calendar))
+        let wednesday = try morningDate(year: 2026, month: 10, day: 28, hour: 9, calendar: calendar)
+        let thursday = try morningDate(year: 2026, month: 10, day: 29, hour: 9, calendar: calendar)
+        let friday = try morningDate(year: 2026, month: 10, day: 30, hour: 21, calendar: calendar)
+        let saturday = try morningDate(year: 2026, month: 10, day: 31, hour: 8, calendar: calendar)
+
+        let week = morningWeek(number: 1, start: start)
+        attachDrink(amount: 2, on: friday, to: week)
+        attachSlot(.dayA, template: .easyRun, to: week, completedAt: wednesday)
+        attachSlot(.dayB, template: .fullBody, to: week, completedAt: thursday)
+        attachSlot(.dayC, template: .longRun, to: week, completedAt: saturday)
+
+        XCTAssertTrue(week.isFullyComplete)
+        XCTAssertEqual(week.drinkBudget, 10)
+        let summary = Gamification.summary(for: [week], now: start, calendar: calendar)
+        XCTAssertEqual(summary.totalDryDays, 0)
+        XCTAssertEqual(summary.xp, 330)
+    }
+
+    func testDrinksOverBudgetLeaveTheCompletedWorkout() throws {
+        let calendar = morningCalendar
+        let saturday = try morningDate(year: 2026, month: 10, day: 31, hour: 8, calendar: calendar)
+        let start = calendar.startOfDay(for: try morningDate(year: 2026, month: 10, day: 26, hour: 8, calendar: calendar))
+        let week = morningWeek(number: 1, start: start)
+        let log = attachSlot(.dayA, template: .easyRun, to: week, completedAt: saturday, exercises: ["Run"])
+        let completedAt = try XCTUnwrap(log.completedAt)
+        let logsBefore = week.workoutLogs.count
+
+        // HomeView.addDrink only grows a DrinkLog. Repeat that write until the week is over budget.
+        let step = week.drinkUnit.step
+        var logged = 0.0
+        while logged <= Double(week.drinkBudget) {
+            if let todays = week.drinkLogs.first(where: { calendar.isDate($0.date, inSameDayAs: saturday) }) {
+                todays.amount += step
+            } else {
+                attachDrink(amount: step, on: saturday, to: week)
+            }
+            logged += step
+        }
+
+        XCTAssertTrue(week.isOverBudget)
+        XCTAssertTrue(log.isCompleted)
+        XCTAssertEqual(log.completedAt, completedAt)
+        XCTAssertEqual(log.completedExercises, ["Run"])
+        XCTAssertEqual(week.workoutLogs.count, logsBefore)
+        XCTAssertEqual(Gamification.summary(for: [week], now: start, calendar: calendar).totalWorkouts, 1)
+    }
+
     func testNotificationCopyUsesTheWeeksUnit() {
         let state = NotificationManager.WeekState(
             completedWorkouts: 3,
@@ -803,6 +1016,66 @@ final class StreaklineCoreTests: XCTestCase {
     private func shieldsAvailable() throws -> Int {
         let rows = try context.fetch(FetchDescriptor<ProgrammeState>())
         return rows.first?.shieldsAvailable ?? 0
+    }
+
+    private var morningCalendar: Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = Locale(identifier: "en_GB")
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        calendar.firstWeekday = 2
+        return calendar
+    }
+
+    private func morningDate(year: Int, month: Int, day: Int, hour: Int, calendar: Calendar) throws -> Date {
+        var components = DateComponents()
+        components.calendar = calendar
+        components.timeZone = calendar.timeZone
+        components.year = year
+        components.month = month
+        components.day = day
+        components.hour = hour
+        return try XCTUnwrap(calendar.date(from: components))
+    }
+
+    private func morningWeek(number: Int, start: Date) -> AppWeek {
+        let week = AppWeek(
+            weekNumber: number,
+            startDate: start,
+            startingDrinkBudget: 10,
+            drinkUnit: .pints,
+            budgetRule: .guideline
+        )
+        context.insert(week)
+        return week
+    }
+
+    private func attachDrink(amount: Double, on date: Date, to week: AppWeek) {
+        let log = DrinkLog(date: date, amount: amount)
+        log.week = week
+        week.drinkLogs.append(log)
+        context.insert(log)
+    }
+
+    @discardableResult
+    private func attachSlot(
+        _ day: WorkoutDay,
+        template: SessionTemplate,
+        to week: AppWeek,
+        completedAt: Date? = nil,
+        completedWithoutTime: Bool = false,
+        exercises: [String] = []
+    ) -> WorkoutLog {
+        let log = WorkoutLog(
+            workoutDay: day,
+            isCompleted: completedAt != nil || completedWithoutTime,
+            sessionTemplateRaw: template.rawValue
+        )
+        log.completedAt = completedAt
+        log.completedExercises = exercises
+        log.week = week
+        week.workoutLogs.append(log)
+        context.insert(log)
+        return log
     }
 
     private func completedWeek(number: Int) -> AppWeek {

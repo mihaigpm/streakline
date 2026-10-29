@@ -1,6 +1,6 @@
 # iOS test cases — Streakline
 
-Manual inventory for the iPhone app, checked against the code on 2026-10-27.
+Manual inventory for the iPhone app, checked against the code on 2026-10-29.
 
 This is the only living test inventory. If it drifts, say so in this header and point at the file that replaced it. Do not keep a second plan up to date beside it.
 
@@ -21,7 +21,7 @@ Filled from the current code (routing, onboarding, home, workouts, progress, his
 | [mobile-testing](https://github.com/petrkindlmann/qa-skills/blob/main/skills/mobile-testing/SKILL.md) | Grant and deny, cold start, background, poor network. Deep links and biometrics are omitted because the app has neither. |
 | [qa-test-planner](https://github.com/softaworks/agent-toolkit/blob/main/skills/qa-test-planner/SKILL.md) | One behavior per case. Preconditions, action, expected result, P0 / P1 / P2. |
 
-**Automation.** Budget math, week rollover, the unit snapshot, the hold-or-shield streak, shield earn and spend, best streak, notification copy, reset, erase, programme-preset templates, the `logged` completion, and empty-template legacy lists belong in `Streakline/StreaklineTests/StreaklineCoreTests.swift` and already live there (XCTest). Permission dialogs, a delivered reminder, Dynamic Type, and layout stay manual. There is no XCUITest target. The app has no users and the UI is still the whole product, so a UI suite would be rewritten before it paid for itself. Do not add one until a flow stops moving and someone will fix flakes.
+**Automation.** Budget math, week rollover, the unit snapshot, the hold-or-shield streak, shield earn and spend, best streak, the morning line, the +80 workout the morning after drinks, notification copy, reset, erase, programme-preset templates, the `logged` completion, and empty-template legacy lists belong in `Streakline/StreaklineTests/StreaklineCoreTests.swift` and already live there (XCTest). Permission dialogs, a delivered reminder, Dynamic Type, and layout stay manual. There is no XCUITest target. The app has no users and the UI is still the whole product, so a UI suite would be rewritten before it paid for itself. Do not add one until a flow stops moving and someone will fix flakes.
 
 **Not built, so not tested as if it were:** accounts, paywall, camera, HealthKit, Watch, widgets, iCloud, deep links, biometrics, push.
 
@@ -126,6 +126,7 @@ One path. If this fails, stop.
 | TC-HOME-011 | P2 | Reduce Motion on | Add a drink and finish a workout | Numbers update. The workout does not play the confetti wait; it dismisses. |
 | TC-HOME-012 | P0 | Week 1 has 2 workouts and drinks at or under budget, device date in the next week | Cold launch | Home streak pill reads "1 week streak". There is no "1 shield" caption. Progress does not add the +150 perfect-week XP. |
 | TC-HOME-013 | P0 | Guideline week, pints, 3 drinks logged, one slot still open | Read the drink strip, then tap the estimate | The line shows 3 pints, about £16.50, and about 660 kcal, and names the open session. At 0 drinks the line is absent. The sheet repeats the three figures and says the estimates are not a measure of the night. Over budget still shows spend and calories and does not show money saved. The session sentence disappears when all three slots are complete. |
+| TC-HOME-014 | P0 | Friday had drinks, Saturday morning, Full body still open, Easy run already done | Read under the ring | One sentence: "You drank last night. Full body still counts, and it’s worth more if you show up." VoiceOver reads it. A morning with no drinks yesterday shows no sentence. Every slot complete shows no sentence. Adding drinks past the budget leaves the finished workout finished. |
 
 ---
 
@@ -170,7 +171,7 @@ Unit tests cover the arithmetic. These cases check the device calendar and the c
 | ID | Pri | Preconditions | Action | Expected |
 |----|-----|---------------|--------|----------|
 | TC-PROG-001 | P0 | New user | Open the rank pill | Progress. 0 XP, Rookie, "150 XP to Starter". Legend lists +10 exercise, +50 workout, +15 dry day, +150 perfect week. Twelve badges, all locked. |
-| TC-PROG-002 | P1 | One exercise ticked and one workout completed | Open Progress | XP includes 10 for the tick and 50 for the workout. "First Steps" unlocks on the first completed workout. |
+| TC-PROG-002 | P1 | One exercise ticked and one workout completed on a day that does not follow drinks | Open Progress | XP includes 10 for the tick and 50 for the workout. "First Steps" unlocks on the first completed workout. A workout completed the morning after drinks counts 80 instead of 50, once for that slot. Undo removes it. |
 | TC-PROG-003 | P1 | XP crosses a rank threshold while a workout screen is open | Finish and land on Home | The rank-up cover presents on Home, not over the workout. Dismissing it means the same rank does not cover again. |
 | TC-PROG-004 | P1 | A rank was celebrated, then Undo drops XP below that rank, then the rank is earned again | Watch Home | The cover shows again for the re-earned rank. |
 | TC-PROG-005 | P1 | At least one week | Open History, tap the week | Sheet shows the week number, date span, workouts as n/3, and drinks over that week’s own budget and unit. |
@@ -239,3 +240,9 @@ Do not duplicate these as the only evidence. A device pass still matters for the
 | `testOverBudgetReceiptHasZeroUnspentAndNoSaving` | Over budget keeps spend and calories, unspent is 0, and the line does not say saved |
 | `testSessionClauseDisappearsWhenEverySlotIsComplete` | The session clause is omitted when all three slots are done |
 | `testOneOpenSlotAfterADrinkNamesTheNextWeekday` | One open long run after Friday drinks says Saturday's long run is still open |
+| `testSaturdayMorningAfterFridayDrinksNamesTheOpenSlot` | Saturday after Friday drinks names the open template, not Day A |
+| `testSoberMorningAndAFinishedWeekShowNoMorningLine` | A dry morning and a finished week show no sentence |
+| `testMorningAfterDrinksPaysEightyAndADryMorningStaysFifty` | The morning after drinks is 80, a dry morning stays 50 |
+| `testUndoDropsTheMorningAfterBonus` | Undo removes the 80 because XP is derived |
+| `testPerfectWeekBonusStaysOneHundredFifty` | Perfect week stays +150 when one slot was 80 |
+| `testDrinksOverBudgetLeaveTheCompletedWorkout` | Drinks past the budget leave the workout completed |

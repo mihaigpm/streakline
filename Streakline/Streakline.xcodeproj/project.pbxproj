@@ -44,6 +44,7 @@
 		E223827967DE5DA99ABDDB65 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D942551B00777C635DEAF5 /* HomeView.swift */; };
 		C4E8A1B72D6F4093A5E1C8D1 /* PlannedNightsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4E8A1B72D6F4093A5E1C8D0 /* PlannedNightsSheet.swift */; };
 		D5E6F708192A3B4C5D6E7F81 /* ReceiptEstimates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E6F708192A3B4C5D6E7F80 /* ReceiptEstimates.swift */; };
+		A7B1C2D3E4F5061728394A5C /* MorningLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B1C2D3E4F5061728394A5B /* MorningLine.swift */; };
 		D5E6F708192A3B4C5D6E7F83 /* ReceiptSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E6F708192A3B4C5D6E7F82 /* ReceiptSheet.swift */; };
 /* End PBXBuildFile section */
 
@@ -98,6 +99,7 @@
 		FBD3E8F252687158CD64A1AF /* ExerciseGuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseGuideView.swift; sourceTree = "<group>"; };
 		C4E8A1B72D6F4093A5E1C8D0 /* PlannedNightsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlannedNightsSheet.swift; sourceTree = "<group>"; };
 		D5E6F708192A3B4C5D6E7F80 /* ReceiptEstimates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptEstimates.swift; sourceTree = "<group>"; };
+		A7B1C2D3E4F5061728394A5B /* MorningLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MorningLine.swift; sourceTree = "<group>"; };
 		D5E6F708192A3B4C5D6E7F82 /* ReceiptSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -133,6 +135,7 @@
 				4D5F2F89BC41DC18EC041CF5 /* DrinkLog.swift */,
 				B2DC923C50CB3B31149B46F4 /* DrinkUnit.swift */,
 				D5E6F708192A3B4C5D6E7F80 /* ReceiptEstimates.swift */,
+				A7B1C2D3E4F5061728394A5B /* MorningLine.swift */,
 				02F84FF4247006E209E2C4C9 /* Exercise.swift */,
 				2D10128C5891371381AD16CF /* ExerciseLibrary.swift */,
 				F1A2B3C4D5E6F708192A3B01 /* ProgrammePreset.swift */,
@@ -319,6 +322,7 @@
 				E223827967DE5DA99ABDDB65 /* HomeView.swift in Sources */,
 				C4E8A1B72D6F4093A5E1C8D1 /* PlannedNightsSheet.swift in Sources */,
 				D5E6F708192A3B4C5D6E7F81 /* ReceiptEstimates.swift in Sources */,
+				A7B1C2D3E4F5061728394A5C /* MorningLine.swift in Sources */,
 				D5E6F708192A3B4C5D6E7F83 /* ReceiptSheet.swift in Sources */,
 				651BF9BD404024269BB4F681 /* NotificationManager.swift in Sources */,
 				5A7EC6886B4D00FFE8B7F4F5 /* OnboardingView.swift in Sources */,

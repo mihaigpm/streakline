@@ -112,6 +112,7 @@ There is no feature-folder MVVM layer. Screens use `@Query` and `@State`. Rules 
 | Local reminder | `Streakline/Streakline/Utilities/NotificationManager.swift` |
 | Drink units and starting target | `Streakline/Streakline/Models/DrinkUnit.swift` |
 | Drink receipt | `Streakline/Streakline/Models/ReceiptEstimates.swift` |
+| Morning line | `Streakline/Streakline/Models/MorningLine.swift` |
 | Exercise copy | `Streakline/Streakline/Models/ExerciseLibrary.swift` |
 | Session templates | `Streakline/Streakline/Models/SessionTemplate.swift` |
 | Programme preset | `Streakline/Streakline/Models/ProgrammePreset.swift` |
@@ -230,8 +231,11 @@ Cards, the detail screen, and history show the template name. Empty logs still s
 |-------|----|
 | Exercise ticked | +10 |
 | Workout completed | +50 |
+| Workout completed the calendar day after drinks | +80 |
 | Dry day | +15 |
 | Fully complete week | +150 |
+
+The morning line sits under the home ring when yesterday’s logged drinks are above 0 and a slot is still open. Monday reads Sunday from the previous week. The name is the first incomplete slot’s template title, in Day A, B, C order, the same title the card shows. A dry morning or a week with every slot complete shows nothing. The extra 30 is derived from `completedAt` and the drink logs, once per slot, not per exercise. A completion with no `completedAt` stays at 50. Undo drops the bonus. Going over budget does not clear a workout. The line awards no drinks, budget, or shield. It is not a health, sleep, or impairment claim. Notification copy is unchanged. The progress legend still lists the base +50.
 
 Ranks: Rookie 0, Starter 150, Consistent 400, Committed 800, Disciplined 1400, Relentless 2200, Machine 3200, Unbreakable 4500, Legend 6000.
 
