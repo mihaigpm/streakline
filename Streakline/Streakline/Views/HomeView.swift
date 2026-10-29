@@ -245,15 +245,38 @@ struct HomeView: View {
     // MARK: - Zone 2: Progress ring
 
     private func ring(_ week: AppWeek) -> some View {
-        ProgressRingView(
-            workoutsCompleted: week.completedWorkouts,
-            workoutTarget: 3,
-            drinkFraction: week.drinkFraction,
-            isOverBudget: week.isOverBudget
-        )
-        .frame(width: 220, height: 220)
-        .frame(maxWidth: .infinity)
+        VStack(spacing: DesignSystem.Spacing.md) {
+            ProgressRingView(
+                workoutsCompleted: week.completedWorkouts,
+                workoutTarget: 3,
+                drinkFraction: week.drinkFraction,
+                isOverBudget: week.isOverBudget
+            )
+            .frame(width: 220, height: 220)
+            .frame(maxWidth: .infinity)
+
+            if let line = morningLine(for: week) {
+                Text(line)
+                    .font(DesignSystem.Typography.bodySmall)
+                    .foregroundStyle(DesignSystem.Colors.textSecondary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.85)
+                    .frame(maxWidth: .infinity)
+                    .accessibilityLabel(line)
+            }
+        }
         .padding(.vertical, DesignSystem.Spacing.sm)
+    }
+
+    /// Yesterday’s drinks. On Monday those drinks may be on the previous week.
+    private func morningLine(for week: AppWeek) -> String? {
+        MorningLine.sentence(
+            week: week,
+            now: .now,
+            calendar: .current,
+            previousWeek: weeks.first { $0.weekNumber == week.weekNumber - 1 }
+        )
     }
 
     // MARK: - Zone 3: Workout cards

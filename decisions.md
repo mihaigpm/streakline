@@ -76,6 +76,12 @@ Dates below are the commit that put the decision in the tree, or 2026-10-13 wher
 - **Rationale:** The number worth a screenshot is what the night cost. It has to look like an estimate, not a till receipt and not a blood-alcohol figure.
 - **Reconsider if:** Those averages stop being a fair planning figure, or the disclosure sentence has to change.
 
+### 2026-10-29 — The morning after drinks is worth more XP, and the workout stays
+
+- **Decision:** Home shows one sentence under the ring when yesterday’s drinks are above 0 and a slot is still open. The name is that slot’s template title. A completion whose `completedAt` is the next calendar day is +80 instead of +50, once per slot, derived in `Gamification`. No `completedAt` stays at +50. Perfect-week +150 is unchanged. Going over budget does not clear a workout. The line awards no drinks, budget, or shield, and it is not a health claim.
+- **Rationale:** Showing up the morning after is the rep that matters. A stored bonus would survive an undo. The sentence has to disappear when the morning was dry or the week is already done.
+- **Reconsider if:** The bonus should depend on something other than the calendar day before `completedAt`.
+
 ---
 
 ## Engineering

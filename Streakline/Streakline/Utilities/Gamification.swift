@@ -6,6 +6,7 @@ import Foundation
 /// XP events:
 ///   +10  per exercise ticked off
 ///   +50  per workout completed
+///   +80  when that completion's calendar day follows a day with drinks, using `completedAt`
 ///   +15  per dry day (a fully elapsed day with no drinks logged)
 ///   +150 per fully complete week
 enum Gamification {
@@ -77,17 +78,17 @@ enum Gamification {
         }
     }
 
-    static func summary(for weeks: [AppWeek], now: Date = .now) -> Summary {
+    static func summary(for weeks: [AppWeek], now: Date = .now, calendar: Calendar = .current) -> Summary {
         let totalWorkouts = weeks.reduce(0) { $0 + $1.completedWorkouts }
         let totalExercises = weeks.reduce(0) { sum, week in
             sum + week.workoutLogs.reduce(0) { $0 + $1.completedExercises.count }
         }
-        let totalDryDays = weeks.reduce(0) { $0 + dryDayCount(in: $1, now: now) }
+        let totalDryDays = weeks.reduce(0) { $0 + dryDayCount(in: $1, now: now, calendar: calendar) }
         let completeWeeks = weeks.filter(\.isFullyComplete).count
         let bestStreak = bestStreak(in: weeks)
 
         let xp = totalExercises * 10
-            + totalWorkouts * 50
+            + workoutXP(in: weeks, calendar: calendar)
             + totalDryDays * 15
             + completeWeeks * 150
 
@@ -121,6 +122,38 @@ enum Gamification {
                 now: now
             )
         )
+    }
+
+    // MARK: - Workout XP
+
+    /// Completed slots are +50. A slot whose `completedAt` is the calendar day after drinks is +80.
+    /// The extra 30 is once per slot. A completion with no `completedAt` stays at +50.
+    private static func workoutXP(in weeks: [AppWeek], calendar: Calendar) -> Int {
+        weeks.reduce(0) { total, week in
+            total + week.workoutLogs.reduce(0) { sum, log in
+                sum + completionXP(for: log, in: weeks, calendar: calendar)
+            }
+        }
+    }
+
+    private static func completionXP(for log: WorkoutLog, in weeks: [AppWeek], calendar: Calendar) -> Int {
+        guard log.isCompleted else { return 0 }
+        guard let completedAt = log.completedAt,
+              drankOnPreviousDay(of: completedAt, in: weeks, calendar: calendar) else {
+            return 50
+        }
+        return 80
+    }
+
+    /// True when the calendar day before `date` has logged drinks above 0, on any of `weeks`.
+    private static func drankOnPreviousDay(of date: Date, in weeks: [AppWeek], calendar: Calendar) -> Bool {
+        let start = calendar.startOfDay(for: date)
+        guard let previous = calendar.date(byAdding: .day, value: -1, to: start) else { return false }
+        return weeks.contains { week in
+            week.drinkLogs.contains { log in
+                log.amount > 0 && calendar.isDate(log.date, inSameDayAs: previous)
+            }
+        }
     }
 
     // MARK: - Dry days
