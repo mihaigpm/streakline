@@ -19,10 +19,15 @@ struct HistoryView: View {
                 ScrollView {
                     LazyVStack(spacing: DesignSystem.Spacing.md) {
                         ForEach(weeks) { week in
+                            let past = WeekSeal.isPastWeek(week, now: .now, calendar: .current)
                             Button {
                                 selectedWeek = week
                             } label: {
-                                WeekRowView(week: week, unit: week.drinkUnit)
+                                WeekRowView(
+                                    week: week,
+                                    unit: week.drinkUnit,
+                                    detailHint: past ? "Opens the week seal" : "Opens week details"
+                                )
                             }
                             .buttonStyle(.plain)
                         }
@@ -34,9 +39,21 @@ struct HistoryView: View {
         .navigationTitle("History")
         .navigationBarTitleDisplayMode(.large)
         .sheet(item: $selectedWeek) { week in
-            WeekDetailSheet(week: week, unit: week.drinkUnit)
+            if WeekSeal.isPastWeek(week, now: .now, calendar: .current) {
+                WeekSealView(seal: WeekSeal(
+                    week: week,
+                    now: .now,
+                    calendar: .current,
+                    isOpenWeek: false,
+                    shieldAvailable: false
+                ))
                 .presentationDetents([.medium, .large])
-                .presentationBackground(DesignSystem.Colors.surfaceHigh)
+                .presentationBackground(DesignSystem.Colors.background)
+            } else {
+                WeekDetailSheet(week: week, unit: week.drinkUnit)
+                    .presentationDetents([.medium, .large])
+                    .presentationBackground(DesignSystem.Colors.surfaceHigh)
+            }
         }
     }
 }

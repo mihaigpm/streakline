@@ -1,7 +1,7 @@
 # Streakline — Agent Handover
 
 > **Audience:** Future AI coding agents (and human contributors) picking up this repo cold.
-> **Last updated:** 2026-10-27.
+> **Last updated:** 2026-10-29.
 > **Repo:** `streakline`. Remote: `github.com:mihaigpm/streakline.git`, branch `main`.
 
 This document is the **fast on-ramp**. It says which file to read, where the code lives, which invariants hold, and which gotchas are already paid for.
@@ -113,6 +113,7 @@ There is no feature-folder MVVM layer. Screens use `@Query` and `@State`. Rules 
 | Drink units and starting target | `Streakline/Streakline/Models/DrinkUnit.swift` |
 | Drink receipt | `Streakline/Streakline/Models/ReceiptEstimates.swift` |
 | Morning line | `Streakline/Streakline/Models/MorningLine.swift` |
+| Sunday seal | `Streakline/Streakline/Models/WeekSeal.swift` |
 | Exercise copy | `Streakline/Streakline/Models/ExerciseLibrary.swift` |
 | Session templates | `Streakline/Streakline/Models/SessionTemplate.swift` |
 | Programme preset | `Streakline/Streakline/Models/ProgrammePreset.swift` |
@@ -237,6 +238,8 @@ Cards, the detail screen, and history show the template name. Empty logs still s
 
 The morning line sits under the home ring when yesterday’s logged drinks are above 0 and a slot is still open. Monday reads Sunday from the previous week. The name is the first incomplete slot’s template title, in Day A, B, C order, the same title the card shows. A dry morning or a week with every slot complete shows nothing. The extra 30 is derived from `completedAt` and the drink logs, once per slot, not per exercise. A completion with no `completedAt` stays at 50. Undo drops the bonus. Going over budget does not clear a workout. The line awards no drinks, budget, or shield. It is not a health, sleep, or impairment claim. Notification copy is unchanged. The progress legend still lists the base +50.
 
+On Sunday, Home shows “Seal the week” under the ring and above that sentence. `WeekSeal` is computed, not stored. It reports slots out of 3, drinks against the week’s own budget, estimated money not spent when `ReceiptEstimates.unspent` is above 0, and one outcome: perfect, held, shield used, or missed. A past week opens the same sheet from History, titled “Week N sealed”. The open week before Sunday does not. Dismissing the sheet does not write a sealed flag and does not change XP. A missed open week with a shield still available says “Shield applies when the week closes” and leaves `shieldUsed` false until rollover.
+
 Ranks: Rookie 0, Starter 150, Consistent 400, Committed 800, Disciplined 1400, Relentless 2200, Machine 3200, Unbreakable 4500, Legend 6000.
 
 A rank-up cover waits until the user is back on Home. If XP drops below the celebrated rank, the baseline drops quietly so the same rank can celebrate again.
@@ -281,7 +284,7 @@ The case list is `ios-test-cases.md`. It was filled from this code, using the pu
 
 **Fresh user:** delete the app, or Settings → Erase all data. Both are enough. There is no server user to delete.
 
-**Unit tests** already cover the budget curve, week rollover and unit snapshot, the hold-or-shield streak, shield earn and spend, best streak, notification copy, reset, and erase. Run those before inventing a UI test for the same math.
+**Unit tests** already cover the budget curve, week rollover and unit snapshot, the hold-or-shield streak, shield earn and spend, best streak, the morning line, the Sunday seal, notification copy, reset, and erase. Run those before inventing a UI test for the same math.
 
 **Real device** for notification permission and a delivered reminder. Simulator green does not prove that. There is no camera and no StoreKit path to prove.
 

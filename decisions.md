@@ -82,6 +82,12 @@ Dates below are the commit that put the decision in the tree, or 2026-10-13 wher
 - **Rationale:** Showing up the morning after is the rep that matters. A stored bonus would survive an undo. The sentence has to disappear when the morning was dry or the week is already done.
 - **Reconsider if:** The bonus should depend on something other than the calendar day before `completedAt`.
 
+### 2026-10-29 — Sunday seal is a view, not a saved close
+
+- **Decision:** `WeekSeal` reads one week: slots out of 3, drinks against that week’s budget, estimated money not spent from `ReceiptEstimates` when some budget is left, and an outcome of perfect, held, shield used, or missed. Home shows “Seal the week” only on Sunday, under the ring and above the morning line. History opens the same sheet for a past week. The open week before Sunday has no seal button. Dismissing the sheet writes nothing and does not spend a shield. A missed open week that still has a shield says “Shield applies when the week closes”.
+- **Rationale:** Closing the week should take a few seconds and must not invent a second XP path or mark a shield used before rollover.
+- **Reconsider if:** The seal needs to be shared. That is a later prompt. It does not add a share control here.
+
 ---
 
 ## Engineering
