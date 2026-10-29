@@ -111,6 +111,7 @@ There is no feature-folder MVVM layer. Screens use `@Query` and `@State`. Rules 
 | Reset and erase | `Streakline/Streakline/Utilities/AppDataManager.swift` |
 | Local reminder | `Streakline/Streakline/Utilities/NotificationManager.swift` |
 | Drink units and starting target | `Streakline/Streakline/Models/DrinkUnit.swift` |
+| Drink receipt | `Streakline/Streakline/Models/ReceiptEstimates.swift` |
 | Exercise copy | `Streakline/Streakline/Models/ExerciseLibrary.swift` |
 | Session templates | `Streakline/Streakline/Models/SessionTemplate.swift` |
 | Programme preset | `Streakline/Streakline/Models/ProgrammePreset.swift` |
@@ -188,6 +189,8 @@ Default start is 10. Weeks 1–2 stay at the start, then the target drops by 1 e
 Each week stores `drinkUnitRaw`. Changing the unit in Settings applies on the **next** week. History keeps the unit it was logged in.
 
 Steps: pints `0.5`, UK units `1`, standard drinks `1`.
+
+`ReceiptEstimates` prices the logged total in that week's unit. The price list is rough 2026 UK averages for planning, not a till receipt: a pint is £5.50 and 220 kcal, a UK unit is £2.40 and 95 kcal, a standard drink is £6.00 and 140 kcal. The home strip shows amount, estimated spend, and estimated calories once the total is above 0. "about" sits on every price and calorie. Tapping the line opens a sheet with those three figures and the sentence that they are not a measure of the night. Unspent is drinks still inside the budget times the price, and 0 when over budget. The line does not show money saved. An open slot adds its card title and "is still open". One open slot on a week that has a planned night uses the weekday after the latest drink. Several open slots have no stored day, so the clause uses the first incomplete slot in Day A, B, C order. All three complete, and the clause is omitted. Nothing new is stored.
 
 ### 6.4 Week boundary
 

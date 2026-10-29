@@ -536,6 +536,145 @@ final class StreaklineCoreTests: XCTestCase {
         XCTAssertEqual(first.plannedWednesday, 2)
     }
 
+    func testReceiptRatesAreTheUKPlanningAverages() {
+        XCTAssertEqual(ReceiptEstimates.rate(for: .pints).price, pounds(550))
+        XCTAssertEqual(ReceiptEstimates.rate(for: .pints).kcal, 220)
+        XCTAssertEqual(ReceiptEstimates.rate(for: .units).price, pounds(240))
+        XCTAssertEqual(ReceiptEstimates.rate(for: .units).kcal, 95)
+        XCTAssertEqual(ReceiptEstimates.rate(for: .drinks).price, pounds(600))
+        XCTAssertEqual(ReceiptEstimates.rate(for: .drinks).kcal, 140)
+    }
+
+    func testThreeGuidelinePintsShowAboutSixteenFiftyAndSixSixtyKcal() throws {
+        let week = try receiptWeek(unit: .pints, starting: 10, total: 3, completed: Set(WorkoutDay.allCases))
+        XCTAssertEqual(week.budgetRule, .guideline)
+        XCTAssertEqual(week.drinkBudget, 10)
+
+        let receipt = ReceiptEstimates(week: week, calendar: receiptCalendar)
+        XCTAssertEqual(receipt.spent, pounds(1650))
+        XCTAssertEqual(receipt.kcal, 660)
+        XCTAssertEqual(receipt.unspent, pounds(3850))
+        XCTAssertEqual(receipt.line, "3 pints · about £16.50 · about 660 kcal")
+        XCTAssertTrue(receipt.line.contains("about") || receipt.line.contains("est."))
+        XCTAssertEqual(
+            ReceiptEstimates.disclaimer,
+            "Estimates use average pub prices and typical drink calories. They are not a measure of your night."
+        )
+
+        let half = try receiptWeek(unit: .pints, starting: 10, total: 2.5, completed: Set(WorkoutDay.allCases))
+        let halfReceipt = ReceiptEstimates(week: half, calendar: receiptCalendar)
+        XCTAssertEqual(halfReceipt.spent, pounds(1375))
+        XCTAssertEqual(halfReceipt.kcal, 550)
+    }
+
+    func testReceiptPricesTheWeekInItsOwnUnit() throws {
+        let units = try receiptWeek(unit: .units, starting: 14, total: 3, completed: Set(WorkoutDay.allCases))
+        let unitReceipt = ReceiptEstimates(week: units, calendar: receiptCalendar)
+        XCTAssertEqual(unitReceipt.spent, pounds(720))
+        XCTAssertEqual(unitReceipt.kcal, 285)
+        XCTAssertEqual(unitReceipt.line, "3 units · about £7.20 · about 285 kcal")
+
+        let drinks = try receiptWeek(unit: .drinks, starting: 8, total: 3, completed: Set(WorkoutDay.allCases))
+        let drinkReceipt = ReceiptEstimates(week: drinks, calendar: receiptCalendar)
+        XCTAssertEqual(drinkReceipt.spent, pounds(1800))
+        XCTAssertEqual(drinkReceipt.kcal, 420)
+        XCTAssertEqual(drinkReceipt.line, "3 drinks · about £18.00 · about 420 kcal")
+    }
+
+    func testOverBudgetReceiptHasZeroUnspentAndNoSaving() throws {
+        let week = try receiptWeek(unit: .pints, starting: 6, total: 8, completed: Set(WorkoutDay.allCases))
+        XCTAssertEqual(week.drinkBudget, 6)
+        XCTAssertTrue(week.isOverBudget)
+
+        let receipt = ReceiptEstimates(week: week, calendar: receiptCalendar)
+        XCTAssertEqual(receipt.spent, pounds(4400))
+        XCTAssertEqual(receipt.kcal, 1760)
+        XCTAssertEqual(receipt.unspent, 0)
+        XCTAssertEqual(receipt.line, "8 pints · about £44.00 · about 1760 kcal")
+        XCTAssertFalse(receipt.line.localizedCaseInsensitiveContains("sav"))
+        XCTAssertTrue(receipt.spentText.contains("about") || receipt.spentText.contains("est."))
+        XCTAssertTrue(receipt.calorieText.contains("about") || receipt.calorieText.contains("est."))
+    }
+
+    func testSessionClauseDisappearsWhenEverySlotIsComplete() throws {
+        let week = try receiptWeek(
+            unit: .pints,
+            starting: 10,
+            total: 3,
+            templates: [.dayA: .easyRun, .dayB: .fullBody, .dayC: .longRun],
+            completed: Set(WorkoutDay.allCases)
+        )
+        let receipt = ReceiptEstimates(week: week, calendar: receiptCalendar)
+        XCTAssertNil(receipt.sessionClause)
+        XCTAssertFalse(receipt.line.contains("still open"))
+        XCTAssertTrue(receipt.line.contains("about £16.50"))
+    }
+
+    func testOneOpenSlotAfterADrinkNamesTheNextWeekday() throws {
+        let calendar = receiptCalendar
+        let friday = try receiptDate(year: 2026, month: 10, day: 2, calendar: calendar)
+        let monday = try XCTUnwrap(calendar.date(byAdding: .day, value: -4, to: friday))
+        let week = try receiptWeek(
+            unit: .pints,
+            starting: 10,
+            total: 3,
+            on: friday,
+            start: monday,
+            templates: [.dayA: .easyRun, .dayB: .fullBody, .dayC: .longRun],
+            completed: [.dayA, .dayB]
+        )
+        let earlier = DrinkLog(date: try receiptDate(year: 2026, month: 9, day: 28, calendar: calendar), amount: 1)
+        earlier.week = week
+        week.drinkLogs.append(earlier)
+        context.insert(earlier)
+
+        let receipt = ReceiptEstimates(week: week, calendar: calendar)
+        XCTAssertEqual(receipt.sessionClause, "Saturday's long run is still open")
+        XCTAssertTrue(receipt.line.contains("about £"))
+        XCTAssertTrue(receipt.line.contains("Saturday's long run is still open"))
+    }
+
+    func testSeveralOpenSlotsUseDayABCOrder() throws {
+        let calendar = receiptCalendar
+        let friday = try receiptDate(year: 2026, month: 10, day: 2, calendar: calendar)
+        let week = try receiptWeek(
+            unit: .pints,
+            starting: 10,
+            total: 3,
+            on: friday,
+            templates: [.dayA: .easyRun, .dayB: .fullBody, .dayC: .longRun],
+            completed: [.dayA]
+        )
+        let receipt = ReceiptEstimates(week: week, calendar: calendar)
+        XCTAssertEqual(receipt.sessionClause, "Full body is still open")
+        XCTAssertFalse(receipt.line.contains("Saturday"))
+    }
+
+    func testNoPlannedNightsOmitTheWeekday() throws {
+        let calendar = receiptCalendar
+        let friday = try receiptDate(year: 2026, month: 10, day: 2, calendar: calendar)
+        let week = try receiptWeek(
+            unit: .pints,
+            starting: 10,
+            total: 3,
+            on: friday,
+            templates: [.dayA: .easyRun, .dayB: .fullBody, .dayC: .longRun],
+            completed: [.dayA, .dayB]
+        )
+        week.saveCustomPlan([0, 0, 0, 0, 0, 0, 0])
+        let receipt = ReceiptEstimates(week: week, calendar: calendar)
+        XCTAssertEqual(receipt.sessionClause, "Long run is still open")
+        XCTAssertTrue(receipt.showsOnStrip)
+    }
+
+    func testReceiptStaysHiddenUntilThereIsADrink() throws {
+        let week = try receiptWeek(unit: .pints, starting: 10, total: 0)
+        let receipt = ReceiptEstimates(week: week, calendar: receiptCalendar)
+        XCTAssertFalse(receipt.showsOnStrip)
+        XCTAssertEqual(receipt.spent, 0)
+        XCTAssertEqual(receipt.kcal, 0)
+    }
+
     func testNotificationCopyUsesTheWeeksUnit() {
         let state = NotificationManager.WeekState(
             completedWorkouts: 3,
@@ -573,6 +712,63 @@ final class StreaklineCoreTests: XCTestCase {
 
         XCTAssertTrue(try context.fetch(FetchDescriptor<AppWeek>()).isEmpty)
         XCTAssertTrue(try context.fetch(FetchDescriptor<ProgrammeState>()).isEmpty)
+    }
+
+    private var receiptCalendar: Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = Locale(identifier: "en_GB")
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        calendar.firstWeekday = 2
+        return calendar
+    }
+
+    private func pounds(_ minorUnits: Int) -> Decimal {
+        Decimal(sign: .plus, exponent: -2, significand: Decimal(minorUnits))
+    }
+
+    private func receiptDate(year: Int, month: Int, day: Int, calendar: Calendar) throws -> Date {
+        var components = DateComponents()
+        components.year = year
+        components.month = month
+        components.day = day
+        components.hour = 12
+        return try XCTUnwrap(calendar.date(from: components))
+    }
+
+    private func receiptWeek(
+        unit: DrinkUnit,
+        starting: Int,
+        total: Double,
+        on date: Date = .now,
+        start: Date = .now,
+        templates: [WorkoutDay: SessionTemplate] = [:],
+        completed: Set<WorkoutDay> = []
+    ) throws -> AppWeek {
+        let week = AppWeek(
+            weekNumber: 1,
+            startDate: start,
+            startingDrinkBudget: starting,
+            drinkUnit: unit,
+            budgetRule: .guideline
+        )
+        context.insert(week)
+        if total > 0 {
+            let log = DrinkLog(date: date, amount: total)
+            log.week = week
+            week.drinkLogs.append(log)
+            context.insert(log)
+        }
+        for day in WorkoutDay.allCases {
+            let log = WorkoutLog(
+                workoutDay: day,
+                isCompleted: completed.contains(day),
+                sessionTemplateRaw: templates[day]?.rawValue ?? ""
+            )
+            log.week = week
+            week.workoutLogs.append(log)
+            context.insert(log)
+        }
+        return week
     }
 
     private func guidelineWeek(_ weekNumber: Int, starting: Int, unit: DrinkUnit) -> AppWeek {
