@@ -1128,6 +1128,83 @@ final class StreaklineCoreTests: XCTestCase {
         XCTAssertEqual(stayedCutting.title, "Season 1")
     }
 
+    func testMonthComparisonDropsNinePointTwoUnitsAndIgnoresTheMiddleWeek() {
+        let first = loggedWeek(number: 1, unit: .pints, drinks: 8, completedSlots: 3)
+        let middle = loggedWeek(number: 2, unit: .pints, drinks: 20, completedSlots: 3)
+        let current = loggedWeek(number: 3, unit: .pints, drinks: 4, completedSlots: 1)
+
+        let comparison = MonthComparison(weeks: [current, middle, first])
+
+        XCTAssertEqual(comparison.firstWeekUnits, 18.4, accuracy: 0.001)
+        XCTAssertEqual(comparison.currentWeekUnits, 9.2, accuracy: 0.001)
+        XCTAssertEqual(comparison.unitDelta, -9.2, accuracy: 0.001)
+        XCTAssertEqual(comparison.deltaSentence, "Down 9.2 units from week 1.")
+        XCTAssertEqual(comparison.firstWeekFigure, "18.4")
+        XCTAssertEqual(comparison.currentWeekFigure, "9.2")
+        XCTAssertEqual(comparison.firstWeekSlots, 3)
+        XCTAssertEqual(comparison.currentWeekSlots, 1)
+        XCTAssertEqual(comparison.firstWeekSlotsText, "3 of 3")
+        XCTAssertEqual(comparison.currentWeekSlotsText, "1 of 3")
+        XCTAssertTrue(comparison.showsComparison)
+        XCTAssertFalse(comparison.unitsDiffer)
+        XCTAssertEqual(first.drinkLogs.map(\.amount), [8])
+        XCTAssertEqual(current.drinkLogs.map(\.amount), [4])
+        XCTAssertEqual(middle.totalDrinks, 20)
+    }
+
+    func testMonthComparisonStaysOnTheBaselineUntilWeekTwo() {
+        XCTAssertFalse(MonthComparison(weeks: []).showsComparison)
+        XCTAssertEqual(
+            MonthComparison.baselineSentence,
+            "Your first week is the baseline. The comparison shows from week 2."
+        )
+
+        let onlyFirst = loggedWeek(number: 1, unit: .pints, drinks: 8, completedSlots: 3)
+        let baseline = MonthComparison(weeks: [onlyFirst])
+        XCTAssertFalse(baseline.showsComparison)
+        XCTAssertEqual(baseline.firstWeekUnits, 18.4, accuracy: 0.001)
+        XCTAssertEqual(baseline.currentWeekUnits, 18.4, accuracy: 0.001)
+
+        let laterOnly = loggedWeek(number: 3, unit: .pints, drinks: 4, completedSlots: 1)
+        XCTAssertFalse(MonthComparison(weeks: [laterOnly]).showsComparison)
+    }
+
+    func testMonthComparisonConvertsAMixedUnitPairIntoUKUnits() {
+        let first = loggedWeek(number: 1, unit: .pints, drinks: 8, completedSlots: 2)
+        let current = loggedWeek(number: 2, unit: .units, drinks: 10, completedSlots: 3)
+        let comparison = MonthComparison(weeks: [first, current])
+
+        XCTAssertEqual(comparison.firstWeekUnits, 18.4, accuracy: 0.001)
+        XCTAssertEqual(comparison.currentWeekUnits, 10, accuracy: 0.001)
+        XCTAssertEqual(comparison.unitDelta, -8.4, accuracy: 0.001)
+        XCTAssertEqual(comparison.deltaSentence, "Down 8.4 units from week 1.")
+        XCTAssertTrue(comparison.unitsDiffer)
+        XCTAssertEqual(
+            MonthComparison.mixedUnitFootnote,
+            "Compared in UK units so the two weeks mean the same thing."
+        )
+        XCTAssertEqual(MonthComparison.logNote, "This is your log, not a health score.")
+        XCTAssertEqual(first.drinkLogs.map(\.amount), [8])
+        XCTAssertEqual(current.drinkLogs.map(\.amount), [10])
+    }
+
+    func testMonthComparisonSaysUpTwoAndLevelWithoutATrailingZero() {
+        let dry = loggedWeek(number: 1, unit: .units, drinks: 0, completedSlots: 3)
+        let twoMore = loggedWeek(number: 2, unit: .units, drinks: 2, completedSlots: 1)
+        let rise = MonthComparison(weeks: [dry, twoMore])
+        XCTAssertEqual(rise.unitDelta, 2, accuracy: 0.001)
+        XCTAssertEqual(rise.deltaSentence, "Up 2 units from week 1.")
+        XCTAssertEqual(rise.currentWeekFigure, "2")
+        XCTAssertFalse(rise.unitsDiffer)
+
+        let sameFirst = loggedWeek(number: 1, unit: .pints, drinks: 4, completedSlots: 3)
+        let sameCurrent = loggedWeek(number: 4, unit: .pints, drinks: 4, completedSlots: 2)
+        let level = MonthComparison(weeks: [sameCurrent, sameFirst])
+        XCTAssertEqual(level.unitDelta, 0, accuracy: 0.001)
+        XCTAssertEqual(level.deltaSentence, "Level with week 1.")
+        XCTAssertTrue(level.showsComparison)
+    }
+
     #if DEBUG
     func testUITestFixturesSeedHomeProgressAndOnboarding() throws {
         defer { clearFixturePreferences() }
@@ -1245,6 +1322,30 @@ final class StreaklineCoreTests: XCTestCase {
                 budgetRule: rule
             )
         }
+    }
+
+    private func loggedWeek(number: Int, unit: DrinkUnit, drinks: Double, completedSlots: Int) -> AppWeek {
+        let week = AppWeek(
+            weekNumber: number,
+            startDate: .now,
+            startingDrinkBudget: 10,
+            drinkUnit: unit,
+            budgetRule: .guideline
+        )
+        context.insert(week)
+        if drinks > 0 {
+            let log = DrinkLog(date: .now, amount: drinks)
+            log.week = week
+            week.drinkLogs.append(log)
+            context.insert(log)
+        }
+        for day in WorkoutDay.allCases.prefix(completedSlots) {
+            let log = WorkoutLog(workoutDay: day, isCompleted: true)
+            log.week = week
+            week.workoutLogs.append(log)
+            context.insert(log)
+        }
+        return week
     }
 
     private func guidelineWeek(_ weekNumber: Int, starting: Int, unit: DrinkUnit) -> AppWeek {

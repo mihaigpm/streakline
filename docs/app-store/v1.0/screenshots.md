@@ -46,7 +46,7 @@ claim remains legible and accurate.
 
 6. **Progress worth keeping**
    - Screen: Progress
-   - Show: XP, rank, streak, and a mix of locked/unlocked badges
+   - Show: this week against week 1 in UK units, then XP, rank, streak, and a mix of locked/unlocked badges. The comparison line is the log, not a health score
    - Overlay: “Build streaks. Earn XP. Keep going.”
 
 ## Capture checklist

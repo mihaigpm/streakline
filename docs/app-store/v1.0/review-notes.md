@@ -19,7 +19,9 @@ three-day weekly workout plan with user-entered drink tracking.
    total.
 4. Open a workout, review exercise instructions, mark exercises complete, and
    complete the workout.
-5. Open Progress to view XP, rank, streak, and badge progress.
+5. Open Progress to view XP, rank, streak, and badge progress. From week 2 the
+   top card compares this week with week 1 in UK units and says the comparison
+   is the log, not a health score. Week 1 alone shows the baseline sentence.
 6. Open Settings to change the drink unit or optional reminder preference.
 
 The weekly drink target decreases by 1 every two weeks until it reaches a floor
