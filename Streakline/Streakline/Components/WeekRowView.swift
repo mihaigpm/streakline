@@ -4,6 +4,8 @@ import SwiftUI
 struct WeekRowView: View {
     let week: AppWeek
     var unit: DrinkUnit = .current
+    /// VoiceOver hint. History uses the seal for a past week and the detail sheet for the open week.
+    var detailHint: String = "Opens week details"
 
     private enum Status {
         case complete, partial, overBudget
@@ -83,6 +85,6 @@ struct WeekRowView: View {
             + "\(week.completedWorkouts) of 3 workouts, "
             + "\(unit.format(week.totalDrinks)) of \(week.drinkBudget) \(unit.pluralNoun)"
         )
-        .accessibilityHint("Opens week details")
+        .accessibilityHint(detailHint)
     }
 }

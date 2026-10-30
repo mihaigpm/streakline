@@ -927,6 +927,116 @@ final class StreaklineCoreTests: XCTestCase {
         XCTAssertTrue(try context.fetch(FetchDescriptor<ProgrammeState>()).isEmpty)
     }
 
+    func testWeekSealSelectsPerfectHeldShieldAndMissed() throws {
+        let calendar = morningCalendar
+        let perfect = try receiptWeek(unit: .pints, starting: 10, total: 3, completed: Set(WorkoutDay.allCases))
+        let perfectSeal = WeekSeal(week: perfect, now: .now, calendar: calendar, isOpenWeek: false, shieldAvailable: false)
+        XCTAssertEqual(perfectSeal.outcome, .perfect)
+        XCTAssertEqual(perfectSeal.slotsText, "3 of 3")
+        XCTAssertEqual(perfectSeal.drinksText, "3 of 10 pints")
+        XCTAssertEqual(perfectSeal.moneyNotSpent, pounds(3850))
+        XCTAssertEqual(perfectSeal.moneyNotSpentText, "about £38.50 not spent")
+        XCTAssertEqual(perfectSeal.outcomeText, "Perfect week")
+
+        let held = try receiptWeek(unit: .pints, starting: 10, total: 3, completed: [.dayA, .dayB])
+        let heldSeal = WeekSeal(week: held, now: .now, calendar: calendar, isOpenWeek: false, shieldAvailable: true)
+        XCTAssertTrue(held.holdsStreak)
+        XCTAssertFalse(held.isPerfectWeek)
+        XCTAssertEqual(heldSeal.outcome, .held)
+        XCTAssertEqual(heldSeal.slotsText, "2 of 3")
+        XCTAssertEqual(heldSeal.outcomeText, "Streak held")
+        XCTAssertNil(heldSeal.closingNote)
+
+        let shielded = try receiptWeek(unit: .pints, starting: 10, total: 1, completed: [.dayA])
+        shielded.shieldUsed = true
+        let shieldSeal = WeekSeal(week: shielded, now: .now, calendar: calendar, isOpenWeek: false, shieldAvailable: false)
+        XCTAssertFalse(shielded.holdsStreak)
+        XCTAssertEqual(shieldSeal.outcome, .shieldUsed)
+        XCTAssertEqual(shieldSeal.outcomeText, "Shield used")
+        XCTAssertNil(shieldSeal.closingNote)
+
+        let missed = try receiptWeek(unit: .pints, starting: 10, total: 1, completed: [.dayA])
+        let missedSeal = WeekSeal(week: missed, now: .now, calendar: calendar, isOpenWeek: false, shieldAvailable: false)
+        XCTAssertEqual(missedSeal.outcome, .missed)
+        XCTAssertEqual(missedSeal.outcomeText, "Missed")
+        XCTAssertEqual(missedSeal.slotsCompleted, 1)
+    }
+
+    func testWeekSealOmitsMoneyWhenNothingIsUnspent() throws {
+        let calendar = morningCalendar
+        let over = try receiptWeek(unit: .pints, starting: 6, total: 8, completed: Set(WorkoutDay.allCases))
+        let overSeal = WeekSeal(week: over, now: .now, calendar: calendar, isOpenWeek: false, shieldAvailable: false)
+        XCTAssertTrue(over.isOverBudget)
+        XCTAssertFalse(over.isPerfectWeek)
+        XCTAssertEqual(overSeal.outcome, .missed)
+        XCTAssertNil(overSeal.moneyNotSpent)
+        XCTAssertNil(overSeal.moneyNotSpentText)
+        XCTAssertEqual(ReceiptEstimates(week: over, calendar: calendar).unspent, 0)
+
+        let exact = try receiptWeek(unit: .pints, starting: 10, total: 10, completed: [.dayA, .dayB])
+        let exactSeal = WeekSeal(week: exact, now: .now, calendar: calendar, isOpenWeek: false, shieldAvailable: false)
+        XCTAssertEqual(exactSeal.outcome, .held)
+        XCTAssertNil(exactSeal.moneyNotSpent)
+        XCTAssertNil(exactSeal.moneyNotSpentText)
+
+        let dry = try receiptWeek(unit: .units, starting: 14, total: 0, completed: [.dayA, .dayB])
+        let drySeal = WeekSeal(week: dry, now: .now, calendar: calendar, isOpenWeek: false, shieldAvailable: false)
+        XCTAssertEqual(drySeal.drinksText, "0 of 14 units")
+        XCTAssertEqual(drySeal.moneyNotSpent, ReceiptEstimates(week: dry, calendar: calendar).unspent)
+        XCTAssertEqual(drySeal.moneyNotSpentText, "about £33.60 not spent")
+    }
+
+    func testSundayCanSealAndWednesdayCannot() throws {
+        let calendar = morningCalendar
+        let start = calendar.startOfDay(for: try morningDate(year: 2026, month: 10, day: 26, hour: 8, calendar: calendar))
+        let wednesday = try morningDate(year: 2026, month: 10, day: 28, hour: 12, calendar: calendar)
+        let sunday = try morningDate(year: 2026, month: 11, day: 1, hour: 18, calendar: calendar)
+        let nextMonday = try morningDate(year: 2026, month: 11, day: 2, hour: 8, calendar: calendar)
+        XCTAssertEqual(calendar.component(.weekday, from: sunday), 1)
+        XCTAssertEqual(calendar.component(.weekday, from: wednesday), 4)
+
+        XCTAssertTrue(WeekSeal.showsOnHome(now: sunday, calendar: calendar))
+        XCTAssertFalse(WeekSeal.showsOnHome(now: wednesday, calendar: calendar))
+
+        let week = try receiptWeek(unit: .pints, starting: 10, total: 2, start: start, completed: [.dayA, .dayB])
+        XCTAssertFalse(WeekSeal.isPastWeek(week, now: wednesday, calendar: calendar))
+        XCTAssertFalse(WeekSeal.isPastWeek(week, now: sunday, calendar: calendar))
+        XCTAssertTrue(WeekSeal.isPastWeek(week, now: nextMonday, calendar: calendar))
+
+        let openSunday = WeekSeal(week: week, now: sunday, calendar: calendar, isOpenWeek: true, shieldAvailable: false)
+        XCTAssertEqual(openSunday.title, "Seal this week")
+        XCTAssertEqual(openSunday.outcome, .held)
+
+        let openWednesday = WeekSeal(week: week, now: wednesday, calendar: calendar, isOpenWeek: true, shieldAvailable: false)
+        XCTAssertEqual(openWednesday.title, "Week 1 sealed")
+        XCTAssertFalse(WeekSeal.showsOnHome(now: wednesday, calendar: calendar))
+
+        let past = WeekSeal(week: week, now: sunday, calendar: calendar, isOpenWeek: false, shieldAvailable: true)
+        XCTAssertEqual(past.title, "Week 1 sealed")
+        XCTAssertNil(past.closingNote)
+    }
+
+    func testOpenMissLeavesTheShieldUntilTheWeekCloses() throws {
+        let calendar = morningCalendar
+        let sunday = try morningDate(year: 2026, month: 11, day: 1, hour: 18, calendar: calendar)
+        let week = try receiptWeek(unit: .pints, starting: 10, total: 4, completed: [.dayA])
+        XCTAssertFalse(week.holdsStreak)
+        XCTAssertFalse(week.shieldUsed)
+        let before = Gamification.summary(for: [week], now: sunday, calendar: calendar).xp
+
+        let seal = WeekSeal(week: week, now: sunday, calendar: calendar, isOpenWeek: true, shieldAvailable: true)
+        XCTAssertEqual(seal.outcome, .missed)
+        XCTAssertEqual(seal.closingNote, "Shield applies when the week closes")
+        XCTAssertEqual(seal.title, "Seal this week")
+        XCTAssertFalse(week.shieldUsed)
+        XCTAssertEqual(Gamification.summary(for: [week], now: sunday, calendar: calendar).xp, before)
+
+        let withoutShield = WeekSeal(week: week, now: sunday, calendar: calendar, isOpenWeek: true, shieldAvailable: false)
+        XCTAssertEqual(withoutShield.outcome, .missed)
+        XCTAssertNil(withoutShield.closingNote)
+        XCTAssertFalse(week.shieldUsed)
+    }
+
     private var receiptCalendar: Calendar {
         var calendar = Calendar(identifier: .gregorian)
         calendar.locale = Locale(identifier: "en_GB")

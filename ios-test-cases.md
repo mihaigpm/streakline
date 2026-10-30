@@ -21,7 +21,7 @@ Filled from the current code (routing, onboarding, home, workouts, progress, his
 | [mobile-testing](https://github.com/petrkindlmann/qa-skills/blob/main/skills/mobile-testing/SKILL.md) | Grant and deny, cold start, background, poor network. Deep links and biometrics are omitted because the app has neither. |
 | [qa-test-planner](https://github.com/softaworks/agent-toolkit/blob/main/skills/qa-test-planner/SKILL.md) | One behavior per case. Preconditions, action, expected result, P0 / P1 / P2. |
 
-**Automation.** Budget math, week rollover, the unit snapshot, the hold-or-shield streak, shield earn and spend, best streak, the morning line, the +80 workout the morning after drinks, notification copy, reset, erase, programme-preset templates, the `logged` completion, and empty-template legacy lists belong in `Streakline/StreaklineTests/StreaklineCoreTests.swift` and already live there (XCTest). Permission dialogs, a delivered reminder, Dynamic Type, and layout stay manual. There is no XCUITest target. The app has no users and the UI is still the whole product, so a UI suite would be rewritten before it paid for itself. Do not add one until a flow stops moving and someone will fix flakes.
+**Automation.** Budget math, week rollover, the unit snapshot, the hold-or-shield streak, shield earn and spend, best streak, the morning line, the +80 workout the morning after drinks, the Sunday seal’s outcome, notification copy, reset, erase, programme-preset templates, the `logged` completion, and empty-template legacy lists belong in `Streakline/StreaklineTests/StreaklineCoreTests.swift` and already live there (XCTest). Permission dialogs, a delivered reminder, Dynamic Type, and layout stay manual. There is no XCUITest target. The app has no users and the UI is still the whole product, so a UI suite would be rewritten before it paid for itself. Do not add one until a flow stops moving and someone will fix flakes.
 
 **Not built, so not tested as if it were:** accounts, paywall, camera, HealthKit, Watch, widgets, iCloud, deep links, biometrics, push.
 
@@ -127,6 +127,7 @@ One path. If this fails, stop.
 | TC-HOME-012 | P0 | Week 1 has 2 workouts and drinks at or under budget, device date in the next week | Cold launch | Home streak pill reads "1 week streak". There is no "1 shield" caption. Progress does not add the +150 perfect-week XP. |
 | TC-HOME-013 | P0 | Guideline week, pints, 3 drinks logged, one slot still open | Read the drink strip, then tap the estimate | The line shows 3 pints, about £16.50, and about 660 kcal, and names the open session. At 0 drinks the line is absent. The sheet repeats the three figures and says the estimates are not a measure of the night. Over budget still shows spend and calories and does not show money saved. The session sentence disappears when all three slots are complete. |
 | TC-HOME-014 | P0 | Friday had drinks, Saturday morning, Full body still open, Easy run already done | Read under the ring | One sentence: "You drank last night. Full body still counts, and it’s worth more if you show up." VoiceOver reads it. A morning with no drinks yesterday shows no sentence. Every slot complete shows no sentence. Adding drinks past the budget leaves the finished workout finished. |
+| TC-HOME-015 | P0 | Sunday of the open week, and on another run Wednesday of that week | Read under the ring, then open the seal | Sunday shows “Seal the week” under the ring and above the morning line when that line is also there. The sheet title is “Seal this week”. It shows slots out of 3, drinks against the week’s budget, money not spent only when some budget is left, and one outcome: Perfect week, Streak held, Shield used, or Missed. No rank, badges, or XP. Dismissing it leaves the week unchanged. Wednesday has no seal button. A missed Sunday with a shield still available says “Shield applies when the week closes” and does not mark the shield used. |
 
 ---
 
@@ -174,7 +175,8 @@ Unit tests cover the arithmetic. These cases check the device calendar and the c
 | TC-PROG-002 | P1 | One exercise ticked and one workout completed on a day that does not follow drinks | Open Progress | XP includes 10 for the tick and 50 for the workout. "First Steps" unlocks on the first completed workout. A workout completed the morning after drinks counts 80 instead of 50, once for that slot. Undo removes it. |
 | TC-PROG-003 | P1 | XP crosses a rank threshold while a workout screen is open | Finish and land on Home | The rank-up cover presents on Home, not over the workout. Dismissing it means the same rank does not cover again. |
 | TC-PROG-004 | P1 | A rank was celebrated, then Undo drops XP below that rank, then the rank is earned again | Watch Home | The cover shows again for the re-earned rank. |
-| TC-PROG-005 | P1 | At least one week | Open History, tap the week | Sheet shows the week number, date span, workouts as n/3, and drinks over that week’s own budget and unit. |
+| TC-PROG-005 | P1 | At least one week, and the tapped row is the open week | Open History, tap the open week | Sheet shows the week number, date span, workouts as n/3, and drinks over that week’s own budget and unit. It is not the Sunday seal. |
+| TC-PROG-007 | P0 | A past week exists | Open History, tap that week | The Sunday seal opens. Title is “Week N sealed”. The same four facts as Home. No share button. |
 | TC-PROG-006 | P2 | Accessibility Dynamic Type on Progress | Open Progress | Badge grid is one column. Rank and XP stay readable. |
 
 ---
@@ -246,3 +248,7 @@ Do not duplicate these as the only evidence. A device pass still matters for the
 | `testUndoDropsTheMorningAfterBonus` | Undo removes the 80 because XP is derived |
 | `testPerfectWeekBonusStaysOneHundredFifty` | Perfect week stays +150 when one slot was 80 |
 | `testDrinksOverBudgetLeaveTheCompletedWorkout` | Drinks past the budget leave the workout completed |
+| `testWeekSealSelectsPerfectHeldShieldAndMissed` | Perfect, 2-of-3 held, shield, and missed are four outcomes |
+| `testWeekSealOmitsMoneyWhenNothingIsUnspent` | Money not spent is hidden at budget and over budget |
+| `testSundayCanSealAndWednesdayCannot` | Sunday can open the seal. Wednesday cannot. A past week stays sealed in the title |
+| `testOpenMissLeavesTheShieldUntilTheWeekCloses` | An open miss with a shield does not spend it or add XP |

@@ -20,6 +20,7 @@ struct HomeView: View {
     @State private var saveErrorMessage: String?
     @State private var isPlanningNights = false
     @State private var isShowingReceipt = false
+    @State private var isShowingSeal = false
 
     private var rankIndex: Int { Gamification.summary(for: weeks).rankIndex }
 
@@ -100,6 +101,19 @@ struct HomeView: View {
                 ReceiptSheet(receipt: ReceiptEstimates(week: week))
                     .presentationDetents([.medium])
                     .presentationBackground(DesignSystem.Colors.background)
+            }
+        }
+        .sheet(isPresented: $isShowingSeal) {
+            if let week = currentWeek {
+                WeekSealView(seal: WeekSeal(
+                    week: week,
+                    now: .now,
+                    calendar: .current,
+                    isOpenWeek: true,
+                    shieldAvailable: programmeStates.contains { $0.shieldsAvailable > 0 }
+                ))
+                .presentationDetents([.medium, .large])
+                .presentationBackground(DesignSystem.Colors.background)
             }
         }
     }
@@ -254,6 +268,19 @@ struct HomeView: View {
             )
             .frame(width: 220, height: 220)
             .frame(maxWidth: .infinity)
+
+            if WeekSeal.showsOnHome(now: .now, calendar: .current) {
+                Button("Seal the week") {
+                    isShowingSeal = true
+                }
+                .font(DesignSystem.Typography.labelLarge)
+                .foregroundStyle(DesignSystem.Colors.textPrimary)
+                .padding(.horizontal, DesignSystem.Spacing.lg)
+                .padding(.vertical, DesignSystem.Spacing.sm)
+                .background(DesignSystem.Colors.surfaceHigh, in: Capsule())
+                .buttonStyle(.plain)
+                .accessibilityHint("Opens this week’s seal")
+            }
 
             if let line = morningLine(for: week) {
                 Text(line)
