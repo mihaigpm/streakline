@@ -55,6 +55,19 @@ targets:
       base:
         GENERATE_INFOPLIST_FILE: YES
         TARGETED_DEVICE_FAMILY: "1"
+  StreaklineUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: StreaklineUITests
+    dependencies:
+      - target: Streakline
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.mihaigarda.StreaklineUITests
+        TARGETED_DEVICE_FAMILY: "1"
+        TEST_TARGET_NAME: Streakline
 schemes:
   Streakline:
     build:
@@ -66,5 +79,6 @@ schemes:
       config: Debug
       targets:
         - StreaklineTests
+        - StreaklineUITests
     archive:
       config: Release

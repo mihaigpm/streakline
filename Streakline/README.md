@@ -28,17 +28,19 @@ Streakline/
 ├── project.yml                 xcodegen definition
 ├── Streakline.xcodeproj
 ├── Tools/generate_icon.py      app icon and launch mark
+├── StreaklineTests/            unit tests
+├── StreaklineUITests/          XCUITest launch fixtures and screenshot capture
 └── Streakline/
     ├── StreaklineApp.swift     entry, routing, storage failure
     ├── Info.plist
     ├── Models/                 SwiftData models, workout days, exercise text
     ├── Views/                  onboarding, home, workout, guide, progress, history, settings
     ├── Components/             ring, cards, drink strip, confetti
-    ├── Utilities/              week advance, XP, notifications, design tokens, reset
+    ├── Utilities/              week advance, XP, notifications, design tokens, reset, UI fixtures
     └── Assets.xcassets
 ```
 
-Tests are `StreaklineTests/StreaklineCoreTests.swift` (XCTest). There is no UI-test target.
+Unit tests are `StreaklineTests/StreaklineCoreTests.swift`. UI tests are `StreaklineUITests`. They launch a Debug fixture. They do not replace the unit tests.
 
 ## Generate the project
 
@@ -62,8 +64,25 @@ python3 Tools/generate_icon.py   # Pillow
 ```bash
 cd Streakline
 xcodebuild test -project Streakline.xcodeproj -scheme Streakline \
-  -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
+  -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+  -only-testing:StreaklineTests
 ```
+
+UI tests, on a booted iPhone simulator. This also attaches a screenshot of each scene to the result bundle:
+
+```bash
+xcodebuild test -project Streakline.xcodeproj -scheme Streakline \
+  -destination 'platform=iOS Simulator,name=iPhone 18 Pro' \
+  -only-testing:StreaklineUITests
+```
+
+For App Store or promo stills, tidy the status bar first, then write PNGs by enabling `STREAKLINE_SCREENSHOT_DIR` on the test action:
+
+```bash
+sh Tools/prepare_screenshot_status_bar.sh
+```
+
+Fixtures are Debug-only: `-ui-fixture home`, `workout`, `progress`, or `onboarding`. They replace the simulator’s saved weeks. Release ignores them. Final store screenshots still come from the uploaded build; use these captures to check the frame and the copy first.
 
 Manual cases: [`../ios-test-cases.md`](../ios-test-cases.md).
 
@@ -78,6 +97,7 @@ Honored only in Debug. Scheme → Run → Arguments.
 | `-open-progress` | Push Progress |
 | `-open-day "Day A"` | Push Day A, Day B, or Day C |
 | `-open-guide` | Open the exercise guide from that workout |
+| `-ui-fixture home` | Replace saved data with a named scene: `home`, `workout`, `progress`, or `onboarding` |
 
 ## Capabilities
 

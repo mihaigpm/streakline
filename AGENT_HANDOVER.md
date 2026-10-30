@@ -152,6 +152,7 @@ Debug builds only. Release ignores them.
 | `-open-progress` | Push Progress |
 | `-open-day "Day A"` | Push that workout (`Day A`, `Day B`, or `Day C`) |
 | `-open-guide` | From a workout screen, open the exercise guide |
+| `-ui-fixture home` | Replace saved data with `home`, `workout`, `progress`, or `onboarding`. UI tests and screenshot captures use this |
 
 ---
 
@@ -287,6 +288,8 @@ The case list is `ios-test-cases.md`. It was filled from this code, using the pu
 **Fresh user:** delete the app, or Settings → Erase all data. Both are enough. There is no server user to delete.
 
 **Unit tests** already cover the budget curve, week rollover and unit snapshot, the hold-or-shield streak, shield earn and spend, best streak, the morning line, the Sunday seal, notification copy, reset, and erase. Run those before inventing a UI test for the same math.
+
+**UI tests** (`StreaklineUITests`) launch Debug fixtures (`-ui-fixture home|workout|progress|onboarding`) and attach screenshots. Use them to drive the simulator and to grab consistent frames for a store pass or a promo. They are not the regression suite. `Tools/prepare_screenshot_status_bar.sh` tidies the booted simulator clock and battery. Set `STREAKLINE_SCREENSHOT_DIR` on the test action to also write PNGs. Release builds ignore the fixture.
 
 **Real device** for notification permission and a delivered reminder. Simulator green does not prove that. There is no camera and no StoreKit path to prove.
 

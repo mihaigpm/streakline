@@ -21,7 +21,7 @@ Filled from the current code (routing, onboarding, home, workouts, progress, his
 | [mobile-testing](https://github.com/petrkindlmann/qa-skills/blob/main/skills/mobile-testing/SKILL.md) | Grant and deny, cold start, background, poor network. Deep links and biometrics are omitted because the app has neither. |
 | [qa-test-planner](https://github.com/softaworks/agent-toolkit/blob/main/skills/qa-test-planner/SKILL.md) | One behavior per case. Preconditions, action, expected result, P0 / P1 / P2. |
 
-**Automation.** Budget math, week rollover, the unit snapshot, the hold-or-shield streak, shield earn and spend, best streak, the morning line, the +80 workout the morning after drinks, the Sunday seal’s outcome, notification copy, reset, erase, programme-preset templates, the `logged` completion, and empty-template legacy lists belong in `Streakline/StreaklineTests/StreaklineCoreTests.swift` and already live there (XCTest). Permission dialogs, a delivered reminder, Dynamic Type, and layout stay manual. There is no XCUITest target. The app has no users and the UI is still the whole product, so a UI suite would be rewritten before it paid for itself. Do not add one until a flow stops moving and someone will fix flakes.
+**Automation.** Budget math, week rollover, the unit snapshot, the hold-or-shield streak, shield earn and spend, best streak, the morning line, the +80 workout the morning after drinks, the Sunday seal’s outcome, notification copy, reset, erase, programme-preset templates, the `logged` completion, and empty-template legacy lists belong in `Streakline/StreaklineTests/StreaklineCoreTests.swift` and already live there (XCTest). `StreaklineUITests` launches a Debug fixture and checks that Home, onboarding, Progress, and a workout open. It also attaches screenshots for a later store or promo pass. Do not move the math cases into that target. Permission dialogs, a delivered reminder, Dynamic Type, and layout stay manual.
 
 **Not built, so not tested as if it were:** accounts, paywall, camera, HealthKit, Watch, widgets, iCloud, deep links, biometrics, push.
 
@@ -255,3 +255,4 @@ Do not duplicate these as the only evidence. A device pass still matters for the
 | `testOpenMissLeavesTheShieldUntilTheWeekCloses` | An open miss with a shield does not spend it or add XP |
 | `testSeasonIndexSplitsEveryEightWeeks` | Week 1 and week 8 are Season 1. Week 9 is Season 2, week 1 of 8 |
 | `testHoldStartsTheWeekAfterTheFloor` | Guideline pints go to Hold the week after 6. Legacy still uses the floor of 5 |
+| `testUITestFixturesSeedHomeProgressAndOnboarding` | Debug fixtures seed Home, an open workout, Progress history, and a fresh onboarding store |
