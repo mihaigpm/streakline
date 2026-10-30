@@ -19,6 +19,8 @@
 		42A6D5F08B2CE775FA79CE5A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656837E3B18215A6514EB004 /* SettingsView.swift */; };
 		49C3E49B0D7A3AA5CA13CBB4 /* Gamification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DB08271C24518E5995BEB8 /* Gamification.swift */; };
 		59A660B2C799BF5004257102 /* WeekManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0043259160E33B0724258D /* WeekManager.swift */; };
+		E1F2A3B4C5D6E7F8091A2B11 /* UITestFixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1F2A3B4C5D6E7F8091A2B01 /* UITestFixture.swift */; };
+		E1F2A3B4C5D6E7F8091A2B12 /* StreaklineUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1F2A3B4C5D6E7F8091A2B02 /* StreaklineUITests.swift */; };
 		5A7EC6886B4D00FFE8B7F4F5 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D203C819D4B1FFABD2C2D1 /* OnboardingView.swift */; };
 		5FC57586D50D879057C0A4D2 /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21E3A1E463F6B1344272A5F /* DesignSystem.swift */; };
 		6147DEB76324A51FF2F92D49 /* Exercise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F84FF4247006E209E2C4C9 /* Exercise.swift */; };
@@ -59,6 +61,13 @@
 			remoteGlobalIDString = A5C9BD2583BCC294CC2ECBD2;
 			remoteInfo = Streakline;
 		};
+		E1F2A3B4C5D6E7F8091A2B34 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 214FFC5B46509D1E049572DF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A5C9BD2583BCC294CC2ECBD2;
+			remoteInfo = Streakline;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -66,10 +75,13 @@
 		4E8B1A6C0D9F4327B5A1E6C8 /* AlcoholUnits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlcoholUnits.swift; sourceTree = "<group>"; };
 		07D942551B00777C635DEAF5 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		0A0043259160E33B0724258D /* WeekManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekManager.swift; sourceTree = "<group>"; };
+		E1F2A3B4C5D6E7F8091A2B01 /* UITestFixture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestFixture.swift; sourceTree = "<group>"; };
+		E1F2A3B4C5D6E7F8091A2B02 /* StreaklineUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreaklineUITests.swift; sourceTree = "<group>"; };
 		0AA6861378A7D7E1B0A08EAF /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		0CA6267BBBB2ED38301BA6E0 /* StreaklineApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreaklineApp.swift; sourceTree = "<group>"; };
 		248C0B8FED00D105C6DD8D47 /* ConfettiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfettiView.swift; sourceTree = "<group>"; };
 		2756955B4547B842044F38B1 /* StreaklineTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StreaklineTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E1F2A3B4C5D6E7F8091A2B03 /* StreaklineUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StreaklineUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C11159C0BFD84525BD62478 /* WorkoutLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutLog.swift; sourceTree = "<group>"; };
 		2C33A17ECA8770640C864826 /* ProgressRingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressRingView.swift; sourceTree = "<group>"; };
 		2D10128C5891371381AD16CF /* ExerciseLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseLibrary.swift; sourceTree = "<group>"; };
@@ -133,6 +145,14 @@
 			path = StreaklineTests;
 			sourceTree = "<group>";
 		};
+		E1F2A3B4C5D6E7F8091A2B21 /* StreaklineUITests */ = {
+			isa = PBXGroup;
+			children = (
+				E1F2A3B4C5D6E7F8091A2B02 /* StreaklineUITests.swift */,
+			);
+			path = StreaklineUITests;
+			sourceTree = "<group>";
+		};
 		279FBAC1189180EA283A825C /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -163,6 +183,7 @@
 				E21E3A1E463F6B1344272A5F /* DesignSystem.swift */,
 				38DB08271C24518E5995BEB8 /* Gamification.swift */,
 				6A969CE6A7578B1BFC1C877F /* NotificationManager.swift */,
+				E1F2A3B4C5D6E7F8091A2B01 /* UITestFixture.swift */,
 				0A0043259160E33B0724258D /* WeekManager.swift */,
 			);
 			path = Utilities;
@@ -173,6 +194,7 @@
 			children = (
 				01F73A139BF05D664ADD6949 /* Streakline */,
 				0E3BD654F009A419F0ABBC5B /* StreaklineTests */,
+				E1F2A3B4C5D6E7F8091A2B21 /* StreaklineUITests */,
 				AEEB120576A214EEC1C5D0AE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -182,6 +204,7 @@
 			children = (
 				49930DCD60BCC76AA08DA6EA /* Streakline.app */,
 				2756955B4547B842044F38B1 /* StreaklineTests.xctest */,
+				E1F2A3B4C5D6E7F8091A2B03 /* StreaklineUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -256,6 +279,24 @@
 			productReference = 2756955B4547B842044F38B1 /* StreaklineTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		E1F2A3B4C5D6E7F8091A2B31 /* StreaklineUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E1F2A3B4C5D6E7F8091A2B37 /* Build configuration list for PBXNativeTarget "StreaklineUITests" */;
+			buildPhases = (
+				E1F2A3B4C5D6E7F8091A2B32 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E1F2A3B4C5D6E7F8091A2B33 /* PBXTargetDependency */,
+			);
+			name = StreaklineUITests;
+			packageProductDependencies = (
+			);
+			productName = StreaklineUITests;
+			productReference = E1F2A3B4C5D6E7F8091A2B03 /* StreaklineUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -281,6 +322,7 @@
 			targets = (
 				A5C9BD2583BCC294CC2ECBD2 /* Streakline */,
 				C70B335A17C2D5E687E34979 /* StreaklineTests */,
+				E1F2A3B4C5D6E7F8091A2B31 /* StreaklineUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -303,6 +345,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				B57073CF3146F04857D918B4 /* StreaklineCoreTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E1F2A3B4C5D6E7F8091A2B32 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E1F2A3B4C5D6E7F8091A2B12 /* StreaklineUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -344,6 +394,7 @@
 				42A6D5F08B2CE775FA79CE5A /* SettingsView.swift in Sources */,
 				67DA909B692B13A3B11E71D2 /* StreaklineApp.swift in Sources */,
 				59A660B2C799BF5004257102 /* WeekManager.swift in Sources */,
+				E1F2A3B4C5D6E7F8091A2B11 /* UITestFixture.swift in Sources */,
 				01C816BA97CEA1F95595ADBB /* WeekRowView.swift in Sources */,
 				1925B31C0D774E3CCA71AFF4 /* WorkoutCardView.swift in Sources */,
 				8F44EC4FE566F440AF469612 /* WorkoutDay.swift in Sources */,
@@ -359,6 +410,11 @@
 			isa = PBXTargetDependency;
 			target = A5C9BD2583BCC294CC2ECBD2 /* Streakline */;
 			targetProxy = 57E0D99F85F252D9AF15CCB5 /* PBXContainerItemProxy */;
+		};
+		E1F2A3B4C5D6E7F8091A2B33 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A5C9BD2583BCC294CC2ECBD2 /* Streakline */;
+			targetProxy = E1F2A3B4C5D6E7F8091A2B34 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -511,6 +567,38 @@
 			};
 			name = Release;
 		};
+		E1F2A3B4C5D6E7F8091A2B35 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mihaigarda.StreaklineUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = Streakline;
+			};
+			name = Debug;
+		};
+		E1F2A3B4C5D6E7F8091A2B36 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mihaigarda.StreaklineUITests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = Streakline;
+			};
+			name = Release;
+		};
 		CFE3E38FC847651B0BEA403C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -592,6 +680,15 @@
 			buildConfigurations = (
 				CFE3E38FC847651B0BEA403C /* Debug */,
 				4CB19BFEF1B1218FE53E262A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E1F2A3B4C5D6E7F8091A2B37 /* Build configuration list for PBXNativeTarget "StreaklineUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E1F2A3B4C5D6E7F8091A2B35 /* Debug */,
+				E1F2A3B4C5D6E7F8091A2B36 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

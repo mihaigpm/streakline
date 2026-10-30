@@ -5,6 +5,10 @@ consistent sample data. Use an Apple-accepted iPhone screenshot size shown in
 the current App Store Connect upload interface; export full-resolution images
 without device frames unless the final creative is intentionally composited.
 
+## Simulator drafts
+
+`StreaklineUITests` can open Home, onboarding, Progress, and a workout on repeatable Debug data (`-ui-fixture`). Run `Streakline/Tools/prepare_screenshot_status_bar.sh` first if the clock and battery should read 9:41 and full. The test result keeps the PNGs. Set `STREAKLINE_SCREENSHOT_DIR` on the test action to write files as well. These drafts are for checking the frame. The upload still uses captures from the build you submit, with the checklist below.
+
 ## Captured source screens
 
 Four unframed 1320 × 2868 iPhone 17 Pro Max captures are available in

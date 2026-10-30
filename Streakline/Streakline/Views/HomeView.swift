@@ -189,6 +189,7 @@ struct HomeView: View {
                         .foregroundStyle(DesignSystem.Colors.textSecondary)
                 }
                 .accessibilityElement(children: .ignore)
+                .accessibilityIdentifier("home.header")
                 .accessibilityLabel("\(season.title), \(season.weekPhrase), Week \(week.weekNumber)")
                 Spacer()
                 drinkBudgetBadge(week)
@@ -348,6 +349,7 @@ struct HomeView: View {
                 )
             }
             .buttonStyle(.plain)
+            .accessibilityIdentifier("workout.\(day.rawValue)")
 
             SessionTemplateMenu(slot: day, selectedRaw: log?.sessionTemplateRaw ?? "") { template in
                 selectTemplate(template, for: day, in: week)

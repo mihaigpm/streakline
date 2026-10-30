@@ -48,6 +48,17 @@
                ReferencedContainer = "container:Streakline.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "E1F2A3B4C5D6E7F8091A2B31"
+               BuildableName = "StreaklineUITests.xctest"
+               BlueprintName = "StreaklineUITests"
+               ReferencedContainer = "container:Streakline.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

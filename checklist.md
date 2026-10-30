@@ -56,3 +56,4 @@ Not in scope unless a task asks. Reasons live in `decisions.md` and the README r
 - [x] **2026-10-29** Morning line. Home shows one sentence under the ring when yesterday had drinks and a slot is open. That completion is +80 instead of +50. A dry morning shows nothing. Over budget does not clear the workout.
 - [x] **2026-10-29** Sunday seal. Home can open it on Sunday. A past week opens it from History. Slots, drinks, money not spent, and perfect / held / shield / missed. No new saved flag and no XP.
 - [x] **2026-10-30** Seasons. Home and the Sunday seal name the eight-week season, then “Hold” the week after the budget floor. The budget, XP, streak, and templates stay put.
+- [x] **2026-10-30** UI test target. Debug fixtures launch Home, a workout, Progress, and onboarding. Screenshots attach for a later store or promo pass.

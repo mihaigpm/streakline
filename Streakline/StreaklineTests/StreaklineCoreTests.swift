@@ -1128,6 +1128,56 @@ final class StreaklineCoreTests: XCTestCase {
         XCTAssertEqual(stayedCutting.title, "Season 1")
     }
 
+    #if DEBUG
+    func testUITestFixturesSeedHomeProgressAndOnboarding() throws {
+        defer { clearFixturePreferences() }
+        let now = try programmeDate(year: 2026, month: 10, day: 28)
+
+        try UITestFixture.apply(.home, in: context, now: now)
+        let home = try context.fetch(FetchDescriptor<AppWeek>(sortBy: [SortDescriptor(\.weekNumber)]))
+        XCTAssertEqual(home.map(\.weekNumber), [1])
+        XCTAssertEqual(home[0].drinkBudget, 10)
+        XCTAssertEqual(home[0].totalDrinks, 2)
+        XCTAssertEqual(home[0].completedWorkouts, 1)
+        XCTAssertEqual(Season(week: home[0], history: home).heading, "Season 1, week 1 of 8")
+        XCTAssertEqual(ProgrammePreset.current, .running)
+        XCTAssertTrue(UserDefaults.standard.bool(forKey: ProgramPreferences.onboardingCompletedKey))
+
+        try UITestFixture.apply(.workout, in: context, now: now)
+        let workout = try XCTUnwrap(try context.fetch(FetchDescriptor<AppWeek>()).first)
+        XCTAssertEqual(workout.completedWorkouts, 0)
+        XCTAssertEqual(workout.totalDrinks, 2)
+
+        try UITestFixture.apply(.progress, in: context, now: now)
+        let progress = try context.fetch(FetchDescriptor<AppWeek>(sortBy: [SortDescriptor(\.weekNumber)]))
+        XCTAssertEqual(progress.map(\.weekNumber), [1, 2, 3])
+        XCTAssertEqual(Season(week: progress[2], history: progress).weekPhrase, "week 3 of 8")
+        XCTAssertEqual(WeekManager.streak(in: context, currentWeekNumber: 3), 2)
+        XCTAssertTrue(progress[0].isPerfectWeek)
+        XCTAssertTrue(progress[1].isPerfectWeek)
+        XCTAssertEqual(progress[2].totalDrinks, 2)
+
+        try UITestFixture.apply(.onboarding, in: context, now: now)
+        XCTAssertTrue(try context.fetch(FetchDescriptor<AppWeek>()).isEmpty)
+        XCTAssertFalse(UserDefaults.standard.bool(forKey: ProgramPreferences.onboardingCompletedKey))
+        XCTAssertNil(ProgrammePreset.current)
+    }
+
+    private func clearFixturePreferences() {
+        for key in [
+            ProgramPreferences.onboardingCompletedKey,
+            ProgramPreferences.startingBudgetKey,
+            DrinkUnit.storageKey,
+            ProgrammePreset.storageKey,
+            "notificationsEnabled",
+            "reminderTime",
+            "lastCelebratedRankIndex",
+        ] {
+            UserDefaults.standard.removeObject(forKey: key)
+        }
+    }
+    #endif
+
     private var receiptCalendar: Calendar {
         var calendar = Calendar(identifier: .gregorian)
         calendar.locale = Locale(identifier: "en_GB")

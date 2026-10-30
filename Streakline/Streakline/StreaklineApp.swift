@@ -16,6 +16,13 @@ struct StreaklineApp: App {
                 for: AppWeek.self, WorkoutLog.self, DrinkLog.self, ProgrammeState.self
             )
             storageUnavailable = false
+            #if DEBUG
+            do {
+                try UITestFixture.applyIfRequested(in: modelContainer.mainContext)
+            } catch {
+                fatalError("UI fixture failed: \(error)")
+            }
+            #endif
         } catch {
             do {
                 let fallback = ModelConfiguration(isStoredInMemoryOnly: true)
