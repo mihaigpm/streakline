@@ -45,7 +45,8 @@ struct HistoryView: View {
                     now: .now,
                     calendar: .current,
                     isOpenWeek: false,
-                    shieldAvailable: false
+                    shieldAvailable: false,
+                    history: weeks
                 ))
                 .presentationDetents([.medium, .large])
                 .presentationBackground(DesignSystem.Colors.background)

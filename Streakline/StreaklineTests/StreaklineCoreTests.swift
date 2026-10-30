@@ -1004,15 +1004,16 @@ final class StreaklineCoreTests: XCTestCase {
         XCTAssertTrue(WeekSeal.isPastWeek(week, now: nextMonday, calendar: calendar))
 
         let openSunday = WeekSeal(week: week, now: sunday, calendar: calendar, isOpenWeek: true, shieldAvailable: false)
-        XCTAssertEqual(openSunday.title, "Seal this week")
+        XCTAssertEqual(openSunday.title, "Season 1, week 1 of 8")
+        XCTAssertEqual(openSunday.season.heading, openSunday.title)
         XCTAssertEqual(openSunday.outcome, .held)
 
         let openWednesday = WeekSeal(week: week, now: wednesday, calendar: calendar, isOpenWeek: true, shieldAvailable: false)
-        XCTAssertEqual(openWednesday.title, "Week 1 sealed")
+        XCTAssertEqual(openWednesday.title, "Season 1, week 1 of 8")
         XCTAssertFalse(WeekSeal.showsOnHome(now: wednesday, calendar: calendar))
 
         let past = WeekSeal(week: week, now: sunday, calendar: calendar, isOpenWeek: false, shieldAvailable: true)
-        XCTAssertEqual(past.title, "Week 1 sealed")
+        XCTAssertEqual(past.title, "Season 1, week 1 of 8")
         XCTAssertNil(past.closingNote)
     }
 
@@ -1027,7 +1028,7 @@ final class StreaklineCoreTests: XCTestCase {
         let seal = WeekSeal(week: week, now: sunday, calendar: calendar, isOpenWeek: true, shieldAvailable: true)
         XCTAssertEqual(seal.outcome, .missed)
         XCTAssertEqual(seal.closingNote, "Shield applies when the week closes")
-        XCTAssertEqual(seal.title, "Seal this week")
+        XCTAssertEqual(seal.title, "Season 1, week 1 of 8")
         XCTAssertFalse(week.shieldUsed)
         XCTAssertEqual(Gamification.summary(for: [week], now: sunday, calendar: calendar).xp, before)
 
@@ -1035,6 +1036,96 @@ final class StreaklineCoreTests: XCTestCase {
         XCTAssertEqual(withoutShield.outcome, .missed)
         XCTAssertNil(withoutShield.closingNote)
         XCTAssertFalse(week.shieldUsed)
+    }
+
+    func testSeasonIndexSplitsEveryEightWeeks() {
+        let weeks = plannedWeeks(count: 9, starting: 10, unit: .pints, rule: .guideline)
+        let first = Season(week: weeks[0], history: weeks)
+        XCTAssertEqual(first.number, 1)
+        XCTAssertEqual(first.weekInSeason, 1)
+        XCTAssertEqual(first.title, "Season 1")
+        XCTAssertEqual(first.weekPhrase, "week 1 of 8")
+        XCTAssertEqual(first.heading, "Season 1, week 1 of 8")
+        XCTAssertFalse(first.isHold)
+
+        let eighth = Season(week: weeks[7], history: weeks)
+        XCTAssertEqual(eighth.number, 1)
+        XCTAssertEqual(eighth.weekInSeason, 8)
+        XCTAssertEqual(eighth.title, "Season 1")
+        XCTAssertFalse(eighth.isHold)
+
+        let ninth = Season(week: weeks[8], history: weeks)
+        XCTAssertEqual(ninth.number, 2)
+        XCTAssertEqual(ninth.weekInSeason, 1)
+        XCTAssertEqual(ninth.title, "Season 2")
+        XCTAssertEqual(ninth.weekPhrase, "week 1 of 8")
+        XCTAssertFalse(ninth.isHold)
+        XCTAssertEqual(weeks[8].drinkBudget, 6)
+    }
+
+    func testHoldStartsTheWeekAfterTheFloor() throws {
+        let calendar = morningCalendar
+        let sunday = try morningDate(year: 2026, month: 11, day: 1, hour: 18, calendar: calendar)
+        let budgetsBefore = [10, 10, 9, 9, 8, 8, 7, 7, 6, 6]
+
+        let pints = plannedWeeks(count: 10, starting: 10, unit: .pints, rule: .guideline)
+        XCTAssertEqual(pints.map(\.drinkBudget), budgetsBefore)
+        let arrived = Season(week: pints[8], history: pints)
+        XCTAssertEqual(pints[8].weekNumber, 9)
+        XCTAssertEqual(pints[8].drinkBudget, 6)
+        XCTAssertEqual(arrived.title, "Season 2")
+        XCTAssertFalse(arrived.isHold)
+
+        let next = Season(week: pints[9], history: pints)
+        XCTAssertEqual(pints[9].weekNumber, 10)
+        XCTAssertEqual(pints[9].drinkBudget, 6)
+        XCTAssertEqual(pints[9].startingDrinkBudget, 10)
+        XCTAssertTrue(next.isHold)
+        XCTAssertEqual(next.number, 2)
+        XCTAssertEqual(next.weekInSeason, 2)
+        XCTAssertEqual(next.title, "Hold")
+        XCTAssertEqual(next.heading, "Hold, week 2 of 8")
+        XCTAssertEqual(pints.map(\.drinkBudget), budgetsBefore)
+        XCTAssertEqual(pints.map(\.startingDrinkBudget), Array(repeating: 10, count: 10))
+
+        let seal = WeekSeal(
+            week: pints[9],
+            now: sunday,
+            calendar: calendar,
+            isOpenWeek: true,
+            shieldAvailable: false,
+            history: pints
+        )
+        XCTAssertEqual(seal.title, "Hold, week 2 of 8")
+        XCTAssertEqual(seal.season, next)
+
+        let legacy = plannedWeeks(count: 12, starting: 10, unit: .pints, rule: .legacy)
+        let legacyPassingSix = Season(week: legacy[8], history: legacy)
+        XCTAssertEqual(legacy[8].weekNumber, 9)
+        XCTAssertEqual(legacy[8].drinkBudget, 6)
+        XCTAssertFalse(legacyPassingSix.isHold)
+        XCTAssertEqual(legacyPassingSix.title, "Season 2")
+
+        let legacyArrived = Season(week: legacy[10], history: legacy)
+        XCTAssertEqual(legacy[10].weekNumber, 11)
+        XCTAssertEqual(legacy[10].drinkBudget, 5)
+        XCTAssertEqual(legacyArrived.weekInSeason, 3)
+        XCTAssertFalse(legacyArrived.isHold)
+        XCTAssertEqual(legacyArrived.title, "Season 2")
+
+        let legacyHold = Season(week: legacy[11], history: legacy)
+        XCTAssertEqual(legacy[11].weekNumber, 12)
+        XCTAssertEqual(legacy[11].drinkBudget, 5)
+        XCTAssertTrue(legacyHold.isHold)
+        XCTAssertEqual(legacyHold.title, "Hold")
+        XCTAssertEqual(legacyHold.heading, "Hold, week 4 of 8")
+
+        let underFloor = plannedWeeks(count: 2, starting: 5, unit: .pints, rule: .guideline)
+        XCTAssertEqual(underFloor[1].drinkBudget, 5)
+        XCTAssertNotEqual(underFloor[1].drinkBudget, AlcoholUnits.displayFloor(for: .pints))
+        let stayedCutting = Season(week: underFloor[1], history: underFloor)
+        XCTAssertFalse(stayedCutting.isHold)
+        XCTAssertEqual(stayedCutting.title, "Season 1")
     }
 
     private var receiptCalendar: Calendar {
@@ -1092,6 +1183,18 @@ final class StreaklineCoreTests: XCTestCase {
             context.insert(log)
         }
         return week
+    }
+
+    private func plannedWeeks(count: Int, starting: Int, unit: DrinkUnit, rule: BudgetRule) -> [AppWeek] {
+        (1...count).map { number in
+            AppWeek(
+                weekNumber: number,
+                startDate: .now,
+                startingDrinkBudget: starting,
+                drinkUnit: unit,
+                budgetRule: rule
+            )
+        }
     }
 
     private func guidelineWeek(_ weekNumber: Int, starting: Int, unit: DrinkUnit) -> AppWeek {

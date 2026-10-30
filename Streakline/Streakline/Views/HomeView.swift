@@ -110,7 +110,8 @@ struct HomeView: View {
                     now: .now,
                     calendar: .current,
                     isOpenWeek: true,
-                    shieldAvailable: programmeStates.contains { $0.shieldsAvailable > 0 }
+                    shieldAvailable: programmeStates.contains { $0.shieldsAvailable > 0 },
+                    history: weeks
                 ))
                 .presentationDetents([.medium, .large])
                 .presentationBackground(DesignSystem.Colors.background)
@@ -175,12 +176,20 @@ struct HomeView: View {
     private func weekHeader(_ week: AppWeek) -> some View {
         let streak = WeekManager.streak(in: context, currentWeekNumber: week.weekNumber)
         let shieldAvailable = programmeStates.contains { $0.shieldsAvailable > 0 }
+        let season = Season(week: week, history: weeks)
         return VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
             HStack(alignment: .top) {
-                Text("Week \(week.weekNumber)")
-                    .font(DesignSystem.Typography.displayMedium)
-                    .foregroundStyle(DesignSystem.Colors.textPrimary)
-                    .kerning(-1)
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(season.title)
+                        .font(DesignSystem.Typography.displayMedium)
+                        .foregroundStyle(DesignSystem.Colors.textPrimary)
+                        .kerning(-1)
+                    Text(season.weekPhrase)
+                        .font(DesignSystem.Typography.labelLarge)
+                        .foregroundStyle(DesignSystem.Colors.textSecondary)
+                }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("\(season.title), \(season.weekPhrase), Week \(week.weekNumber)")
                 Spacer()
                 drinkBudgetBadge(week)
             }

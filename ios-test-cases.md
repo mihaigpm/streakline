@@ -127,7 +127,8 @@ One path. If this fails, stop.
 | TC-HOME-012 | P0 | Week 1 has 2 workouts and drinks at or under budget, device date in the next week | Cold launch | Home streak pill reads "1 week streak". There is no "1 shield" caption. Progress does not add the +150 perfect-week XP. |
 | TC-HOME-013 | P0 | Guideline week, pints, 3 drinks logged, one slot still open | Read the drink strip, then tap the estimate | The line shows 3 pints, about £16.50, and about 660 kcal, and names the open session. At 0 drinks the line is absent. The sheet repeats the three figures and says the estimates are not a measure of the night. Over budget still shows spend and calories and does not show money saved. The session sentence disappears when all three slots are complete. |
 | TC-HOME-014 | P0 | Friday had drinks, Saturday morning, Full body still open, Easy run already done | Read under the ring | One sentence: "You drank last night. Full body still counts, and it’s worth more if you show up." VoiceOver reads it. A morning with no drinks yesterday shows no sentence. Every slot complete shows no sentence. Adding drinks past the budget leaves the finished workout finished. |
-| TC-HOME-015 | P0 | Sunday of the open week, and on another run Wednesday of that week | Read under the ring, then open the seal | Sunday shows “Seal the week” under the ring and above the morning line when that line is also there. The sheet title is “Seal this week”. It shows slots out of 3, drinks against the week’s budget, money not spent only when some budget is left, and one outcome: Perfect week, Streak held, Shield used, or Missed. No rank, badges, or XP. Dismissing it leaves the week unchanged. Wednesday has no seal button. A missed Sunday with a shield still available says “Shield applies when the week closes” and does not mark the shield used. |
+| TC-HOME-015 | P0 | Sunday of the open week, and on another run Wednesday of that week | Read under the ring, then open the seal | Sunday shows “Seal the week” under the ring and above the morning line when that line is also there. The sheet title is “Season N, week X of 8”, or “Hold, week X of 8” once the week after the floor has started. It shows slots out of 3, drinks against the week’s budget, money not spent only when some budget is left, and one outcome: Perfect week, Streak held, Shield used, or Missed. No rank, badges, XP, or confetti. Dismissing it leaves the week unchanged. Wednesday has no seal button. A missed Sunday with a shield still available says “Shield applies when the week closes” and does not mark the shield used. |
+| TC-HOME-016 | P0 | Week 1 of a new plan, then a later week whose budget has sat on the floor for a second week | Read the home header. On the Hold week, open the Sunday seal | Week 1 reads “Season 1” and “week 1 of 8”. VoiceOver also says “Week 1”. The first week on the floor still uses its Season title. The next week on that floor reads “Hold” and “week X of 8”, and the Sunday sheet title is “Hold, week X of 8”. The drink budget does not jump back up. |
 
 ---
 
@@ -176,7 +177,7 @@ Unit tests cover the arithmetic. These cases check the device calendar and the c
 | TC-PROG-003 | P1 | XP crosses a rank threshold while a workout screen is open | Finish and land on Home | The rank-up cover presents on Home, not over the workout. Dismissing it means the same rank does not cover again. |
 | TC-PROG-004 | P1 | A rank was celebrated, then Undo drops XP below that rank, then the rank is earned again | Watch Home | The cover shows again for the re-earned rank. |
 | TC-PROG-005 | P1 | At least one week, and the tapped row is the open week | Open History, tap the open week | Sheet shows the week number, date span, workouts as n/3, and drinks over that week’s own budget and unit. It is not the Sunday seal. |
-| TC-PROG-007 | P0 | A past week exists | Open History, tap that week | The Sunday seal opens. Title is “Week N sealed”. The same four facts as Home. No share button. |
+| TC-PROG-007 | P0 | A past week exists | Open History, tap that week | The Sunday seal opens. Title is “Season N, week X of 8”, or “Hold, week X of 8” when that week is in Hold. The same four facts as Home. No share button. |
 | TC-PROG-006 | P2 | Accessibility Dynamic Type on Progress | Open Progress | Badge grid is one column. Rank and XP stay readable. |
 
 ---
@@ -250,5 +251,7 @@ Do not duplicate these as the only evidence. A device pass still matters for the
 | `testDrinksOverBudgetLeaveTheCompletedWorkout` | Drinks past the budget leave the workout completed |
 | `testWeekSealSelectsPerfectHeldShieldAndMissed` | Perfect, 2-of-3 held, shield, and missed are four outcomes |
 | `testWeekSealOmitsMoneyWhenNothingIsUnspent` | Money not spent is hidden at budget and over budget |
-| `testSundayCanSealAndWednesdayCannot` | Sunday can open the seal. Wednesday cannot. A past week stays sealed in the title |
+| `testSundayCanSealAndWednesdayCannot` | Sunday can open the seal. Wednesday cannot. The sheet title is the season |
 | `testOpenMissLeavesTheShieldUntilTheWeekCloses` | An open miss with a shield does not spend it or add XP |
+| `testSeasonIndexSplitsEveryEightWeeks` | Week 1 and week 8 are Season 1. Week 9 is Season 2, week 1 of 8 |
+| `testHoldStartsTheWeekAfterTheFloor` | Guideline pints go to Hold the week after 6. Legacy still uses the floor of 5 |

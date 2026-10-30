@@ -31,8 +31,10 @@ struct WeekSeal: Equatable {
     /// Estimated money still inside the budget. Nil when nothing is unspent, including over budget.
     var moneyNotSpent: Decimal?
     var outcome: Outcome
-    /// “Seal this week” on Sunday of the open week. “Week N sealed” otherwise.
-    var title: String
+    /// Eight-week name for this week. Hold starts the week after the budget floor.
+    var season: Season
+    /// Season heading. “Season N, week X of 8”, or “Hold, week X of 8” once Hold has started.
+    var title: String { season.heading }
     /// Set only for a missed open week that still has a shield.
     var closingNote: String?
 
@@ -85,16 +87,18 @@ struct WeekSeal: Equatable {
     ///
     /// - Parameters:
     ///   - week: The week being summarised.
-    ///   - now: Used for the title. Sunday of the open week reads “Seal this week”.
+    ///   - now: The moment Home or History is reading. Sunday still decides whether Home shows the button. The heading is the season on every day.
     ///   - calendar: Calendar for Sunday and for the receipt’s session clause. Money uses the same estimates as the strip.
     ///   - isOpenWeek: True for the week Home is showing. False for a past week in History.
     ///   - shieldAvailable: True when a shield is still in inventory. It is not spent here.
+    ///   - history: Saved weeks. Hold starts only after an earlier one already sat on this floor.
     init(
         week: AppWeek,
-        now: Date,
+        now _: Date,
         calendar: Calendar = .current,
         isOpenWeek: Bool,
-        shieldAvailable: Bool
+        shieldAvailable: Bool,
+        history: [AppWeek] = []
     ) {
         weekNumber = week.weekNumber
         slotsCompleted = week.completedWorkouts
@@ -104,9 +108,7 @@ struct WeekSeal: Equatable {
         let unspent = ReceiptEstimates(week: week, calendar: calendar).unspent
         moneyNotSpent = unspent > 0 ? unspent : nil
         outcome = Self.outcome(for: week)
-        title = (isOpenWeek && Self.isSunday(now, calendar: calendar))
-            ? "Seal this week"
-            : "Week \(week.weekNumber) sealed"
+        season = Season(week: week, history: history)
         if isOpenWeek, outcome == .missed, shieldAvailable {
             closingNote = Self.shieldAppliesWhenTheWeekCloses
         } else {
