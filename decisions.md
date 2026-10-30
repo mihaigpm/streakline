@@ -88,6 +88,12 @@ Dates below are the commit that put the decision in the tree, or 2026-10-13 wher
 - **Rationale:** Closing the week should take a few seconds and must not invent a second XP path or mark a shield used before rollover.
 - **Reconsider if:** The seal needs to be shared. That is a later prompt. It does not add a share control here.
 
+### 2026-10-30 — Seasons name the week. Hold starts the week after the floor.
+
+- **Decision:** `Season` is derived. Weeks 1–8 are Season 1, weeks 9–16 are Season 2, and the index repeats every 8. Home shows that title plus “week X of 8”, and the accessibility label still says the absolute week number. The seal heading uses the same words. A week is titled “Hold” only when its budget equals its own floor (legacy 5, or the guideline display floor) and a saved week before it already sat on that floor. The arriving week keeps “Season N”. A start under the display floor stays a cutting season. Nothing is persisted. XP, streak, templates, logs, and the budget curve are unchanged. No badge and no confetti.
+- **Rationale:** Once the countdown hits the floor the week needs a name, and that name must not pretend the budget started over.
+- **Reconsider if:** Hold needs its own shrinking schedule. That would be a different product. This label does not add one.
+
 ---
 
 ## Engineering

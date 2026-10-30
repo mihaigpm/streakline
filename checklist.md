@@ -55,3 +55,4 @@ Not in scope unless a task asks. Reasons live in `decisions.md` and the README r
 - [x] **2026-10-27** Drink receipt. The home strip estimates spend and calories from the week's own unit once the total is above 0. Over budget does not show money saved. The open-session clause drops when all three slots are done.
 - [x] **2026-10-29** Morning line. Home shows one sentence under the ring when yesterday had drinks and a slot is open. That completion is +80 instead of +50. A dry morning shows nothing. Over budget does not clear the workout.
 - [x] **2026-10-29** Sunday seal. Home can open it on Sunday. A past week opens it from History. Slots, drinks, money not spent, and perfect / held / shield / missed. No new saved flag and no XP.
+- [x] **2026-10-30** Seasons. Home and the Sunday seal name the eight-week season, then “Hold” the week after the budget floor. The budget, XP, streak, and templates stay put.

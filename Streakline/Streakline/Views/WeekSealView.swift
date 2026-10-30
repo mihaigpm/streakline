@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The four facts of a `WeekSeal`. No rank, badge grid, XP, or share action.
+/// The four facts of a `WeekSeal`. The navigation title is the season heading. No rank, badge grid, XP, confetti, or share action.
 struct WeekSealView: View {
     let seal: WeekSeal
 

@@ -81,7 +81,7 @@ White on teal is not the primary label. The label is the near-black background c
 
 | Token | Style | Where |
 |-------|--------|--------|
-| `displayLarge` / `displayMedium` | `.largeTitle`, rounded, black | Ring count, "Week N", setup title |
+| `displayLarge` / `displayMedium` | `.largeTitle`, rounded, black | Ring count, season title, setup title |
 | `displaySmall` | `.title`, rounded, bold | Screen titles inside a flow, rank name |
 | `headlineLarge` | `.title3`, rounded, bold | Card titles, primary button |
 | `headlineSmall` | `.headline`, rounded, semibold | Section labels, drink total |
