@@ -20,9 +20,9 @@ A build log that never prints `Set CURRENT_PROJECT_VERSION` did not run this scr
 
 `MARKETING_VERSION` in `Streakline/project.yml` is the user-visible version. Change it by hand when testers should see a new version name, then regenerate the project.
 
-`ci_post_clone.sh` overwrites every `CURRENT_PROJECT_VERSION` in `project.pbxproj` on the Xcode Cloud machine, before the archive. The build number is `10000 + CI_BUILD_NUMBER`. `CI_BUILD_NUMBER` is the Xcode Cloud run count for **this** workflow, so each Cloud archive gets a new number. The `10000` offset keeps those numbers above the manually uploaded builds `1`–`4`. The script does not commit the number back. A local Xcode archive uses the number in git (`4` until you bump `project.yml`).
+`ci_post_clone.sh` overwrites every `CURRENT_PROJECT_VERSION` in `project.pbxproj` on the Xcode Cloud machine, before the archive. The build number is `CI_BUILD_NUMBER`, the Xcode Cloud run count for **this** workflow. The later "Prepare build for App Store Connect" step submits that same number. The binary has to match it. The script does not commit the number back. A local Xcode archive uses the number in git (`4` until you bump `project.yml`). It does not run this script.
 
-Do not point the workflow at the raw `CI_BUILD_NUMBER`. That counter started at 1 and is lower than builds already on TestFlight. Do not delete and recreate the workflow: the run count starts over and can reuse a build number.
+Do not add an offset such as `10000 + CI_BUILD_NUMBER`. Prepare still submits the raw run count, so the archive step can succeed and then fail with **Preparing build for App Store Connect failed**. Do not delete and recreate the workflow: the run count starts over and can reuse a build number TestFlight already has for this marketing version, including the manual uploads `1`–`4`.
 
 `ITSAppUsesNonExemptEncryption` is `false` in `Streakline/Streakline/Info.plist`. Leave it `false` unless the app adds its own non-exempt cryptography.
 

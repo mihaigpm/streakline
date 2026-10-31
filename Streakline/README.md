@@ -46,7 +46,7 @@ Unit tests are `StreaklineTests/StreaklineCoreTests.swift`. UI tests are `Streak
 
 `project.yml` is the source. The `xcodeproj` is committed so a clone opens. `CURRENT_PROJECT_VERSION` there is **4**, which matches the app target. That is the number a local archive uploads.
 
-Xcode Cloud does not use it. `ci_scripts/ci_post_clone.sh` sets every `CURRENT_PROJECT_VERSION` to `10000 +` the workflow run count after clone, and does not commit. See [`../CI.md`](../CI.md). Bump the value in `project.yml` before `xcodegen generate` when you want the next local archive to be a new build.
+Xcode Cloud does not use it. `ci_scripts/ci_post_clone.sh` sets every `CURRENT_PROJECT_VERSION` to `CI_BUILD_NUMBER` after clone, and does not commit. That is the number "Prepare build for App Store Connect" submits. See [`../CI.md`](../CI.md). Bump the value in `project.yml` before `xcodegen generate` when you want the next local archive to be a new build.
 
 ```bash
 cd Streakline

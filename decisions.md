@@ -152,6 +152,12 @@ Dates below are the commit that put the decision in the tree, or 2026-10-13 wher
 - **Rationale:** TestFlight rejects a repeated marketing version and build number. The workflow run count started at 1, which is already used by manual builds 1–4. The offset matches the Posturato pipeline. Supersedes the upload path in the 2026-09-05 entry: GitHub Actions stays gone; this workflow is the TestFlight path.
 - **Reconsider if:** Someone deletes and recreates the workflow. The run count starts over and can reuse a build number. Do not do that. Raise the offset only if `10000 +` the current run collides with a build already on TestFlight.
 
+### 2026-10-31 — TestFlight build number is the Xcode Cloud run count
+
+- **Decision:** `Streakline/ci_scripts/ci_post_clone.sh` overwrites `CURRENT_PROJECT_VERSION` on the Xcode Cloud runner with `CI_BUILD_NUMBER`. It does not commit. Local archives stay on the number in `project.yml` (4). Supersedes the 2026-10-13 offset.
+- **Rationale:** "Prepare build for App Store Connect" submits the raw run count. Build 14 was stamped `10014`, so prepare failed. The binary has to carry the number that step submits. The workflow count is already past the manual uploads `1`–`4`.
+- **Reconsider if:** The workflow is deleted and recreated. The run count starts over and can reuse a build TestFlight already has for this marketing version. Do not do that. Do not put the offset back; prepare would fail again.
+
 ---
 
 ## Superseded
