@@ -6,7 +6,7 @@ This runbook is for the existing Streakline App Store Connect record and its per
 
 1. Pull `main` and confirm the working tree is clean.
 2. Install Xcode 26 or newer, XcodeGen, and Python Pillow.
-3. For a **local** archive, update `MARKETING_VERSION` if testers should see a new version name, and increment `CURRENT_PROJECT_VERSION` in `Streakline/project.yml`. The TestFlight workflow does not use that number. `Streakline/ci_scripts/ci_post_clone.sh` sets the build to `10000 +` the Xcode Cloud run count. See [`CI.md`](../CI.md).
+3. For a **local** archive, update `MARKETING_VERSION` if testers should see a new version name, and increment `CURRENT_PROJECT_VERSION` in `Streakline/project.yml`. The TestFlight workflow does not use that number. `Streakline/ci_scripts/ci_post_clone.sh` sets the build to `CI_BUILD_NUMBER`, the same number Xcode Cloud submits. See [`CI.md`](../CI.md).
 4. Run:
 
    ```sh
