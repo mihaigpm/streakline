@@ -40,8 +40,16 @@ final class StreaklineUITests: XCTestCase {
 
     func testProgressFixtureOpensProgress() {
         let app = launch("progress", extraArguments: ["-open-progress"])
+        let month = element("progress.month", in: app)
+        XCTAssertTrue(month.waitForExistence(timeout: 15))
+        XCTAssertTrue(month.label.contains("This week vs week 1"))
+        XCTAssertTrue(month.label.contains("Up 4.6 units from week 1."))
+        XCTAssertTrue(month.label.contains("This is your log, not a health score."))
         let heading = app.staticTexts["How you earn XP"]
-        XCTAssertTrue(heading.waitForExistence(timeout: 15))
+        if !heading.waitForExistence(timeout: 2) {
+            app.swipeUp()
+        }
+        XCTAssertTrue(heading.waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["Badges"].exists)
         capture(app, name: "progress")
     }

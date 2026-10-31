@@ -25,6 +25,7 @@ struct ProgressScreen: View {
 
             ScrollView {
                 VStack(spacing: DesignSystem.Spacing.xl) {
+                    monthComparison
                     rankHero
                     statsRow
                     xpLegend
@@ -35,6 +36,62 @@ struct ProgressScreen: View {
         }
         .navigationTitle("Progress")
         .navigationBarTitleDisplayMode(.large)
+    }
+
+    // MARK: - Month comparison
+
+    private var monthComparison: some View {
+        let comparison = MonthComparison(weeks: weeks)
+        return VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
+            if comparison.showsComparison {
+                Text(MonthComparison.comparisonTitle)
+                    .font(DesignSystem.Typography.headlineSmall)
+                    .foregroundStyle(DesignSystem.Colors.textPrimary)
+                comparisonLine("This week", figure: comparison.currentWeekFigure, slots: comparison.currentWeekSlotsText)
+                comparisonLine("Week 1", figure: comparison.firstWeekFigure, slots: comparison.firstWeekSlotsText)
+                Text(comparison.deltaSentence)
+                    .font(DesignSystem.Typography.headlineLarge)
+                    .foregroundStyle(DesignSystem.Colors.textPrimary)
+                    .fixedSize(horizontal: false, vertical: true)
+                if comparison.unitsDiffer {
+                    Text(MonthComparison.mixedUnitFootnote)
+                        .font(DesignSystem.Typography.bodySmall)
+                        .foregroundStyle(DesignSystem.Colors.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            } else {
+                Text(MonthComparison.baselineSentence)
+                    .font(DesignSystem.Typography.body)
+                    .foregroundStyle(DesignSystem.Colors.textPrimary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Text(MonthComparison.logNote)
+                .font(DesignSystem.Typography.bodySmall)
+                .foregroundStyle(DesignSystem.Colors.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(DesignSystem.Spacing.md)
+        .background(DesignSystem.Colors.surface, in: RoundedRectangle(cornerRadius: DesignSystem.Radius.md))
+        .overlay(
+            RoundedRectangle(cornerRadius: DesignSystem.Radius.md)
+                .strokeBorder(DesignSystem.Colors.border, lineWidth: 1)
+        )
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("progress.month")
+    }
+
+    private func comparisonLine(_ title: String, figure: String, slots: String) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: DesignSystem.Spacing.sm) {
+            Text(title)
+                .foregroundStyle(DesignSystem.Colors.textSecondary)
+            Spacer(minLength: DesignSystem.Spacing.sm)
+            Text("\(figure) UK units")
+                .foregroundStyle(DesignSystem.Colors.textPrimary)
+            Text(slots)
+                .foregroundStyle(DesignSystem.Colors.textSecondary)
+        }
+        .font(DesignSystem.Typography.labelLarge)
     }
 
     // MARK: - Rank hero

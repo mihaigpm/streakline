@@ -94,6 +94,12 @@ Dates below are the commit that put the decision in the tree, or 2026-10-13 wher
 - **Rationale:** Once the countdown hits the floor the week needs a name, and that name must not pretend the budget started over.
 - **Reconsider if:** Hold needs its own shrinking schedule. That would be a different product. This label does not add one.
 
+### 2026-10-30 — The month screen compares week 1 with this week, in UK units.
+
+- **Decision:** `MonthComparison` is derived. Progress shows it above the rank. Week 1 alone says the comparison starts at week 2. From week 2 it shows this week and week 1 in UK units, the slot counts out of 3, and one sentence: down, up, or level. A week in between is ignored. Pints and units are converted with `AlcoholUnits` and the stored amounts stay as logged. Different display units add the footnote that the comparison is in UK units. The card always says this is the log, not a health score. A rise uses the same colour as a drop. No chart, no average, no share, no paywall.
+- **Rationale:** Adding a pint to a unit would invent a number. The first week is the only baseline the user can still see.
+- **Reconsider if:** The comparison should use a different pair of weeks. That is a different product. This screen does not average the month.
+
 ### 2026-10-30 — UI tests launch a fixture. They do not own the math.
 
 - **Decision:** `StreaklineUITests` drives the simulator. `-ui-fixture` in a Debug build replaces the saved weeks with `home`, `workout`, `progress`, or `onboarding`. The same launch writes screenshots into the test result, and into `STREAKLINE_SCREENSHOT_DIR` when that variable is set. Release ignores the argument. Budget, streak, and XP stay in `StreaklineTests`.
