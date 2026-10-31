@@ -8,7 +8,8 @@ settings:
   base:
     SWIFT_VERSION: "6.0"
     DEVELOPMENT_LANGUAGE: en
-    MARKETING_VERSION: "1.0"
+    # 1.0 is approved and closed. New uploads must stay above it.
+    MARKETING_VERSION: "1.0.1"
     # Local archives use this number. Xcode Cloud overwrites it in
     # ci_scripts/ci_post_clone.sh with CI_BUILD_NUMBER and does not commit.
     CURRENT_PROJECT_VERSION: "4"

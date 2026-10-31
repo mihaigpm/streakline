@@ -152,6 +152,12 @@ Dates below are the commit that put the decision in the tree, or 2026-10-13 wher
 - **Rationale:** TestFlight rejects a repeated marketing version and build number. The workflow run count started at 1, which is already used by manual builds 1–4. The offset matches the Posturato pipeline. Supersedes the upload path in the 2026-09-05 entry: GitHub Actions stays gone; this workflow is the TestFlight path.
 - **Reconsider if:** Someone deletes and recreates the workflow. The run count starts over and can reuse a build number. Do not do that. Raise the offset only if `10000 +` the current run collides with a build already on TestFlight.
 
+### 2026-10-31 — Marketing version is 1.0.1
+
+- **Decision:** `MARKETING_VERSION` in `Streakline/project.yml` is `1.0.1`. The Xcode Cloud build-number script stays `CI_BUILD_NUMBER`.
+- **Rationale:** Version `1.0` is already approved. Apple rejected Xcode Cloud build 16 with ITMS-90186 (train `1.0` is closed) and ITMS-90062 (`CFBundleShortVersionString` must be higher than the approved `1.0`). The binary's build number was `16`, which matched the number Prepare submitted.
+- **Reconsider if:** `1.0.1` is approved. Bump `MARKETING_VERSION` again before the next upload. Do not ship new builds on a closed train.
+
 ### 2026-10-31 — TestFlight build number is the Xcode Cloud run count
 
 - **Decision:** `Streakline/ci_scripts/ci_post_clone.sh` overwrites `CURRENT_PROJECT_VERSION` on the Xcode Cloud runner with `CI_BUILD_NUMBER`. It does not commit. Local archives stay on the number in `project.yml` (4). Supersedes the 2026-10-13 offset.

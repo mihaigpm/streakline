@@ -73,7 +73,7 @@ Verify with `git log` and the Xcode project before trusting dates or build numbe
 
 | Surface | Version | Status |
 |---------|---------|--------|
-| **iOS** | Marketing version `1.0`. Committed build number is **4** (`project.yml` and the app target). | Xcode Cloud archives to TestFlight and sets the build to `CI_BUILD_NUMBER` (the workflow run count). It does not commit that number. See `CI.md` |
+| **iOS** | Marketing version `1.0.1`. Version `1.0` is approved and closed. Committed build number is **4** (`project.yml` and the app target). | Xcode Cloud archives to TestFlight and sets the build to `CI_BUILD_NUMBER` (the workflow run count). It does not commit that number. See `CI.md` |
 | **Web** | Static Next.js | `streakline.fit` — landing, privacy, support |
 
 `docs/app-store/v1.0/metadata.md` still says build 3. The binary's build number is the app target in `project.pbxproj`, not that draft.
@@ -318,16 +318,17 @@ The case list is `ios-test-cases.md`. It was filled from this code, using the pu
 
 1. **Bundle id is `com.mihaigarda.threshold`.** The display name is Streakline. Changing the bundle id orphans the App Store Connect record. Do not "fix" it.
 2. **Cloud build numbers are `CI_BUILD_NUMBER`.** `ci_post_clone.sh` writes that into `project.pbxproj` on the runner and does not commit it. Prepare submits the same number; an offset makes that step fail. A local archive still uses the number in git. Do not delete and recreate the TestFlight workflow, or the run count starts over and can reuse a build TestFlight already has.
-3. **`docs/app-store/v1.0/metadata.md` says build 3.** Trust the app target, then update the draft.
-4. **Week start follows the device calendar**, not a hard-coded Monday. Say which region you tested.
-5. **Home streak ignores the current week.** Progress "Best streak" does not. They are different numbers on purpose.
-6. **Drink unit on a week is a snapshot.** Settings changes the preference used for the next week.
-7. **Minus removes from the latest drink log by date**, not "today" specifically.
-8. **Over budget still shows "0 left"** on the home badge, in red. The strip shows the real total.
-9. **Beta migration rewrites `drinkUnitRaw`** on existing weeks when the onboarding flag was never set.
-10. **Notification id is still `fittrack.daily.reminder`.** Leave it, or cancel the old request in the same change.
-11. **Storage failure looks like an empty app** but writes go to memory and vanish. The screen says storage is unavailable.
-12. **Xcode Cloud `manifest.json`** can appear when the project is linked. It does not define start conditions or TestFlight. Those live in App Store Connect. `CI.md` describes the build-number script.
+3. **Marketing version is `1.0.1`.** Version `1.0` is approved and closed. A new build of `1.0` fails at Prepare with ITMS-90186 and ITMS-90062. The build-number script does not change `MARKETING_VERSION`.
+4. **`docs/app-store/v1.0/metadata.md` says build 3.** Trust the app target, then update the draft.
+5. **Week start follows the device calendar**, not a hard-coded Monday. Say which region you tested.
+6. **Home streak ignores the current week.** Progress "Best streak" does not. They are different numbers on purpose.
+7. **Drink unit on a week is a snapshot.** Settings changes the preference used for the next week.
+8. **Minus removes from the latest drink log by date**, not "today" specifically.
+9. **Over budget still shows "0 left"** on the home badge, in red. The strip shows the real total.
+10. **Beta migration rewrites `drinkUnitRaw`** on existing weeks when the onboarding flag was never set.
+11. **Notification id is still `fittrack.daily.reminder`.** Leave it, or cancel the old request in the same change.
+12. **Storage failure looks like an empty app** but writes go to memory and vanish. The screen says storage is unavailable.
+13. **Xcode Cloud `manifest.json`** can appear when the project is linked. It does not define start conditions or TestFlight. Those live in App Store Connect. `CI.md` describes the build-number script.
 
 ---
 
