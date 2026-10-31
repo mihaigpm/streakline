@@ -38,7 +38,7 @@ This runbook is for the existing Streakline App Store Connect record and its per
 2. Select **Any iOS Device (arm64)** and choose **Product > Archive**.
 3. In Organizer, run **Validate App** and resolve every error and privacy warning.
 4. Distribute with **App Store Connect > Upload** and include symbols.
-5. Wait for processing, then attach the build to version 1.0 in App Store Connect.
+5. Wait for processing, then attach the build to version 1.0.1 in App Store Connect. Version 1.0 is approved and closed for new builds.
 
 The project declares no non-exempt encryption and no collected data. Reconfirm both statements whenever dependencies or network features change.
 

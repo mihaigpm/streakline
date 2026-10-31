@@ -14,6 +14,7 @@ Legend: `[ ]` open · `[x]` done · `[/]` in progress · `[~]` blocked / waiting
 
 ## Now
 
+- [ ] **Create version 1.0.1 in App Store Connect** before the next upload. The project marketing version is already `1.0.1`. Version 1.0 is approved and closed.
 - [ ] **Reconcile store draft with the binary.** `docs/app-store/v1.0/metadata.md` says build 3. A local archive is build 4. An Xcode Cloud archive uses `CI_BUILD_NUMBER`, the workflow run count (`CI.md`). Fix the draft when the next build is chosen, not before.
 - [~] **Support mail.** As checked on 2026-09-05, `streakline.fit` had no MX record (`docs/app-store/v1.0/README.md`). Confirm `support@`, `privacy@`, and `hello@` actually receive mail before they go on a submission. Not rechecked on 2026-10-13.
 
@@ -50,6 +51,7 @@ Not in scope unless a task asks. Reasons live in `decisions.md` and the README r
 - [x] **2026-09-05** App target build number set to 4 in `project.pbxproj`.
 - [x] **2026-10-13** Agent on-ramp: `AGENT_HANDOVER.md`, `decisions.md`, `checklist.md`, `brand.md`, `Streakline/README.md`, `ios-test-cases.md`.
 - [x] **2026-10-13** Xcode Cloud build number: `Streakline/ci_scripts/ci_post_clone.sh` sets `10000 +` the workflow run count. `CI.md`. `project.yml` build number aligned to 4 for local archives.
+- [x] **2026-10-31** Marketing version is `1.0.1`. Xcode Cloud build 16 of `1.0` was rejected (ITMS-90186, ITMS-90062) because that train is closed.
 - [x] **2026-10-31** Xcode Cloud build number is `CI_BUILD_NUMBER`. The `10000 +` offset disagreed with the build Prepare submits, so the archive failed at "Prepare build for App Store Connect". Local archives stay on the number in `project.yml`.
 - [x] **2026-10-27** Session slots. Onboarding stores `programmePreset`. New weeks seed Hard / Strong / Long templates. A swap is one slot, this week only. "I already trained" completes that slot. An empty `sessionTemplateRaw` keeps Day A / B / C.
 - [x] **2026-10-27** Streak shield. Two sessions under budget hold the streak. Three sessions remain the perfect week. One shield, earned on rollover from a perfect week and spent on a miss. Not for sale.

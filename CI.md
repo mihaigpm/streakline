@@ -18,7 +18,7 @@ A build log that never prints `Set CURRENT_PROJECT_VERSION` did not run this scr
 
 ## Version numbers
 
-`MARKETING_VERSION` in `Streakline/project.yml` is the user-visible version. Change it by hand when testers should see a new version name, then regenerate the project.
+`MARKETING_VERSION` in `Streakline/project.yml` is the user-visible version. It is `1.0.1`. Version `1.0` was approved, so App Store Connect closed that train. Xcode Cloud build 16 of `1.0` was rejected with ITMS-90186 and ITMS-90062: `CFBundleShortVersionString` must be higher than the approved version. `ci_post_clone.sh` does not change this key. Bump it by hand when the next train closes, then regenerate the project.
 
 `ci_post_clone.sh` overwrites every `CURRENT_PROJECT_VERSION` in `project.pbxproj` on the Xcode Cloud machine, before the archive. The build number is `CI_BUILD_NUMBER`, the Xcode Cloud run count for **this** workflow. The later "Prepare build for App Store Connect" step submits that same number. The binary has to match it. The script does not commit the number back. A local Xcode archive uses the number in git (`4` until you bump `project.yml`). It does not run this script.
 
