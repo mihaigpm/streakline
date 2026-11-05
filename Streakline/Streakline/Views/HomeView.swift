@@ -107,7 +107,7 @@ struct HomeView: View {
             if let week = currentWeek {
                 WeekSealView(seal: WeekSeal(
                     week: week,
-                    now: .now,
+                    now: ReadingClock.now,
                     calendar: .current,
                     isOpenWeek: true,
                     shieldAvailable: programmeStates.contains { $0.shieldsAvailable > 0 },
@@ -279,7 +279,7 @@ struct HomeView: View {
             .frame(width: 220, height: 220)
             .frame(maxWidth: .infinity)
 
-            if WeekSeal.showsOnHome(now: .now, calendar: .current) {
+            if WeekSeal.showsOnHome(now: ReadingClock.now, calendar: .current) {
                 Button("Seal the week") {
                     isShowingSeal = true
                 }
@@ -385,7 +385,7 @@ struct HomeView: View {
     // MARK: - Logic
 
     private func refreshWeek() {
-        currentWeek = WeekManager.currentWeek(in: context)
+        currentWeek = WeekManager.currentWeek(in: context, now: ReadingClock.now)
 
         // Catch a rank-up that was earned but never celebrated
         // (e.g. the app was quit mid-workout).

@@ -51,7 +51,81 @@ final class StreaklineUITests: XCTestCase {
         }
         XCTAssertTrue(heading.waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["Badges"].exists)
+        XCTAssertFalse(app.buttons["Share"].exists)
         capture(app, name: "progress")
+    }
+
+    func testSundaySealSharesACardAndWednesdayDoesNot() {
+        XCUIDevice.shared.orientation = .portrait
+        let sunday = launch("home", extraArguments: ["-ui-now", "2026-11-08T12:00:00Z"])
+        XCTAssertTrue(element("home.header", in: sunday).waitForExistence(timeout: 15))
+        let sealButton = sunday.buttons["Seal the week"]
+        XCTAssertTrue(sealButton.waitForExistence(timeout: 5))
+        sealButton.tap()
+
+        XCTAssertTrue(sunday.staticTexts["1 of 3"].waitForExistence(timeout: 5) || labelContains("1 of 3", in: sunday))
+        XCTAssertTrue(labelContains("2 of 10 pints", in: sunday))
+        XCTAssertTrue(labelContains("not spent", in: sunday))
+        XCTAssertTrue(labelContains("Missed", in: sunday))
+        XCTAssertFalse(labelContains("XP", in: sunday))
+        XCTAssertFalse(labelContains("Badge", in: sunday))
+
+        element("week.seal.share", in: sunday).tap()
+        let card = element("week.card", in: sunday)
+        XCTAssertTrue(card.waitForExistence(timeout: 5))
+        XCTAssertEqual(
+            card.label,
+            "Streakline\nSeason 1\n1 of 3\n2 of 10 pints\nabout £44.00 not spent\nMissed\nstreakline.fit"
+        )
+
+        let shareCard = element("week.card.share", in: sunday)
+        XCTAssertTrue(shareCard.waitForExistence(timeout: 5))
+        shareCard.tap()
+        let activity = sunday.otherElements["ActivityListView"]
+        XCTAssertTrue(activity.waitForExistence(timeout: 8))
+        if activity.buttons["Close"].exists {
+            activity.buttons["Close"].tap()
+        } else {
+            sunday.swipeDown()
+        }
+
+        let drinks = sunday.switches["Include drinks"]
+        XCTAssertTrue(drinks.waitForExistence(timeout: 5))
+        drinks.tap()
+        let hidden = NSPredicate(format: "label == %@", "Streakline\nSeason 1\n1 of 3\nMissed\nstreakline.fit")
+        let hiddenCard = expectation(for: hidden, evaluatedWith: card)
+        wait(for: [hiddenCard], timeout: 5)
+
+        let wednesday = launch("home", extraArguments: ["-ui-now", "2026-11-04T12:00:00Z"])
+        XCTAssertTrue(element("home.header", in: wednesday).waitForExistence(timeout: 15))
+        XCTAssertFalse(wednesday.buttons["Seal the week"].exists)
+    }
+
+    func testHistorySharesAPastWeekAndNotTheOpenWeek() {
+        XCUIDevice.shared.orientation = .portrait
+        let app = launch("progress")
+        XCTAssertTrue(element("home.header", in: app).waitForExistence(timeout: 15))
+        app.buttons["History"].tap()
+        XCTAssertTrue(app.navigationBars["History"].waitForExistence(timeout: 5))
+
+        app.staticTexts["Week 2"].tap()
+        let share = element("week.seal.share", in: app)
+        XCTAssertTrue(share.waitForExistence(timeout: 5))
+        share.tap()
+        let card = element("week.card", in: app)
+        XCTAssertTrue(card.waitForExistence(timeout: 5))
+        XCTAssertTrue(card.label.contains("Streakline"))
+        XCTAssertTrue(card.label.contains("streakline.fit"))
+        XCTAssertFalse(card.label.contains("week "))
+        app.navigationBars["Share"].buttons["Close"].tap()
+        let sealBar = app.navigationBars["Season 1, week 2 of 8"]
+        XCTAssertTrue(sealBar.waitForExistence(timeout: 5))
+        sealBar.buttons["Close"].tap()
+
+        app.staticTexts["Week 3"].tap()
+        XCTAssertTrue(app.staticTexts["Workout dates"].waitForExistence(timeout: 5))
+        XCTAssertFalse(element("week.seal.share", in: app).exists)
+        XCTAssertFalse(app.buttons["Share"].exists)
     }
 
     func testWorkoutFixtureOpensTheSession() {
@@ -71,6 +145,10 @@ final class StreaklineUITests: XCTestCase {
 
     private func element(_ identifier: String, in app: XCUIApplication) -> XCUIElement {
         app.descendants(matching: .any)[identifier]
+    }
+
+    private func labelContains(_ text: String, in app: XCUIApplication) -> Bool {
+        app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", text)).firstMatch.exists
     }
 
     private func capture(_ app: XCUIApplication, name: String) {

@@ -54,7 +54,7 @@ struct WeekSeal: Equatable {
         return "about \(ReceiptEstimates.formatPounds(moneyNotSpent)) not spent"
     }
 
-    /// The outcome in words. No rank, badge, or XP.
+    /// The outcome in words. No rank, badge, or XP. The seal screen uses this. The card uses `cardOutcomeWord`.
     var outcomeText: String {
         switch outcome {
         case .perfect: "Perfect week"
@@ -62,6 +62,70 @@ struct WeekSeal: Equatable {
         case .shieldUsed: "Shield used"
         case .missed: "Missed"
         }
+    }
+
+    /// The name drawn at the top of the shared card.
+    static let cardBrand = "Streakline"
+
+    /// The public site, drawn small on the card. Not a link.
+    static let cardSite = "streakline.fit"
+
+    /// One word for the shared card. The seal screen keeps `outcomeText`.
+    var cardOutcomeWord: String {
+        switch outcome {
+        case .perfect: "Perfect"
+        case .held: "Held"
+        case .shieldUsed: "Shield"
+        case .missed: "Missed"
+        }
+    }
+
+    /// One line on the shared card.
+    struct CardCaption: Equatable, Identifiable {
+        /// The words drawn on that line.
+        var text: String
+        /// Which line, so the card can colour it without reading the words.
+        var kind: Kind
+        var id: Kind { kind }
+
+        enum Kind: Hashable {
+            /// “Streakline”.
+            case brand
+            /// `Season.title`. “Season 1”, “Season 2”, or “Hold”.
+            case season
+            /// Slots completed out of 3.
+            case slots
+            /// The drink line. Present only while drinks are included.
+            case drinks
+            /// The estimate. Present only while drinks are included and money remains.
+            case money
+            /// Perfect, Held, Shield, or Missed.
+            case outcome
+            /// “streakline.fit”.
+            case site
+        }
+    }
+
+    /// Lines for the shared card, in order.
+    ///
+    /// Drinks and the estimate are omitted when `includeDrinks` is false.
+    /// The estimate is also omitted when `moneyNotSpent` is nil, which is a week on budget or over it.
+    /// The season heading and the open-week shield sentence are not lines.
+    func cardCaptions(includeDrinks: Bool) -> [CardCaption] {
+        var lines = [
+            CardCaption(text: Self.cardBrand, kind: .brand),
+            CardCaption(text: season.title, kind: .season),
+            CardCaption(text: slotsText, kind: .slots),
+        ]
+        if includeDrinks {
+            lines.append(CardCaption(text: drinksText, kind: .drinks))
+            if let moneyNotSpentText {
+                lines.append(CardCaption(text: moneyNotSpentText, kind: .money))
+            }
+        }
+        lines.append(CardCaption(text: cardOutcomeWord, kind: .outcome))
+        lines.append(CardCaption(text: Self.cardSite, kind: .site))
+        return lines
     }
 
     /// Home shows “Seal the week” on Sunday only.
