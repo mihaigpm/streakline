@@ -1,10 +1,11 @@
 import SwiftUI
 
-/// The four facts of a `WeekSeal`. The navigation title is the season heading. No rank, badge grid, XP, confetti, or share action.
+/// The four facts of a `WeekSeal`. The navigation title is the season heading. No rank, badge grid, XP, or confetti.
 struct WeekSealView: View {
     let seal: WeekSeal
 
     @Environment(\.dismiss) private var dismiss
+    @State private var isShowingCard = false
 
     var body: some View {
         NavigationStack {
@@ -34,9 +35,18 @@ struct WeekSealView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close", action: dismiss.callAsFunction)
                 }
+                ToolbarItem(placement: .primaryAction) {
+                    Button("Share", action: { isShowingCard = true })
+                        .accessibilityIdentifier("week.seal.share")
+                }
             }
         }
         .preferredColorScheme(.dark)
+        .sheet(isPresented: $isShowingCard) {
+            WeekCardShareView(seal: seal)
+                .presentationDetents([.large])
+                .presentationBackground(DesignSystem.Colors.background)
+        }
     }
 
     private var drinkColor: Color {

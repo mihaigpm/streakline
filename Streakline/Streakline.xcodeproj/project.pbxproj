@@ -51,6 +51,8 @@
 		C3A91E7B5D4F4802A6B1C909 /* Season.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A91E7B5D4F4802A6B1C908 /* Season.swift */; };
 		F7A8B9C0D1E2F30415263702 /* MonthComparison.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A8B9C0D1E2F30415263701 /* MonthComparison.swift */; };
 		B8C2D3E4F5061728394A5C04 /* WeekSealView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8C2D3E4F5061728394A5C03 /* WeekSealView.swift */; };
+		C4A7E1B83F2D4960A8C5E7B2 /* WeekCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A7E1B83F2D4960A8C5E7B1 /* WeekCardView.swift */; };
+		C4A7E1B83F2D4960A8C5E7B4 /* WeekCardShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A7E1B83F2D4960A8C5E7B3 /* WeekCardShareView.swift */; };
 		D5E6F708192A3B4C5D6E7F83 /* ReceiptSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5E6F708192A3B4C5D6E7F82 /* ReceiptSheet.swift */; };
 /* End PBXBuildFile section */
 
@@ -120,6 +122,8 @@
 		C3A91E7B5D4F4802A6B1C908 /* Season.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Season.swift; sourceTree = "<group>"; };
 		F7A8B9C0D1E2F30415263701 /* MonthComparison.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthComparison.swift; sourceTree = "<group>"; };
 		B8C2D3E4F5061728394A5C03 /* WeekSealView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekSealView.swift; sourceTree = "<group>"; };
+		C4A7E1B83F2D4960A8C5E7B1 /* WeekCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekCardView.swift; sourceTree = "<group>"; };
+		C4A7E1B83F2D4960A8C5E7B3 /* WeekCardShareView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekCardShareView.swift; sourceTree = "<group>"; };
 		D5E6F708192A3B4C5D6E7F82 /* ReceiptSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -234,6 +238,8 @@
 				33D203C819D4B1FFABD2C2D1 /* OnboardingView.swift */,
 				C4E8A1B72D6F4093A5E1C8D0 /* PlannedNightsSheet.swift */,
 				D5E6F708192A3B4C5D6E7F82 /* ReceiptSheet.swift */,
+				C4A7E1B83F2D4960A8C5E7B1 /* WeekCardView.swift */,
+				C4A7E1B83F2D4960A8C5E7B3 /* WeekCardShareView.swift */,
 				B8C2D3E4F5061728394A5C03 /* WeekSealView.swift */,
 				B6AE49A691ED8976F3C765E5 /* ProgressScreen.swift */,
 				BD396A2A0DE26A02615504C3 /* RankUpView.swift */,
@@ -388,6 +394,8 @@
 				F7A8B9C0D1E2F30415263702 /* MonthComparison.swift in Sources */,
 				C3A91E7B5D4F4802A6B1C909 /* Season.swift in Sources */,
 				B8C2D3E4F5061728394A5C02 /* WeekSeal.swift in Sources */,
+				C4A7E1B83F2D4960A8C5E7B2 /* WeekCardView.swift in Sources */,
+				C4A7E1B83F2D4960A8C5E7B4 /* WeekCardShareView.swift in Sources */,
 				B8C2D3E4F5061728394A5C04 /* WeekSealView.swift in Sources */,
 				D5E6F708192A3B4C5D6E7F83 /* ReceiptSheet.swift in Sources */,
 				651BF9BD404024269BB4F681 /* NotificationManager.swift in Sources */,

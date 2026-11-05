@@ -986,6 +986,121 @@ final class StreaklineCoreTests: XCTestCase {
         XCTAssertEqual(drySeal.moneyNotSpentText, "about £33.60 not spent")
     }
 
+    func testWeekCardOutcomeWordsArePerfectHeldShieldAndMissed() throws {
+        let calendar = morningCalendar
+        let perfect = try receiptWeek(unit: .pints, starting: 10, total: 3, completed: Set(WorkoutDay.allCases))
+        let perfectSeal = WeekSeal(week: perfect, now: .now, calendar: calendar, isOpenWeek: false, shieldAvailable: false)
+        XCTAssertEqual(perfectSeal.outcomeText, "Perfect week")
+        XCTAssertEqual(perfectSeal.cardOutcomeWord, "Perfect")
+
+        let held = try receiptWeek(unit: .pints, starting: 10, total: 3, completed: [.dayA, .dayB])
+        let heldSeal = WeekSeal(week: held, now: .now, calendar: calendar, isOpenWeek: false, shieldAvailable: true)
+        XCTAssertEqual(heldSeal.outcomeText, "Streak held")
+        XCTAssertEqual(heldSeal.cardOutcomeWord, "Held")
+
+        let shielded = try receiptWeek(unit: .pints, starting: 10, total: 1, completed: [.dayA])
+        shielded.shieldUsed = true
+        let shieldSeal = WeekSeal(week: shielded, now: .now, calendar: calendar, isOpenWeek: false, shieldAvailable: false)
+        XCTAssertEqual(shieldSeal.outcomeText, "Shield used")
+        XCTAssertEqual(shieldSeal.cardOutcomeWord, "Shield")
+
+        let missed = try receiptWeek(unit: .pints, starting: 10, total: 1, completed: [.dayA])
+        let missedSeal = WeekSeal(week: missed, now: .now, calendar: calendar, isOpenWeek: true, shieldAvailable: true)
+        XCTAssertEqual(missedSeal.outcomeText, "Missed")
+        XCTAssertEqual(missedSeal.cardOutcomeWord, "Missed")
+        XCTAssertEqual(missedSeal.closingNote, WeekSeal.shieldAppliesWhenTheWeekCloses)
+        let missedLines = missedSeal.cardCaptions(includeDrinks: true).map(\.text)
+        XCTAssertFalse(missedLines.contains(WeekSeal.shieldAppliesWhenTheWeekCloses))
+        XCTAssertFalse(missedLines.contains(missedSeal.title))
+    }
+
+    func testWeekCardHidesDrinksAndMoney() throws {
+        let calendar = morningCalendar
+        let perfect = try receiptWeek(unit: .pints, starting: 10, total: 3, completed: Set(WorkoutDay.allCases))
+        let seal = WeekSeal(week: perfect, now: .now, calendar: calendar, isOpenWeek: false, shieldAvailable: false)
+        let captions = seal.cardCaptions(includeDrinks: false)
+        let lines = captions.map(\.text)
+        XCTAssertEqual(lines, ["Streakline", "Season 1", "3 of 3", "Perfect", "streakline.fit"])
+        XCTAssertFalse(lines.contains(seal.drinksText))
+        XCTAssertFalse(lines.contains { $0.contains("£") || $0.contains("not spent") })
+        XCTAssertFalse(captions.contains { $0.kind == .drinks || $0.kind == .money })
+        XCTAssertFalse(lines.contains(seal.title))
+    }
+
+    func testWeekCardShowsDrinksAndMoneyUnderBudget() throws {
+        let calendar = morningCalendar
+        let perfect = try receiptWeek(unit: .pints, starting: 10, total: 3, completed: Set(WorkoutDay.allCases))
+        let seal = WeekSeal(week: perfect, now: .now, calendar: calendar, isOpenWeek: false, shieldAvailable: false)
+        let lines = seal.cardCaptions(includeDrinks: true).map(\.text)
+        XCTAssertEqual(lines, [
+            "Streakline",
+            "Season 1",
+            "3 of 3",
+            "3 of 10 pints",
+            "about £38.50 not spent",
+            "Perfect",
+            "streakline.fit",
+        ])
+        XCTAssertEqual(lines[3], seal.drinksText)
+        XCTAssertEqual(lines[4], seal.moneyNotSpentText)
+        XCTAssertFalse(lines.contains(seal.title))
+
+        let holdWeeks = plannedWeeks(count: 10, starting: 10, unit: .pints, rule: .guideline)
+        let hold = WeekSeal(
+            week: holdWeeks[9],
+            now: .now,
+            calendar: calendar,
+            isOpenWeek: false,
+            shieldAvailable: false,
+            history: holdWeeks
+        )
+        XCTAssertEqual(hold.season.title, "Hold")
+        XCTAssertEqual(hold.title, "Hold, week 2 of 8")
+        let holdLines = hold.cardCaptions(includeDrinks: true).map(\.text)
+        XCTAssertEqual(holdLines[1], "Hold")
+        XCTAssertFalse(holdLines.contains(hold.title))
+    }
+
+    func testWeekCardOmitsMoneyOnOrOverBudget() throws {
+        let calendar = morningCalendar
+        let over = try receiptWeek(unit: .pints, starting: 6, total: 8, completed: Set(WorkoutDay.allCases))
+        let overSeal = WeekSeal(week: over, now: .now, calendar: calendar, isOpenWeek: false, shieldAvailable: false)
+        let overLines = overSeal.cardCaptions(includeDrinks: true).map(\.text)
+        XCTAssertTrue(overLines.contains(overSeal.drinksText))
+        XCTAssertNil(overSeal.moneyNotSpentText)
+        XCTAssertFalse(overLines.contains { $0.contains("£") || $0.contains("not spent") })
+        XCTAssertEqual(overSeal.cardOutcomeWord, "Missed")
+
+        let exact = try receiptWeek(unit: .pints, starting: 10, total: 10, completed: [.dayA, .dayB])
+        let exactSeal = WeekSeal(week: exact, now: .now, calendar: calendar, isOpenWeek: false, shieldAvailable: false)
+        let exactLines = exactSeal.cardCaptions(includeDrinks: true).map(\.text)
+        XCTAssertTrue(exactLines.contains(exactSeal.drinksText))
+        XCTAssertNil(exactSeal.moneyNotSpentText)
+        XCTAssertFalse(exactLines.contains { $0.contains("£") || $0.contains("not spent") })
+        XCTAssertEqual(exactSeal.cardOutcomeWord, "Held")
+    }
+
+    func testWeekCardFileIsTemporaryAndLeavesDocumentsUntouched() throws {
+        let documents = try XCTUnwrap(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first)
+        try FileManager.default.createDirectory(at: documents, withIntermediateDirectories: true)
+        let before = try fileNames(in: documents)
+
+        let first = try WeekCardImageFile.write(Data("one".utf8))
+        let second = try WeekCardImageFile.write(Data("two".utf8))
+        let after = try fileNames(in: documents)
+
+        XCTAssertEqual(before, after)
+        XCTAssertEqual(first, second)
+        XCTAssertEqual(second.lastPathComponent, "streakline-week.png")
+        XCTAssertEqual(try Data(contentsOf: second), Data("two".utf8))
+        let temporary = FileManager.default.temporaryDirectory.resolvingSymlinksInPath().standardizedFileURL
+        let written = second.resolvingSymlinksInPath().standardizedFileURL
+        let documentsPath = documents.resolvingSymlinksInPath().standardizedFileURL
+        XCTAssertEqual(written.deletingLastPathComponent().path, temporary.path)
+        XCTAssertNotEqual(written.deletingLastPathComponent().path, documentsPath.path)
+        try FileManager.default.removeItem(at: second)
+    }
+
     func testSundayCanSealAndWednesdayCannot() throws {
         let calendar = morningCalendar
         let start = calendar.startOfDay(for: try morningDate(year: 2026, month: 10, day: 26, hour: 8, calendar: calendar))
@@ -1265,6 +1380,12 @@ final class StreaklineCoreTests: XCTestCase {
 
     private func pounds(_ minorUnits: Int) -> Decimal {
         Decimal(sign: .plus, exponent: -2, significand: Decimal(minorUnits))
+    }
+
+    private func fileNames(in directory: URL) throws -> [String] {
+        try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)
+            .map(\.lastPathComponent)
+            .sorted()
     }
 
     private func receiptDate(year: Int, month: Int, day: Int, calendar: Calendar) throws -> Date {

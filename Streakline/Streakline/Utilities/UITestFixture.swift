@@ -1,12 +1,41 @@
 import Foundation
 import SwiftData
 
+/// The moment Home and History are reading.
+///
+/// A Debug launch can pass `-ui-now` and an ISO-8601 date so Sunday and a past week can be opened on any weekday.
+/// Release builds always use the real time, and they ignore that argument.
+enum ReadingClock {
+    static var now: Date {
+        #if DEBUG
+        UITestClock.now
+        #else
+        .now
+        #endif
+    }
+}
+
 /// Deterministic app state for UI tests and simulator screenshots.
 ///
 /// Debug builds only. Pass `-ui-fixture` and one of `home`, `workout`, `progress`, or `onboarding`.
 /// The store and the programme preferences are replaced. A normal launch never reads this.
 /// Release builds omit it, so an App Store binary cannot be switched into a fixture.
 #if DEBUG
+/// `-ui-now` followed by an ISO-8601 date, for example `2026-11-08T12:00:00Z`. Absent or unreadable means the real time.
+enum UITestClock {
+    static let argument = "-ui-now"
+
+    static var now: Date {
+        let arguments = ProcessInfo.processInfo.arguments
+        guard let index = arguments.firstIndex(of: argument), index + 1 < arguments.count else {
+            return .now
+        }
+        let parser = ISO8601DateFormatter()
+        parser.formatOptions = [.withInternetDateTime]
+        return parser.date(from: arguments[index + 1]) ?? .now
+    }
+}
+
 @MainActor
 enum UITestFixture {
     static let argument = "-ui-fixture"
@@ -34,7 +63,7 @@ enum UITestFixture {
     static func applyIfRequested(
         in context: ModelContext,
         arguments: [String] = ProcessInfo.processInfo.arguments,
-        now: Date = .now
+        now: Date = ReadingClock.now
     ) throws {
         guard let index = arguments.firstIndex(of: argument) else { return }
         let name = index + 1 < arguments.count ? arguments[index + 1] : ""

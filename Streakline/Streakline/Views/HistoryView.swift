@@ -19,7 +19,7 @@ struct HistoryView: View {
                 ScrollView {
                     LazyVStack(spacing: DesignSystem.Spacing.md) {
                         ForEach(weeks) { week in
-                            let past = WeekSeal.isPastWeek(week, now: .now, calendar: .current)
+                            let past = WeekSeal.isPastWeek(week, now: ReadingClock.now, calendar: .current)
                             Button {
                                 selectedWeek = week
                             } label: {
@@ -39,10 +39,10 @@ struct HistoryView: View {
         .navigationTitle("History")
         .navigationBarTitleDisplayMode(.large)
         .sheet(item: $selectedWeek) { week in
-            if WeekSeal.isPastWeek(week, now: .now, calendar: .current) {
+            if WeekSeal.isPastWeek(week, now: ReadingClock.now, calendar: .current) {
                 WeekSealView(seal: WeekSeal(
                     week: week,
-                    now: .now,
+                    now: ReadingClock.now,
                     calendar: .current,
                     isOpenWeek: false,
                     shieldAvailable: false,
